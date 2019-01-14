@@ -16,6 +16,7 @@
 	<string name = "txt-blast" text="BLAST MODE"/>
 	<string name = "txt-advanced" text="ADVANCED MODE"/>
 	<string name = "txt-challenge" text="CHALLENGE MODE"/>
+	<string name="txt-wall-lava" text="WALL LAVA MODE"/>
 
 	<!--Settings Screen-->
 	<string name = "txt-settings" text="SETTINGS"/>

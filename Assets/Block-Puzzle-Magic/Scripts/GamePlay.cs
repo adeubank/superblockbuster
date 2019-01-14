@@ -450,12 +450,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool CanExistingBlocksPlaced(List<ShapeInfo> OnBoardBlockShapes)
     {
         foreach (var block in blockGrid)
+        {
+            if (GameController.gameMode == GameMode.WALL_LAVA)
+                if (block.isEdge)
+                    continue;
+
             if (!block.isFilled)
                 foreach (var info in OnBoardBlockShapes)
                 {
                     var canPlace = CheckShapeCanPlace(block, info);
                     if (canPlace) return true;
                 }
+        }
+
 
         return false;
     }

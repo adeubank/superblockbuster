@@ -161,17 +161,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf2ae6f26d3d68d41b54b56079da4a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameOverScreen: {fileID: 2057389771}
   mainMenu: {fileID: 1342716143}
+  pauseSceen: {fileID: 1796045300}
+  purchaseFailScreen: {fileID: 20279008}
+  purchaseSuccessScreen: {fileID: 1195194307}
+  quitConfirmGameScreen: {fileID: 1356135477}
+  recueScreen: {fileID: 1083935024}
+  selectLanguageScreen: {fileID: 155007942}
   selectModeScreen: {fileID: 1359835090}
   settingsScreen: {fileID: 1369380778}
-  selectLanguageScreen: {fileID: 155007942}
-  pauseSceen: {fileID: 1796045300}
-  recueScreen: {fileID: 1083935024}
-  gameOverScreen: {fileID: 2057389771}
   shopScreen: {fileID: 1947819125}
-  purchaseSuccessScreen: {fileID: 1195194307}
-  purchaseFailScreen: {fileID: 20279008}
-  quitConfirmGameScreen: {fileID: 1356135477}
 --- !u!1001 &155007940
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -738,11 +738,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f75c4f279c8828e4588e703f7922f4ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSoundEnabled: 1
-  isMusicEnabled: 1
   audioSource: {fileID: 403334065}
   clickSound: {fileID: 8300000, guid: 9ee30e561d1439f469ddbc76c894dd40, type: 3}
   gameOverSound: {fileID: 8300000, guid: fda345bcd90ae7947aa9482e71f9d1b9, type: 3}
+  isMusicEnabled: 1
+  isSoundEnabled: 1
 --- !u!82 &403334065
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1360,30 +1360,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54272aa67ca25354da1bf7839d90b4f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AboutURL: 
   gameModesInfo:
-  - modeName: CLASSIC
-    gameMode: 1
+  - gameMode: 1
+    isActive: 0
     modeIndex: 1
-    isActive: 1
-  - modeName: TIMED
-    gameMode: 2
+    modeName: CLASSIC
+  - gameMode: 2
+    isActive: 0
     modeIndex: 2
-    isActive: 1
-  - modeName: BLAST
-    gameMode: 3
+    modeName: TIMED
+  - gameMode: 3
+    isActive: 0
     modeIndex: 3
-    isActive: 1
-  - modeName: ADVANCE
-    gameMode: 4
+    modeName: BLAST
+  - gameMode: 4
+    isActive: 0
     modeIndex: 4
-    isActive: 1
-  - modeName: CHALLENGE
-    gameMode: 5
+    modeName: ADVANCE
+  - gameMode: 5
+    isActive: 0
     modeIndex: 5
+    modeName: CHALLENGE
+  - gameMode: 6
     isActive: 1
+    modeIndex: 6
+    modeName: WALL_LAVA
   ReviewURL_Google: 
   ReviewURL_iOS: 
-  AboutURL: 
 --- !u!1001 &1083935022
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1756,6 +1760,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1066534986474738, guid: 4dcc127c7ad2dcd489457eada6a40e5b, type: 3}
+      propertyPath: m_Name
+      value: SelectMode
+      objectReference: {fileID: 0}
     - target: {fileID: 224254137811769946, guid: 4dcc127c7ad2dcd489457eada6a40e5b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1795,6 +1803,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 224254137811769946, guid: 4dcc127c7ad2dcd489457eada6a40e5b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224254137811769946, guid: 4dcc127c7ad2dcd489457eada6a40e5b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 224254137811769946, guid: 4dcc127c7ad2dcd489457eada6a40e5b,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224254137811769946, guid: 4dcc127c7ad2dcd489457eada6a40e5b,
         type: 3}
