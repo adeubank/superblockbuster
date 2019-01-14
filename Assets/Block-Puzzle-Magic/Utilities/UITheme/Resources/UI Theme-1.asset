@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b89c09cdca9474ba71b8486727e566, type: 3}
+  m_Name: UI Theme-1
+  m_EditorClassIdentifier: 
+  UIStyle:
+  - tagName: main-bg
+    UIColor: {r: 0.09803922, g: 0.11372549, b: 0.16078432, a: 1}
+  - tagName: title-text
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: btn-1
+    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.2509804, a: 1}
+  - tagName: popup-bg-1
+    UIColor: {r: 0.12941177, g: 0.14509805, b: 0.20392157, a: 1}
+  - tagName: popup-title-1
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: popup-header-1
+    UIColor: {r: 0, g: 0.7490196, b: 0.6862745, a: 1}
+  - tagName: btn-popup-1
+    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.24705882, a: 1}
+  - tagName: btn-text-popup-1
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: btn-image-popup-1
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: btn-text-popup-2
+    UIColor: {r: 0.4745098, g: 0.52156866, b: 0.7294118, a: 1}
+  - tagName: popup-header-2
+    UIColor: {r: 0.5058824, g: 0.23921569, b: 0.59607846, a: 1}
+  - tagName: language-text
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: gameplay-bg
+    UIColor: {r: 0.09803922, g: 0.11372549, b: 0.16078432, a: 1}
+  - tagName: gameplay-shape-bg
+    UIColor: {r: 0.28627452, g: 0.29803923, b: 0.32941177, a: 1}
+  - tagName: gameplay-btn-pause
+    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.24705882, a: 1}
+  - tagName: gameplay-btn-pause-inner
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: gameplay-timer
+    UIColor: {r: 0.1254902, g: 0.81960785, b: 1, a: 1}
+  - tagName: text-quit-confirm
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
+  - tagName: btn-stay
+    UIColor: {r: 0, g: 0.7490196, b: 0.6862745, a: 1}
+  - tagName: btn-home-gameover
+    UIColor: {r: 0.16078432, g: 0.23137255, b: 0.3529412, a: 1}
+  - tagName: btn-replay-gameover
+    UIColor: {r: 0, g: 0.7490196, b: 0.6862745, a: 1}
+  - tagName: btn-quit
+    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.24705882, a: 1}
+  - tagName: text-gameover
+    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.24705882, a: 1}
+  - tagName: help-hand
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
