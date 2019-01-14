@@ -1,16 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class UIScreen : MonoBehaviour 
+public class UIScreen : MonoBehaviour
 {
-	void Awake()
-	{
-		init ();	
-	}
+    private void Awake()
+    {
+        init();
+    }
 
-	public virtual void init()
-	{
-		//StackManager.Instance.PushWindow (gameObject);
-	}
+    public virtual void init()
+    {
+        //StackManager.Instance.PushWindow (gameObject);
+    }
 }

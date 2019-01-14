@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-#if UNITY_PURCHASING
+﻿#if UNITY_PURCHASING
 using UnityEngine.Purchasing;
 #endif
 
-public class PurchaseRewardsManager : Singleton<PurchaseRewardsManager> 
+public class PurchaseRewardsManager : Singleton<PurchaseRewardsManager>
 {
-	#if UNITY_PURCHASING
+#if UNITY_PURCHASING
 	public void ProcessRewardForProduct(Product product)
 	{
 		switch (product.definition.id) {
@@ -25,5 +22,5 @@ public class PurchaseRewardsManager : Singleton<PurchaseRewardsManager>
 			break;
 		}
 	}
-	#endif
+#endif
 }

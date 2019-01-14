@@ -1,45 +1,40 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class SelectLanguage : MonoBehaviour 
+public class SelectLanguage : MonoBehaviour
 {
-	[SerializeField] 
-	private GameObject LangaugeButtonTemplate;
+    [SerializeField] private GameObject LangaugeButtonTemplate;
 
-	[SerializeField] 
-	private Transform langaugeSelectionContent;
+    [SerializeField] private Transform langaugeSelectionContent;
 
 
-	void Start()
-	{
-		CreateLanguageList ();
-	}
+    private void Start()
+    {
+        CreateLanguageList();
+    }
 
-	void CreateLanguageList()
-	{
-		foreach (Langauge lang in LocalizationManager.Instance.LanguageList) {
-			if (lang.isAvailable) {
-				CreateLanguageButton (lang);
-			}
-		}
-	}
+    private void CreateLanguageList()
+    {
+        foreach (var lang in LocalizationManager.Instance.LanguageList)
+            if (lang.isAvailable)
+                CreateLanguageButton(lang);
+    }
 
-	void CreateLanguageButton(Langauge languauge)
-	{
-		GameObject languageButton = (GameObject)Instantiate (LangaugeButtonTemplate);
-		languageButton.name = "btn-" + languauge.LanguageName;
-		languageButton.GetComponent<LanguageButton> ().SetLangugaeDetail (languauge);
-		languageButton.transform.SetParent (langaugeSelectionContent);
-		languageButton.transform.localScale = Vector3.one;
-		languageButton.SetActive (true);
-	}
+    private void CreateLanguageButton(Langauge languauge)
+    {
+        var languageButton = Instantiate(LangaugeButtonTemplate);
+        languageButton.name = "btn-" + languauge.LanguageName;
+        languageButton.GetComponent<LanguageButton>().SetLangugaeDetail(languauge);
+        languageButton.transform.SetParent(langaugeSelectionContent);
+        languageButton.transform.localScale = Vector3.one;
+        languageButton.SetActive(true);
+    }
 
-	public void OnCloseButtonPressed()
-	{
-		if (InputManager.Instance.canInput ()) {
-			AudioManager.Instance.PlayButtonClickSound ();
-			gameObject.Deactivate();
-		}
-	}
+    public void OnCloseButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            gameObject.Deactivate();
+        }
+    }
 }

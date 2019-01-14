@@ -1,31 +1,28 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
-/// Help popup.
+///     Help popup.
 /// </summary>
-public class HelpPopup : MonoBehaviour 
+public class HelpPopup : MonoBehaviour
 {
-	/// <summary>
-	/// Raises the close button pressed event.
-	/// </summary>
-	public void OnCloseButtonPressed()
-	{
-		if (InputManager.Instance.canInput ()) {
-			AudioManager.Instance.PlayButtonClickSound ();
-			//StackManager.Instance.OnCloseButtonPressed ();
-			gameObject.Deactivate();
-		}
-	}
+    /// <summary>
+    ///     Raises the close button pressed event.
+    /// </summary>
+    public void OnCloseButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            //StackManager.Instance.OnCloseButtonPressed ();
+            gameObject.Deactivate();
+        }
+    }
 
-	/// <summary>
-	/// Raises the destroy event.
-	/// </summary>
-	void OnDestroy()
-	{
-		if (GamePlay.Instance != null) {
-			GamePlay.Instance.OnHelpPopupClosed ();
-		}
-	}
+    /// <summary>
+    ///     Raises the destroy event.
+    /// </summary>
+    private void OnDestroy()
+    {
+        if (GamePlay.Instance != null) GamePlay.Instance.OnHelpPopupClosed();
+    }
 }

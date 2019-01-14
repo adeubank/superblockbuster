@@ -1,66 +1,61 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
-public class ShapeInfo : MonoBehaviour 
+public class ShapeInfo : MonoBehaviour
 {
-	public int ShapeID = 0;
-	[HideInInspector] public ShapeBlock firstBlock;
-	[HideInInspector] public Sprite blockImage = null;
-	[HideInInspector] public int startOffsetX = 0;
-	[HideInInspector] public int startOffsetY = 0;
+    [HideInInspector] public Sprite blockImage;
+    [HideInInspector] public ShapeBlock firstBlock;
 
-	public List<ShapeBlock> ShapeBlocks;
+    public List<ShapeBlock> ShapeBlocks;
+    public int ShapeID;
+    [HideInInspector] public int startOffsetX;
+    [HideInInspector] public int startOffsetY;
 
-	void Start()
-	{
-		CreateBlockList ();
+    private void Start()
+    {
+        CreateBlockList();
 
-		firstBlock = ShapeBlocks [0];
-		blockImage = firstBlock.block.GetComponent<Image>().sprite;
-		startOffsetX = firstBlock.rowID;
-		startOffsetY = firstBlock.columnID;
-	}
+        firstBlock = ShapeBlocks[0];
+        blockImage = firstBlock.block.GetComponent<Image>().sprite;
+        startOffsetX = firstBlock.rowID;
+        startOffsetY = firstBlock.columnID;
+    }
 
-	void CreateBlockList()
-	{
-		ShapeBlocks = new List<ShapeBlock> ();
-		List<Transform> shapeAllBlocks = transform.GetComponentsInChildren<Transform> ().ToList ();
+    private void CreateBlockList()
+    {
+        ShapeBlocks = new List<ShapeBlock>();
+        var shapeAllBlocks = transform.GetComponentsInChildren<Transform>().ToList();
 
-		if (shapeAllBlocks.Contains (transform)) {
-			shapeAllBlocks.Remove (transform);
-		}
+        if (shapeAllBlocks.Contains(transform)) shapeAllBlocks.Remove(transform);
 
-		foreach (Transform block in shapeAllBlocks) {
-			string[] blockNameSplit =  block.name.Split ('-');
+        foreach (var block in shapeAllBlocks)
+        {
+            var blockNameSplit = block.name.Split('-');
 
-			if (blockNameSplit.Length == 3) {
-				int rowID = blockNameSplit [1].TryParseInt ();
-				int columnID = blockNameSplit [2].TryParseInt ();
-			
-				ShapeBlock thisBlock = new ShapeBlock (block, rowID, columnID);
-				if (!ShapeBlocks.Contains (thisBlock)) {
-					ShapeBlocks.Add (thisBlock);
-				}
-			}
-		}
-	}
+            if (blockNameSplit.Length == 3)
+            {
+                var rowID = blockNameSplit[1].TryParseInt();
+                var columnID = blockNameSplit[2].TryParseInt();
+
+                var thisBlock = new ShapeBlock(block, rowID, columnID);
+                if (!ShapeBlocks.Contains(thisBlock)) ShapeBlocks.Add(thisBlock);
+            }
+        }
+    }
 }
 
 public class ShapeBlock
 {
-	public Transform block;
-	public int rowID;
-	public int columnID;
+    public Transform block;
+    public int columnID;
+    public int rowID;
 
-	public ShapeBlock(Transform _block, int _rowID, int _columnID)
-	{
-		this.block = _block;
-		this.rowID = _rowID;
-		this.columnID = _columnID;
-	}
+    public ShapeBlock(Transform _block, int _rowID, int _columnID)
+    {
+        block = _block;
+        rowID = _rowID;
+        columnID = _columnID;
+    }
 }
-
-

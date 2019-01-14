@@ -1,65 +1,60 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
+﻿using UnityEngine;
 #if HBDOTween
 using DG.Tweening;
+
 #endif
 
 
 /// <summary>
-/// Help classic.
+///     Help classic.
 /// </summary>
 public class HelpClassic : MonoBehaviour
 {
-	[SerializeField]
-	private Transform handImage;
+    private Vector2 firstPosition = Vector2.zero;
 
-	Vector2 firstPosition = Vector2.zero;
-	Vector2 secondPosition = Vector2.zero;
+    [SerializeField] private Transform handImage;
 
-	/// <summary>
-	/// Start this instance.
-	/// </summary>
-	void Start ()
-	{
-		Invoke ("StartHelp", 1F);
-	}
+    private Vector2 secondPosition = Vector2.zero;
 
-	/// <summary>
-	/// Starts the help.
-	/// </summary>
-	void StartHelp ()
-	{
-		GameObject firstShape = BlockShapeSpawner.Instance.transform.GetChild (0).gameObject;
+    /// <summary>
+    ///     Start this instance.
+    /// </summary>
+    private void Start()
+    {
+        Invoke("StartHelp", 1F);
+    }
 
-		firstPosition = firstShape.transform.position;
-		firstPosition -= new Vector2 (-0.2F, 0.4F);
-		handImage.gameObject.SetActive (true);
-		handImage.transform.position = firstPosition;
-		secondPosition = GamePlay.Instance.transform.Find ("Game-Content").position;
+    /// <summary>
+    ///     Starts the help.
+    /// </summary>
+    private void StartHelp()
+    {
+        var firstShape = BlockShapeSpawner.Instance.transform.GetChild(0).gameObject;
 
-		if (firstShape.transform.childCount > 0) {
-			firstShape.transform.GetChild (0).GetComponent<Canvas> ().sortingOrder = 3;
-		}
-		#if HBDOTween
-		transform.GetComponent<CanvasGroup> ().DOFade (1F, 0.5F).OnComplete (() => {
-			AnimateInLoop ();
-		});
-		#endif
-	}
+        firstPosition = firstShape.transform.position;
+        firstPosition -= new Vector2(-0.2F, 0.4F);
+        handImage.gameObject.SetActive(true);
+        handImage.transform.position = firstPosition;
+        secondPosition = GamePlay.Instance.transform.Find("Game-Content").position;
 
-	/// <summary>
-	/// Animates the in loop.
-	/// </summary>
-	void AnimateInLoop ()
-	{
-		#if HBDOTween
-		handImage.transform.position = firstPosition;
-		handImage.transform.DOMove (secondPosition, 1F).SetDelay (1).OnComplete (() => {
-			handImage.transform.DOMove (firstPosition, 0.5F).SetDelay (1).OnComplete (AnimateInLoop);
-		});
-		#endif
-	}
+        if (firstShape.transform.childCount > 0)
+            firstShape.transform.GetChild(0).GetComponent<Canvas>().sortingOrder = 3;
+#if HBDOTween
+        transform.GetComponent<CanvasGroup>().DOFade(1F, 0.5F).OnComplete(() => { AnimateInLoop(); });
+#endif
+    }
+
+    /// <summary>
+    ///     Animates the in loop.
+    /// </summary>
+    private void AnimateInLoop()
+    {
+#if HBDOTween
+        handImage.transform.position = firstPosition;
+        handImage.transform.DOMove(secondPosition, 1F).SetDelay(1).OnComplete(() =>
+        {
+            handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1).OnComplete(AnimateInLoop);
+        });
+#endif
+    }
 }

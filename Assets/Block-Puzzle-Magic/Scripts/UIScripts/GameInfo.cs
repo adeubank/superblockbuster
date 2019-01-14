@@ -1,45 +1,42 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum GameMode
 {
-	CLASSIC = 1,
-	TIMED = 2,
-	BLAST = 3,
-	ADVANCE = 4,
-	CHALLENGE = 5
+    CLASSIC = 1,
+    TIMED = 2,
+    BLAST = 3,
+    ADVANCE = 4,
+    CHALLENGE = 5
 }
 
-public class GameInfo : Singleton<GameInfo> 
+public class GameInfo : Singleton<GameInfo>
 {
-	public List<GameModesInfo> gameModesInfo;
+    public static string ReviewURL;
 
-	[SerializeField]
-	private string ReviewURL_Google;
+    public string AboutURL;
+    public List<GameModesInfo> gameModesInfo;
 
-	[SerializeField]
-	private string ReviewURL_iOS;
+    [SerializeField] private string ReviewURL_Google;
 
-	public static string ReviewURL;
+    [SerializeField] private string ReviewURL_iOS;
 
-	public string AboutURL;
-
-	void Start()
-	{
-		#if UNITY_ANDROID
+    private void Start()
+    {
+#if UNITY_ANDROID
 		ReviewURL = ReviewURL_Google;
-		#elif UNITY_IOS
+#elif UNITY_IOS
 		ReviewURL = ReviewURL_iOS;
-		#endif
-	}
+#endif
+    }
 }
 
-[System.Serializable]
+[Serializable]
 public class GameModesInfo
 {
-	public string modeName;
-	public GameMode gameMode;
-	public int modeIndex;
-	public bool isActive;
+    public GameMode gameMode;
+    public bool isActive;
+    public int modeIndex;
+    public string modeName;
 }
