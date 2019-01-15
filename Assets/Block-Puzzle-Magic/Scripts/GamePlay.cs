@@ -289,6 +289,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             Invoke("UpdateBlockCount", 0.5F);
+
+        if (GameController.gameMode == GameMode.WALL_LAVA)
+            Invoke("AnyBlocksOnEdge", 0.5f);
     }
 
     /// <summary>
@@ -637,6 +640,31 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         GameProgressManager.Instance.ClearProgress();
         StackManager.Instance.DeactivateGamePlay();
     }
+
+
+    #region Wall Lava Specific
+
+    /// <summary>
+    ///     Checks if any blocks are place on the edge.
+    /// </summary>
+    private void AnyBlocksOnEdge()
+    {
+        if (blockGrid.FindAll(o => o.isEdge && o.isFilled).Count < 1) return;
+
+        Debug.Log("Block placed on edge. Calling game over");
+
+        if (TotalRescueDone < MaxAllowedRescuePerGame || MaxAllowedRescuePerGame < 0)
+        {
+            GamePlayUI.Instance.ShowRescue(GameOverReason.PLAYED_IN_LAVA);
+        }
+        else
+        {
+            Debug.Log("GameOver Called..");
+            OnGameOver();
+        }
+    }
+
+    #endregion
 
     #region Bomb Mode Specific
 

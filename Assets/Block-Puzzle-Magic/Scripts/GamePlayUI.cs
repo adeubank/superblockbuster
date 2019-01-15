@@ -75,6 +75,9 @@ public class GamePlayUI : Singleton<GamePlayUI>
             case GameOverReason.TIME_OVER:
                 txtAlertText.SetLocalizedTextForTag("txt-time-over");
                 break;
+            case GameOverReason.PLAYED_IN_LAVA:
+                txtAlertText.SetLocalizedTextForTag("txt-in-lava");
+                break;
         }
 
         yield return new WaitForSeconds(0.5F);
@@ -92,5 +95,6 @@ public enum GameOverReason
 {
     OUT_OF_MOVES = 0,
     BOMB_COUNTER_ZERO = 1,
-    TIME_OVER
+    TIME_OVER = 2,
+    PLAYED_IN_LAVA = 3
 }
