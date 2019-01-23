@@ -194,6 +194,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         StopHighlighting();
 
         var canPlaceShape = true;
+
         foreach (var c in currentShape.ShapeBlocks)
         {
             var checkingCell = blockGrid.Find(o =>
@@ -207,41 +208,34 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 break;
             }
 
-            // TODO Handle playing next to other blocks
-            if (GameController.gameMode == GameMode.WALL_LAVA)
-            {
-                if (blockGrid.FindAll(o => o.isFilled && !o.isEdge).Any(o =>
-                {
-//                    Debug.Log("o.rowID=" + o.rowID);
-//                    Debug.Log("o.columnID=" + o.columnID);
-//                    Debug.Log("currentRowID=" + currentRowID);
-//                    Debug.Log("currentColumnID=" + currentColumnID);
-//                    Debug.Log("currentShape.startOffsetX=" + currentShape.startOffsetX);
-//                    Debug.Log("currentShape.startOffsetY=" + currentShape.startOffsetY);
-//                    Debug.Log("c.rowID + currentShape.startOffsetX=" + c.rowID + currentShape.startOffsetX);
-//                    Debug.Log("(c.columnID - currentShape.startOffsetY)=" + (c.columnID - currentShape.startOffsetY));
-//                    Debug.Log("Mathf.Abs(o.rowID - currentRowID + c.rowID + currentShape.startOffsetX)=" +
-//                              Mathf.Abs(o.rowID - currentRowID + c.rowID + currentShape.startOffsetX));
-//                    Debug.Log("Mathf.Abs(o.columnID - currentColumnID + (c.columnID - currentShape.startOffsetY))=" +
-//                              Mathf.Abs(o.columnID - currentColumnID + (c.columnID - currentShape.startOffsetY)));
-
-                    return Mathf.Abs(o.rowID - currentRowID + c.rowID + currentShape.startOffsetX) != 1 ||
-                           Mathf.Abs(o.columnID - currentColumnID + (c.columnID - currentShape.startOffsetY)) != 1;
-                }))
-                {
-                    Debug.Log("Can place shape=" + false);
-                    canPlaceShape = false;
-                }
-
-                if (!canPlaceShape)
-                {
-                    highlightingBlocks.Clear();
-                    break;
-                }
-            }
-
-
             if (!highlightingBlocks.Contains(checkingCell)) highlightingBlocks.Add(checkingCell);
+        }
+
+
+        if (GameController.gameMode == GameMode.WALL_LAVA)
+        {
+            var filledNonEdgeBlocks = blockGrid.FindAll(o => o.isFilled && !o.isEdge);
+
+            if (canPlaceShape && filledNonEdgeBlocks.Count > 0 && !currentShape.ShapeBlocks.Any(c =>
+            {
+                var checkingCell = blockGrid.Find(o =>
+                    o.rowID == currentRowID + c.rowID + currentShape.startOffsetX &&
+                    o.columnID == currentColumnID + (c.columnID - currentShape.startOffsetY));
+                return filledNonEdgeBlocks.Any(o =>
+                {
+                    // same row or column and within 1 block
+                    var touching = o.rowID == checkingCell.rowID &&
+                                   Mathf.Abs(o.columnID - checkingCell.columnID) <= 1 ||
+                                   o.columnID == checkingCell.columnID &&
+                                   Mathf.Abs(o.rowID - checkingCell.rowID) <= 1;
+                    if (touching) Debug.Log("Touching! o=" + o + " c=" + checkingCell);
+                    return touching;
+                });
+            }))
+            {
+                highlightingBlocks.Clear();
+                return false;
+            }
         }
 
         if (canPlaceShape) SetHighLightImage();
