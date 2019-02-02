@@ -608,12 +608,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c84def46e430f4a4391f3affbdb0b7cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalRows: 10
-  TotalColumns: 10
   blockSpace: 2
   BoardContent: {fileID: 1000010784751800}
   emptyBlockTemplate: {fileID: 1993577205933158, guid: d7ed44f13f9512047bc5aec828f9cb44,
     type: 3}
+  TotalColumns: 10
+  TotalRows: 10
 --- !u!114 &114522561204588330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -627,21 +627,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockGrid: []
+  blockNotPlacedSound: {fileID: 8300000, guid: 30b2b74fad800c74894d4d1cd72af31c, type: 3}
   blockPlaceSound: {fileID: 8300000, guid: 5f2bd1a3704c6e249a71a649e936e6b2, type: 3}
   blockSelectSound: {fileID: 8300000, guid: c0f1083b827f4db4399cf9ef58a7d767, type: 3}
+  BombSprite: {fileID: 21300000, guid: f69f794b3f5ab754da6c57e3de814758, type: 3}
+  isHelpOnScreen: 0
   lineClear1: {fileID: 8300000, guid: 1effb7535a3dba84bb91f2577c4380ee, type: 3}
   lineClear2: {fileID: 8300000, guid: 94a6fd2777105df419dc7365d6b8bde4, type: 3}
   lineClear3: {fileID: 8300000, guid: 6ea2d9bf63dfd734191764604aec86ce, type: 3}
   lineClear4: {fileID: 8300000, guid: 6ea8a9fdd0a0afe46a686eeb4a1e88de, type: 3}
-  blockNotPlacedSound: {fileID: 8300000, guid: 30b2b74fad800c74894d4d1cd72af31c, type: 3}
   MaxAllowedRescuePerGame: -1
   MaxAllowedVideoWatchRescue: 1
+  MoveCount: 0
+  timeSlider: {fileID: 114742203467833454}
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
-  MoveCount: 0
-  BombSprite: {fileID: 21300000, guid: f69f794b3f5ab754da6c57e3de814758, type: 3}
-  timeSlider: {fileID: 114742203467833454}
-  isHelpOnScreen: 0
 --- !u!114 &114295809129194750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -654,11 +654,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33357f6d1dec92348ae0a809fb289e75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txtScore: {fileID: 114000011856445208}
+  Score: 0
   scoreAnimator: {fileID: 1529504064376304}
   txtAnimatedText: {fileID: 114662818138533384}
   txtBestScore: {fileID: 114000011814914888}
-  Score: 0
+  txtScore: {fileID: 114000011856445208}
 --- !u!114 &114697835902578216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1342,8 +1342,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f85b09724f44d648b6aa5848261e985, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxTimeCounter: 60
   imageProgress: {fileID: 114549484330403346}
+  MaxTimeCounter: 60
 --- !u!114 &114500208788449410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1653,11 +1653,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5366c1b0f3189754b9a6a3793c355cc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ActiveShapeBlockModule: {fileID: 0}
   keepFilledAlways: 0
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,
     type: 2}
-  ActiveShapeBlockModule: {fileID: 0}
+  shapeColors:
+  - {fileID: 2800000, guid: e5bcf05d9e224ff45b46092d066001fe, type: 3}
+  - {fileID: 2800000, guid: 28960a1f1b3a9734289b3067c9390c79, type: 3}
+  - {fileID: 2800000, guid: 01ecbceccc686fa4996bb6ff04493ad3, type: 3}
+  - {fileID: 2800000, guid: d421a150a075b85408ebdab82a126c03, type: 3}
+  - {fileID: 2800000, guid: 1cab8c72cd59d2c48934cf2d2dde3750, type: 3}
+  - {fileID: 2800000, guid: a721181d509d2cb46952c50f23585cf8, type: 3}
+  - {fileID: 2800000, guid: b97a6bd29a34c6d4b904e7b957f03273, type: 3}
+  - {fileID: 2800000, guid: 9591cdaa499a9154dae4ff87a8473bb9, type: 3}
+  - {fileID: 2800000, guid: d3a73b0da60a26d42b335864c1b61691, type: 3}
   ShapeContainers:
   - {fileID: 224547115609232490}
   - {fileID: 224911234488836502}

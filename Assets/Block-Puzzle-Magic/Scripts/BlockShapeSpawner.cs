@@ -22,6 +22,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     private List<int> shapeBlockProbabilityPool;
 
+    [SerializeField] private Texture2D[] shapeColors;
+
     [SerializeField] private Transform[] ShapeContainers;
 
     /// <summary>
