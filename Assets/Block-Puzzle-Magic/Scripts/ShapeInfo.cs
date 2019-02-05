@@ -6,16 +6,22 @@ using UnityEngine.UI;
 public class ShapeInfo : MonoBehaviour
 {
     [HideInInspector] public Sprite blockImage;
+
+//    [HideInInspector] 
+    public int colorId = -1;
     [HideInInspector] public ShapeBlock firstBlock;
 
     public List<ShapeBlock> ShapeBlocks;
     public int ShapeID;
+
     [HideInInspector] public int startOffsetX;
     [HideInInspector] public int startOffsetY;
 
     private void Start()
     {
         CreateBlockList();
+
+        // TODO: Why is color id -1? Do I have to set here?
 
         firstBlock = ShapeBlocks[0];
         blockImage = firstBlock.block.GetComponent<Image>().sprite;

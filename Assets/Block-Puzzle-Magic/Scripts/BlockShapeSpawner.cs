@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
 
@@ -22,7 +23,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     private List<int> shapeBlockProbabilityPool;
 
-    [SerializeField] private Texture2D[] shapeColors;
+    [SerializeField] private Sprite[] shapeColors;
 
     [SerializeField] private Transform[] ShapeContainers;
 
@@ -142,6 +143,15 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeBlock.transform.SetParent(shapeContainer);
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
+
+        if (GameController.gameMode == GameMode.WALL_LAVA)
+        {
+            var randomColor = Random.Range(0, shapeColors.Length - 1);
+            newShapeBlock.GetComponent<ShapeInfo>().colorId = randomColor;
+            var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
+            foreach (var blockImage in blockImages) blockImage.sprite = shapeColors[randomColor];
+        }
+
 #if HBDOTween
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
