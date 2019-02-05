@@ -9,6 +9,9 @@ public class Block : MonoBehaviour
 {
     public int blockID = -1;
 
+    [HideInInspector]
+    public int colorId = -1;
+    
     //Block image instance.
     [HideInInspector] public Image blockImage;
 
@@ -70,6 +73,7 @@ public class Block : MonoBehaviour
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;
+        colorId = sprite.name.TryParseInt();
         isFilled = true;
     }
 

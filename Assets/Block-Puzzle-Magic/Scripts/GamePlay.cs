@@ -320,7 +320,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             Invoke("UpdateBlockCount", 0.5F);
 
         if (GameController.gameMode == GameMode.WALL_LAVA)
-            Invoke("AnyBlocksOnEdge", 0.5f);
+        {
+            Invoke("AnyBlocksOnEdge", 0.01f);
+        }
+        
+        // TODO: Add scoring for same color blocks placed together
+        
     }
 
     /// <summary>

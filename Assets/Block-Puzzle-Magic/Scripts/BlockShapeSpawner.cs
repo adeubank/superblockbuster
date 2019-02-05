@@ -147,7 +147,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         if (GameController.gameMode == GameMode.WALL_LAVA)
         {
             var randomColor = Random.Range(0, shapeColors.Length - 1);
-            newShapeBlock.GetComponent<ShapeInfo>().colorId = randomColor;
             var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
             foreach (var blockImage in blockImages) blockImage.sprite = shapeColors[randomColor];
         }

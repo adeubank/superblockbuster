@@ -7,8 +7,6 @@ public class ShapeInfo : MonoBehaviour
 {
     [HideInInspector] public Sprite blockImage;
 
-//    [HideInInspector] 
-    public int colorId = -1;
     [HideInInspector] public ShapeBlock firstBlock;
 
     public List<ShapeBlock> ShapeBlocks;
@@ -20,9 +18,7 @@ public class ShapeInfo : MonoBehaviour
     private void Start()
     {
         CreateBlockList();
-
-        // TODO: Why is color id -1? Do I have to set here?
-
+        
         firstBlock = ShapeBlocks[0];
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
         startOffsetX = firstBlock.rowID;
