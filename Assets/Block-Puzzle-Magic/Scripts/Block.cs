@@ -9,14 +9,13 @@ public class Block : MonoBehaviour
 {
     public int blockID = -1;
 
-    [HideInInspector]
-    public int colorId = -1;
-    
     //Block image instance.
     [HideInInspector] public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
     [HideInInspector] public int bombCounter;
+
+    [HideInInspector] public int colorId = -1;
 
     //Column Index of block.
     public int columnID;

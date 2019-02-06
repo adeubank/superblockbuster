@@ -18,7 +18,7 @@ public class ShapeInfo : MonoBehaviour
     private void Start()
     {
         CreateBlockList();
-        
+
         firstBlock = ShapeBlocks[0];
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
         startOffsetX = firstBlock.rowID;
