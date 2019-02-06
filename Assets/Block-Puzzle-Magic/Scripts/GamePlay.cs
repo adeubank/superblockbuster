@@ -285,11 +285,32 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var breakingRows = new List<List<Block>>();
         var breakingColumns = new List<List<Block>>();
-
+        
         foreach (var b in highlightingBlocks)
         {
             if (!updatedRows.Contains(b.rowID)) updatedRows.Add(b.rowID);
             if (!updatedColumns.Contains(b.columnID)) updatedColumns.Add(b.columnID);
+        }
+
+        var firstHighlightedBlock = highlightingBlocks.First();
+        var touchingSameColor = blockGrid.FindAll(o => o.colorId == firstHighlightedBlock.colorId && o.blockID != firstHighlightedBlock.blockID).Any(o =>
+        {
+            return highlightingBlocks.Any(hb =>
+            {
+                var touching = o.rowID == hb.rowID &&
+                       Mathf.Abs(o.columnID - hb.columnID) <= 1 ||
+                       o.columnID == hb.columnID &&
+                       Mathf.Abs(o.rowID - hb.rowID) <= 1;
+                if (touching) Debug.Log("Touching same color block! o=" + o + " hb=" + hb);
+                return touching;
+            });
+        });
+
+        if (touchingSameColor)
+        {
+            // TODO Add sweet animation for playing same color blocks
+            // double the score when placing same color blocks
+            placingShapeBlockCount *= 2;
         }
 
         highlightingBlocks.Clear();
@@ -323,9 +344,33 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             Invoke("AnyBlocksOnEdge", 0.01f);
         }
+    }
+
+    private void AddSameColorScoring()
+    {
+        Debug.Log("Adding score based on block color");
         
-        // TODO: Add scoring for same color blocks placed together
+        Dictionary<int, List<Block>> colorBuckets = 
+            new Dictionary<int, List<Block>>();
         
+        blockGrid.FindAll(o => o.isFilled && !o.isEdge).ForEach(block =>
+        {
+            List<Block> colors;
+            if (colorBuckets.TryGetValue(block.colorId, out colors))
+            {
+                colors.Add(block);
+            }
+            else
+            {
+                colorBuckets.Add(block.colorId, new List<Block> { block });
+            }
+        });
+        
+        
+        foreach (var keyValuePair in colorBuckets)
+        {
+            Debug.Log("Adding score for color id " + keyValuePair.Key + ". Found " + keyValuePair.Value.Count + " blocks.");
+        }
     }
 
     /// <summary>
@@ -668,6 +713,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
+        if (GameController.gameMode == GameMode.WALL_LAVA)
+        {
+            AddSameColorScoring();
+        }
+
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
         gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score, 10);
