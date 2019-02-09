@@ -211,33 +211,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (!highlightingBlocks.Contains(checkingCell)) highlightingBlocks.Add(checkingCell);
         }
 
-
-        if (GameController.gameMode == GameMode.WALL_LAVA)
-        {
-            var filledNonEdgeBlocks = blockGrid.FindAll(o => o.isFilled && !o.isEdge);
-
-            if (canPlaceShape && filledNonEdgeBlocks.Count > 0 && !currentShape.ShapeBlocks.Any(c =>
-            {
-                var checkingCell = blockGrid.Find(o =>
-                    o.rowID == currentRowID + c.rowID + currentShape.startOffsetX &&
-                    o.columnID == currentColumnID + (c.columnID - currentShape.startOffsetY));
-                return filledNonEdgeBlocks.Any(o =>
-                {
-                    // same row or column and within 1 block
-                    var touching = o.rowID == checkingCell.rowID &&
-                                   Mathf.Abs(o.columnID - checkingCell.columnID) <= 1 ||
-                                   o.columnID == checkingCell.columnID &&
-                                   Mathf.Abs(o.rowID - checkingCell.rowID) <= 1;
-                    if (touching) Debug.Log("Touching! o=" + o + " c=" + checkingCell);
-                    return touching;
-                });
-            }))
-            {
-                highlightingBlocks.Clear();
-                return false;
-            }
-        }
-
         if (canPlaceShape) SetHighLightImage();
 
         return canPlaceShape;
@@ -336,8 +309,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             Invoke("UpdateBlockCount", 0.5F);
-
-        if (GameController.gameMode == GameMode.WALL_LAVA) Invoke("AnyBlocksOnEdge", 0.01f);
     }
 
     private void AddSameColorScoring()
@@ -448,30 +419,39 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         int placingShapeBlockCount)
     {
         var TotalBreakingLines = breakingRows.Count + breakingColumns.Count;
+        var newScore = 0;
 
         if (TotalBreakingLines == 1)
         {
             AudioManager.Instance.PlaySound(lineClear1);
-            ScoreManager.Instance.AddScore(100 + placingShapeBlockCount * 10);
+            newScore = 100 + placingShapeBlockCount * 10;
         }
         else if (TotalBreakingLines == 2)
         {
             AudioManager.Instance.PlaySound(lineClear2);
-            ScoreManager.Instance.AddScore(300 + placingShapeBlockCount * 10);
+            newScore = 300 + placingShapeBlockCount * 10;
         }
         else if (TotalBreakingLines == 3)
         {
             AudioManager.Instance.PlaySound(lineClear3);
-            ScoreManager.Instance.AddScore(600 + placingShapeBlockCount * 10);
+            newScore = 600 + placingShapeBlockCount * 10;
         }
         else if (TotalBreakingLines >= 4)
         {
             AudioManager.Instance.PlaySound(lineClear4);
             if (TotalBreakingLines == 4)
-                ScoreManager.Instance.AddScore(1000 + placingShapeBlockCount * 10);
+                newScore = 1000 + placingShapeBlockCount * 10;
             else
-                ScoreManager.Instance.AddScore(300 * TotalBreakingLines + placingShapeBlockCount * 10);
+                newScore = 300 * TotalBreakingLines + placingShapeBlockCount * 10;
         }
+
+        var rowColors = breakingRows.SelectMany(row => row.Select(b => b.colorId)).Distinct().ToList();
+        var columnColors = breakingColumns.SelectMany(column => column.Select(b => b.colorId)).Distinct().ToList();
+
+        var sameColorMultiplier =
+            rowColors.Aggregate(0, (total, rowColor) => columnColors.Contains(rowColor) ? total += 1 : total);
+
+        ScoreManager.Instance.AddScore(newScore * Mathf.Max(sameColorMultiplier, 1));
 
         yield return 0;
         if (breakingRows.Count > 0)
@@ -521,18 +501,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool CanExistingBlocksPlaced(List<ShapeInfo> OnBoardBlockShapes)
     {
         foreach (var block in blockGrid)
-        {
-            if (GameController.gameMode == GameMode.WALL_LAVA)
-                if (block.isEdge)
-                    continue;
-
             if (!block.isFilled)
                 foreach (var info in OnBoardBlockShapes)
                 {
                     var canPlace = CheckShapeCanPlace(block, info);
                     if (canPlace) return true;
                 }
-        }
 
 
         return false;
@@ -702,7 +676,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
-        if (GameController.gameMode == GameMode.WALL_LAVA) AddSameColorScoring();
+        AddSameColorScoring();
 
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
@@ -710,31 +684,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         GameProgressManager.Instance.ClearProgress();
         StackManager.Instance.DeactivateGamePlay();
     }
-
-
-    #region Wall Lava Specific
-
-    /// <summary>
-    ///     Checks if any blocks are place on the edge.
-    /// </summary>
-    private void AnyBlocksOnEdge()
-    {
-        if (blockGrid.FindAll(o => o.isEdge && o.isFilled).Count < 1) return;
-
-        Debug.Log("Block placed on edge. Calling game over");
-
-        if (TotalRescueDone < MaxAllowedRescuePerGame || MaxAllowedRescuePerGame < 0)
-        {
-            GamePlayUI.Instance.ShowRescue(GameOverReason.PLAYED_IN_LAVA);
-        }
-        else
-        {
-            Debug.Log("GameOver Called..");
-            OnGameOver();
-        }
-    }
-
-    #endregion
 
     #region Bomb Mode Specific
 

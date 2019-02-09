@@ -8,8 +8,7 @@ public enum GameMode
     TIMED = 2,
     BLAST = 3,
     ADVANCE = 4,
-    CHALLENGE = 5,
-    WALL_LAVA = 6
+    CHALLENGE = 5
 }
 
 public class GameInfo : Singleton<GameInfo>

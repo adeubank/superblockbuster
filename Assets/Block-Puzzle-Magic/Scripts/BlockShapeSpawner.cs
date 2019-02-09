@@ -144,12 +144,10 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
 
-        if (GameController.gameMode == GameMode.WALL_LAVA)
-        {
-            var randomColor = Random.Range(0, shapeColors.Length);
-            var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
-            foreach (var blockImage in blockImages) blockImage.sprite = shapeColors[randomColor];
-        }
+        var randomColor = Random.Range(0, shapeColors.Length);
+        var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
+        foreach (var blockImage in blockImages) blockImage.sprite = shapeColors[randomColor];
+
 
 #if HBDOTween
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);

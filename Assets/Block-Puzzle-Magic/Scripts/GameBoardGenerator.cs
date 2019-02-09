@@ -79,10 +79,7 @@ public class GameBoardGenerator : Singleton<GameBoardGenerator>
 
                 //mark whether or not this is an edge piece
                 if (row == 0 || row == TotalRows - 1 || column == 0 || column == TotalRows - 1)
-                {
                     thisCellInfo.isEdge = true;
-                    thisCellInfo.GetComponent<Image>().color = Color.red;
-                }
 
                 #endregion
 

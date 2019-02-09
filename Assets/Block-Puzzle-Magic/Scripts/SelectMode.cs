@@ -61,16 +61,6 @@ public class SelectMode : MonoBehaviour
                     }
 
                     break;
-
-                case GameMode.WALL_LAVA:
-                    modeButton = mainContent.transform.Find("btn-wall-lava");
-                    if (modeButton != null)
-                    {
-                        modeButton.gameObject.SetActive(modeInfo.isActive);
-                        modeButton = null;
-                    }
-
-                    break;
             }
     }
 
@@ -128,18 +118,6 @@ public class SelectMode : MonoBehaviour
         {
             AudioManager.Instance.PlayButtonClickSound();
             GameController.gameMode = GameMode.CHALLENGE;
-            StackManager.Instance.ActivateGamePlay();
-            StackManager.Instance.mainMenu.Deactivate();
-            gameObject.Deactivate();
-        }
-    }
-
-    public void OnWallLavaButtonPressed()
-    {
-        if (InputManager.Instance.canInput())
-        {
-            AudioManager.Instance.PlayButtonClickSound();
-            GameController.gameMode = GameMode.WALL_LAVA;
             StackManager.Instance.ActivateGamePlay();
             StackManager.Instance.mainMenu.Deactivate();
             gameObject.Deactivate();
