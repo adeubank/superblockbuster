@@ -259,13 +259,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e7493026114de478b777cf9460d80e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rowID: 0
-  columnID: 0
-  isFilled: 0
-  blockImage: {fileID: 0}
   blockID: -1
+  blockImage: {fileID: 0}
   bombCounter: 0
+  colorId: -1
+  columnID: 0
   isBomb: 0
+  isEdge: 0
+  isFilled: 0
+  rowID: 0
 --- !u!61 &61475109600377552
 BoxCollider2D:
   m_ObjectHideFlags: 0
