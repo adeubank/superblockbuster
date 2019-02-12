@@ -99,10 +99,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     }
 
     /// <summary>
-    ///     Fills the shape container.
+    ///     Fills the shape container and returns true if shapes were placed.
     /// </summary>
-    public void FillShapeContainer()
+    public bool FillShapeContainer()
     {
+        var shapesFilled = false;
+
         ReorderShapes();
 
         if (!keepFilledAlways)
@@ -113,17 +115,25 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                     isAllEmpty = false;
 
             if (isAllEmpty)
+            {
+                shapesFilled = true;
                 foreach (var shapeContainer in ShapeContainers)
                     AddRandomShapeToContainer(shapeContainer);
+            }
         }
         else
         {
             foreach (var shapeContainer in ShapeContainers)
                 if (shapeContainer.childCount <= 0)
+                {
+                    shapesFilled = true;
                     AddRandomShapeToContainer(shapeContainer);
+                }
         }
 
         Invoke("CheckOnBoardShapeStatus", 0.2F);
+
+        return shapesFilled;
     }
 
     /// <summary>

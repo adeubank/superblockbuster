@@ -1,8 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 #if HBDOTween
 using DG.Tweening;
 
@@ -19,6 +22,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public AudioClip blockSelectSound;
 
     public Sprite BombSprite;
+    public int currentRound = 1;
 
     private ShapeInfo currentShape;
 
@@ -46,6 +50,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     [HideInInspector] public int TotalFreeRescueDone;
 
     [HideInInspector] public int TotalRescueDone;
+
+    public Text txtCurrentRound;
 
     #region IBeginDragHandler implementation
 
@@ -303,12 +309,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
         else
         {
-            BlockShapeSpawner.Instance.FillShapeContainer();
+            AddShapesAndUpdateRound();
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
         }
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             Invoke("UpdateBlockCount", 0.5F);
+    }
+
+    private void AddShapesAndUpdateRound()
+    {
+        if (BlockShapeSpawner.Instance.FillShapeContainer()) UpdateRound(currentRound += 1);
+    }
+
+    private void UpdateRound(int newRound)
+    {
+        Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
+        currentRound = newRound;
+        var strCurrentRound = currentRound.ToString();
+        txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
     }
 
     private void AddSameColorScoring()
@@ -464,7 +483,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 StartCoroutine(BreakThisLine(thisLine));
 
 
-        BlockShapeSpawner.Instance.FillShapeContainer();
+        AddShapesAndUpdateRound();
 
         #region time mode
 
