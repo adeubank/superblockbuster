@@ -9,14 +9,16 @@ public class Timer : MonoBehaviour
 
     private float timeRemaining = 60.0F;
 
+    private float timerRate = 0.1f;
+
     private void Start()
     {
-        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", 0.1F, 0.1F);
+        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", timerRate, timerRate);
     }
 
     private void ElapseTimer()
     {
-        timeRemaining -= 0.1F;
+        timeRemaining -= timerRate;
         SetTimeSlider(timeRemaining);
     }
 
@@ -33,6 +35,13 @@ public class Timer : MonoBehaviour
         }
     }
 
+    public void UpdateTimerSpeed(float newRate)
+    {
+        PauseTimer();
+        timerRate = newRate;
+        ResumeTimer();
+    }
+
     public void AddSeconds(int secondsToAdd)
     {
         timeRemaining += secondsToAdd;
@@ -46,7 +55,7 @@ public class Timer : MonoBehaviour
 
     public void ResumeTimer()
     {
-        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", 0.1F, 0.1F);
+        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", timerRate, timerRate);
     }
 
     public int GetRemainingTime()

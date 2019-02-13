@@ -328,6 +328,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         currentRound = newRound;
         var strCurrentRound = currentRound.ToString();
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
+
+        // speed up game as rounds progress
+        if (currentRound < 10)
+            timeSlider.UpdateTimerSpeed(0.1f);
+        else if (currentRound > 10)
+            timeSlider.UpdateTimerSpeed(0.11f);
+        else if (currentRound > 20) timeSlider.UpdateTimerSpeed(0.125f);
     }
 
     private void AddSameColorScoring()
