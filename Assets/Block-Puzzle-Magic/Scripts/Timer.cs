@@ -9,7 +9,8 @@ public class Timer : MonoBehaviour
 
     private float timeRemaining = 60.0F;
 
-    private float timerRate = 0.1f;
+    [SerializeField] private float timerRate = 0.1f;
+    [SerializeField] private Text txtTimeRemaining;
 
     private void Start()
     {
@@ -18,7 +19,7 @@ public class Timer : MonoBehaviour
 
     private void ElapseTimer()
     {
-        timeRemaining -= timerRate;
+        timeRemaining = Mathf.Round(timeRemaining - timerRate);
         SetTimeSlider(timeRemaining);
     }
 
@@ -32,6 +33,7 @@ public class Timer : MonoBehaviour
         {
             var sliderValue = timeRemaining / MaxTimeCounter;
             imageProgress.fillAmount = sliderValue;
+            txtTimeRemaining.text = "Seconds left " + timeRemaining.ToString("F2");
         }
     }
 

@@ -480,6 +480,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         ScoreManager.Instance.AddScore(newScore * Mathf.Max(sameColorMultiplier, 1));
 
         yield return 0;
+
+        #region time mode
+
+        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
+            timeSlider.PauseTimer();
+
+        #endregion
+
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
                 StartCoroutine(BreakThisLine(thisLine));
@@ -488,14 +496,21 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (breakingColumns.Count > 0)
             foreach (var thisLine in breakingColumns)
                 StartCoroutine(BreakThisLine(thisLine));
+        if (breakingColumns.Count > 0)
+            if (breakingColumns.Count > 0)
+                yield return new WaitForSeconds(0.1F);
 
+        yield return 0;
 
         AddShapesAndUpdateRound();
 
         #region time mode
 
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
+        {
+            timeSlider.ResumeTimer();
             timeSlider.AddSeconds(TotalBreakingLines * 5);
+        }
 
         #endregion
     }
