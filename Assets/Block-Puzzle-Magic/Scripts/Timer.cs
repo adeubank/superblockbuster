@@ -19,7 +19,7 @@ public class Timer : MonoBehaviour
 
     private void ElapseTimer()
     {
-        timeRemaining = Mathf.Round(timeRemaining - timerRate);
+        timeRemaining -= timerRate;
         SetTimeSlider(timeRemaining);
     }
 

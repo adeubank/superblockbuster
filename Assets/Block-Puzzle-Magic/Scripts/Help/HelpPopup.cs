@@ -14,7 +14,7 @@ public class HelpPopup : MonoBehaviour
         {
             AudioManager.Instance.PlayButtonClickSound();
             //StackManager.Instance.OnCloseButtonPressed ();
-            gameObject.Deactivate();
+            Destroy(gameObject);
         }
     }
 
