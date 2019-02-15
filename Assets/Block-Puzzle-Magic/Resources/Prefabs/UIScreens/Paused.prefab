@@ -799,10 +799,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff78ba33cdadb8949911b3b9488ef401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateOnLoad: 0
   AnimateOnDestroy: 0
-  UseBackgroundFadeEffect: 0
+  AnimateOnLoad: 0
   BlackLayImage: {fileID: 114000012206057058}
+  UseBackgroundFadeEffect: 0
   WindowContent: {fileID: 1000010970833958}
 --- !u!114 &114000010501275298
 MonoBehaviour:
@@ -852,7 +852,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 1125, y: 2436}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
@@ -1768,8 +1768,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btnMusic: {fileID: 114611720378627570}
   btnMusicImage: {fileID: 114874154514093836}
-  musicOnSprite: {fileID: 21300000, guid: 00ecb57fb11684c47aa07931242dc53c, type: 3}
   musicOffSprite: {fileID: 21300000, guid: f19a63e11545e91469ffeb4d2641b8a1, type: 3}
+  musicOnSprite: {fileID: 21300000, guid: 00ecb57fb11684c47aa07931242dc53c, type: 3}
 --- !u!114 &114816794763760276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2345,8 +2345,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btnSound: {fileID: 114934032861896716}
   btnSoundImage: {fileID: 114584153084091692}
-  soundOnSprite: {fileID: 21300000, guid: 9bfdf686935fc7b47ab3a38e10e0ede4, type: 3}
   soundOffSprite: {fileID: 21300000, guid: 933f765aa88790445923d326654487e1, type: 3}
+  soundOnSprite: {fileID: 21300000, guid: 9bfdf686935fc7b47ab3a38e10e0ede4, type: 3}
 --- !u!114 &114099741757777652
 MonoBehaviour:
   m_ObjectHideFlags: 0

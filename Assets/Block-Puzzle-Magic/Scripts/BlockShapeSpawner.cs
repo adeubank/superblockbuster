@@ -13,6 +13,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     private readonly int shapeBlockPoolCount = 1;
     [HideInInspector] public ShapeBlockList ActiveShapeBlockModule;
 
+    [SerializeField] private Vector2 blockSize = new Vector2(44, 44);
+
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
@@ -36,6 +38,18 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             ActiveShapeBlockModule = shapeBlockList_Plus;
         else
             ActiveShapeBlockModule = shapeBlockList;
+
+        ActiveShapeBlockModule.ShapeBlocks.ForEach(shape =>
+        {
+//            shape.shapeBlock.transform.localScale *= 0.8f;
+            foreach (var rectTransform in shape.shapeBlock.GetComponentsInChildren<RectTransform>())
+            {
+                if (rectTransform.gameObject == shape.shapeBlock) continue;
+
+//                rectTransform.sizeDelta = blockSize;
+                rectTransform.localScale *= 0.6f;
+            }
+        });
     }
 
     /// <summary>
@@ -242,8 +256,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     public void SetBlockShapeToSix()
     {
-        var gridLayout = gameObject.GetComponent<GridLayoutGroup>();
-        gridLayout.cellSize = new Vector2(120, 120);
         var inactivePanels = new List<GameObject>();
 
         foreach (Transform child in transform)

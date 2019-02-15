@@ -655,8 +655,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btnMusic: {fileID: 114000013072170598}
   btnMusicImage: {fileID: 114000013616073854}
-  musicOnSprite: {fileID: 21300000, guid: 00ecb57fb11684c47aa07931242dc53c, type: 3}
   musicOffSprite: {fileID: 21300000, guid: f19a63e11545e91469ffeb4d2641b8a1, type: 3}
+  musicOnSprite: {fileID: 21300000, guid: 00ecb57fb11684c47aa07931242dc53c, type: 3}
 --- !u!114 &114333613172017366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1027,8 +1027,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   btnSound: {fileID: 114000010951570908}
   btnSoundImage: {fileID: 114000010363333256}
-  soundOnSprite: {fileID: 21300000, guid: 9bfdf686935fc7b47ab3a38e10e0ede4, type: 3}
   soundOffSprite: {fileID: 21300000, guid: 933f765aa88790445923d326654487e1, type: 3}
+  soundOnSprite: {fileID: 21300000, guid: 9bfdf686935fc7b47ab3a38e10e0ede4, type: 3}
 --- !u!114 &114523683860368170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1368,10 +1368,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff78ba33cdadb8949911b3b9488ef401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateOnLoad: 1
   AnimateOnDestroy: 1
-  UseBackgroundFadeEffect: 1
+  AnimateOnLoad: 1
   BlackLayImage: {fileID: 114000011659875978}
+  UseBackgroundFadeEffect: 1
   WindowContent: {fileID: 1000013551445154}
 --- !u!114 &114200931317245950
 MonoBehaviour:
@@ -1421,7 +1421,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 1125, y: 2436}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3

@@ -103,9 +103,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f641a3ca34489e4e842d796c031e16e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LanguageCode: 
   checkMarkImage: {fileID: 114629695299841508}
   FlagImage: {fileID: 114353542586849936}
+  LanguageCode: 
   txtLanguageName: {fileID: 114569463822472188}
 --- !u!1 &1012805441756388
 GameObject:
@@ -567,10 +567,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff78ba33cdadb8949911b3b9488ef401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateOnLoad: 1
   AnimateOnDestroy: 1
-  UseBackgroundFadeEffect: 1
+  AnimateOnLoad: 1
   BlackLayImage: {fileID: 114490868668519300}
+  UseBackgroundFadeEffect: 1
   WindowContent: {fileID: 1012805441756388}
 --- !u!114 &114901654784307930
 MonoBehaviour:
@@ -622,7 +622,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 1125, y: 2436}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3

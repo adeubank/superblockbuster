@@ -250,10 +250,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff78ba33cdadb8949911b3b9488ef401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AnimateOnLoad: 1
   AnimateOnDestroy: 1
-  UseBackgroundFadeEffect: 1
+  AnimateOnLoad: 1
   BlackLayImage: {fileID: 114000013863096872}
+  UseBackgroundFadeEffect: 1
   WindowContent: {fileID: 1670531867202792}
 --- !u!114 &114000010313271486
 MonoBehaviour:
@@ -267,9 +267,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a597bdf6f2624940bc07bc6a806229c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  txtScore: {fileID: 114329678800830446}
   txtBestScore: {fileID: 114216029917767490}
   txtCoinReward: {fileID: 114731236710726964}
+  txtScore: {fileID: 114329678800830446}
 --- !u!223 &223749287637630394
 Canvas:
   m_ObjectHideFlags: 0
@@ -323,7 +323,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 640, y: 1136}
+  m_ReferenceResolution: {x: 1125, y: 2436}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
