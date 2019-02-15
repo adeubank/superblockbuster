@@ -109,12 +109,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         if (!keepFilledAlways)
         {
-            var isAllEmpty = true;
+            var emptyEnough = true;
             foreach (var shapeContainer in GetActiveShapeContainers())
                 if (shapeContainer.childCount > 0)
-                    isAllEmpty = false;
+                    emptyEnough = false;
 
-            if (isAllEmpty)
+            if (emptyEnough)
             {
                 shapesFilled = true;
                 foreach (var shapeContainer in GetActiveShapeContainers())
@@ -242,12 +242,21 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     public void SetBlockShapeToSix()
     {
-        var gridLayout = this.gameObject.GetComponent<GridLayoutGroup>();
+        var gridLayout = gameObject.GetComponent<GridLayoutGroup>();
         gridLayout.cellSize = new Vector2(120, 120);
+        var inactivePanels = new List<GameObject>();
+
         foreach (Transform child in transform)
-        {
-            child.gameObject.Activate();
-        }
+            if (!child.gameObject.activeInHierarchy)
+                inactivePanels.Add(child.gameObject);
+
+        foreach (var panel in inactivePanels) panel.Activate();
+
+        // fill up the new containers
+        var originalKeepFilledUp = keepFilledAlways;
+        keepFilledAlways = true;
+        FillShapeContainer();
+        keepFilledAlways = originalKeepFilledUp;
     }
 
     public List<Transform> GetActiveShapeContainers()
