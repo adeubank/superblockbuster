@@ -333,30 +333,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (currentRound < 10)
             timeSlider.UpdateTimerSpeed(0.1f);
         else if (currentRound > 10)
-            timeSlider.UpdateTimerSpeed(0.11f);
-        else if (currentRound > 20) timeSlider.UpdateTimerSpeed(0.125f);
-    }
-
-    private void AddSameColorScoring()
-    {
-        Debug.Log("Adding score based on block color");
-
-        var colorBuckets =
-            new Dictionary<int, List<Block>>();
-
-        blockGrid.FindAll(o => o.isFilled && !o.isEdge).ForEach(block =>
         {
-            List<Block> colors;
-            if (colorBuckets.TryGetValue(block.colorId, out colors))
-                colors.Add(block);
-            else
-                colorBuckets.Add(block.colorId, new List<Block> {block});
-        });
+            BlockShapeSpawner.Instance.SetBlockShapeToSix();
+            timeSlider.UpdateTimerSpeed(0.11f);
 
-
-        foreach (var keyValuePair in colorBuckets)
-            Debug.Log("Adding score for color id " + keyValuePair.Key + ". Found " + keyValuePair.Value.Count +
-                      " blocks.");
+        }
+        else if (currentRound > 20) timeSlider.UpdateTimerSpeed(0.125f);
     }
 
     /// <summary>
@@ -717,8 +699,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
-        AddSameColorScoring();
-
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
         gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score, 10);

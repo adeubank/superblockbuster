@@ -110,20 +110,20 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         if (!keepFilledAlways)
         {
             var isAllEmpty = true;
-            foreach (var shapeContainer in ShapeContainers)
+            foreach (var shapeContainer in GetActiveShapeContainers())
                 if (shapeContainer.childCount > 0)
                     isAllEmpty = false;
 
             if (isAllEmpty)
             {
                 shapesFilled = true;
-                foreach (var shapeContainer in ShapeContainers)
+                foreach (var shapeContainer in GetActiveShapeContainers())
                     AddRandomShapeToContainer(shapeContainer);
             }
         }
         else
         {
-            foreach (var shapeContainer in ShapeContainers)
+            foreach (var shapeContainer in GetActiveShapeContainers())
                 if (shapeContainer.childCount <= 0)
                 {
                     shapesFilled = true;
@@ -187,7 +187,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public void CheckOnBoardShapeStatus()
     {
         var OnBoardBlockShapes = new List<ShapeInfo>();
-        foreach (var shapeContainer in ShapeContainers)
+        foreach (var shapeContainer in GetActiveShapeContainers())
             if (shapeContainer.childCount > 0)
                 OnBoardBlockShapes.Add(shapeContainer.GetChild(0).GetComponent<ShapeInfo>());
 
@@ -203,7 +203,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         var EmptyShapes = new List<Transform>();
 
-        foreach (var shapeContainer in ShapeContainers)
+        foreach (var shapeContainer in GetActiveShapeContainers())
             if (shapeContainer.childCount == 0)
             {
                 EmptyShapes.Add(shapeContainer);
@@ -230,7 +230,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public string GetAllOnBoardShapeNames()
     {
         var shapeNames = "";
-        foreach (var shapeContainer in ShapeContainers)
+        foreach (var shapeContainer in GetActiveShapeContainers())
             if (shapeContainer.childCount > 0)
                 shapeNames = shapeNames + shapeContainer.GetChild(0).GetComponent<ShapeInfo>().ShapeID + ",";
             else
@@ -238,5 +238,20 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         shapeNames = shapeNames.Remove(shapeNames.Length - 1);
         return shapeNames;
+    }
+
+    public void SetBlockShapeToSix()
+    {
+        var gridLayout = this.gameObject.GetComponent<GridLayoutGroup>();
+        gridLayout.cellSize = new Vector2(120, 120);
+        foreach (Transform child in transform)
+        {
+            child.gameObject.Activate();
+        }
+    }
+
+    public List<Transform> GetActiveShapeContainers()
+    {
+        return ShapeContainers.ToList().Where(o => o.gameObject.activeInHierarchy).ToList();
     }
 }
