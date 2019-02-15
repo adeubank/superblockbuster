@@ -319,26 +319,34 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void AddShapesAndUpdateRound()
     {
-        if (BlockShapeSpawner.Instance.FillShapeContainer()) UpdateRound(currentRound += 1);
+        if (BlockShapeSpawner.Instance.FillShapeContainer())
+        {
+            var newRound = currentRound += 1;
+            Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
+            UpdateRound(newRound);
+        }
     }
 
     private void UpdateRound(int newRound)
     {
-        Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
         currentRound = newRound;
         var strCurrentRound = currentRound.ToString();
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
 
         // speed up game as rounds progress
         if (currentRound < 10)
+        {
             timeSlider.UpdateTimerSpeed(0.1f);
+        }
         else if (currentRound > 10)
         {
             BlockShapeSpawner.Instance.SetBlockShapeToSix();
             timeSlider.UpdateTimerSpeed(0.11f);
-
         }
-        else if (currentRound > 20) timeSlider.UpdateTimerSpeed(0.125f);
+        else if (currentRound > 20)
+        {
+            timeSlider.UpdateTimerSpeed(0.125f);
+        }
     }
 
     /// <summary>
