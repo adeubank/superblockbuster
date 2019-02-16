@@ -38,18 +38,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             ActiveShapeBlockModule = shapeBlockList_Plus;
         else
             ActiveShapeBlockModule = shapeBlockList;
-
-        ActiveShapeBlockModule.ShapeBlocks.ForEach(shape =>
-        {
-//            shape.shapeBlock.transform.localScale *= 0.8f;
-            foreach (var rectTransform in shape.shapeBlock.GetComponentsInChildren<RectTransform>())
-            {
-                if (rectTransform.gameObject == shape.shapeBlock) continue;
-
-//                rectTransform.sizeDelta = blockSize;
-                rectTransform.localScale *= 0.6f;
-            }
-        });
     }
 
     /// <summary>
