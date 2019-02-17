@@ -461,13 +461,31 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 newScore = 300 * TotalBreakingLines + placingShapeBlockCount * 10;
         }
 
-        var rowColors = breakingRows.SelectMany(row => row.Select(b => b.colorId)).Distinct().ToList();
-        var columnColors = breakingColumns.SelectMany(column => column.Select(b => b.colorId)).Distinct().ToList();
+        // clearing row and column at same time multipler
+        var rowAndColumnBreakMultiplier = breakingRows.Count() > 0 && breakingColumns.Count() > 0 ? 1 : 0;
 
-        var sameColorMultiplier =
-            rowColors.Aggregate(0, (total, rowColor) => columnColors.Contains(rowColor) ? total += 1 : total);
+        // find rows/columns with same color and add to multiplier
+        var rowsWithSameColor = breakingRows.Aggregate(0, (total, row) =>
+        {
+            var firstColorId = row.First().colorId;
+            if (row.TrueForAll(b => b.colorId == firstColorId)) return total + 1;
+            return total;
+        });
+        var columnsWithSameColor = breakingColumns.Aggregate(0, (total, column) =>
+        {
+            var firstColorId = column.First().colorId;
+            if (column.TrueForAll(b => b.colorId == firstColorId)) return total + 1;
+            return total;
+        });
 
-        ScoreManager.Instance.AddScore(newScore * Mathf.Max(sameColorMultiplier, 1));
+        var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
+
+        var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
+
+        Debug.Log("You scored! newScore=" + newScore + " sameColorMultiplier=" + sameColorMultiplier +
+                  " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
+
+        ScoreManager.Instance.AddScore(newScore * multiplier);
 
         yield return 0;
 
@@ -499,7 +517,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
         {
             timeSlider.ResumeTimer();
-            timeSlider.AddSeconds(TotalBreakingLines * 5);
+            timeSlider.AddSeconds(TotalBreakingLines * multiplier * 5);
         }
 
         #endregion
