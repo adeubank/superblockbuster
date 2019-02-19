@@ -13,7 +13,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     private readonly int shapeBlockPoolCount = 1;
     [HideInInspector] public ShapeBlockList ActiveShapeBlockModule;
 
-    [SerializeField] private Vector2 blockSize = new Vector2(44, 44);
+    [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
@@ -22,6 +22,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     [SerializeField] private ShapeBlockList shapeBlockList;
 
     [SerializeField] private ShapeBlockList shapeBlockList_Plus;
+
+    [SerializeField] private ShapeBlockList shapeBlockList_Powerups;
 
     private List<int> shapeBlockProbabilityPool;
 
@@ -34,10 +36,16 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void Awake()
     {
-        if (GameController.gameMode == GameMode.ADVANCE || GameController.gameMode == GameMode.CHALLENGE)
-            ActiveShapeBlockModule = shapeBlockList_Plus;
-        else
-            ActiveShapeBlockModule = shapeBlockList;
+        // TODO remove me
+//        if (GameController.gameMode == GameMode.ADVANCE || GameController.gameMode == GameMode.CHALLENGE)
+//            ActiveShapeBlockModule = shapeBlockList_Plus;
+//        else
+//            ActiveShapeBlockModule = shapeBlockList;
+
+        ActiveShapeBlocks =
+            new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + shapeBlockList_Powerups.ShapeBlocks.Count);
+        ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
+        ActiveShapeBlocks.AddRange(shapeBlockList_Powerups.ShapeBlocks);
     }
 
     /// <summary>
@@ -82,9 +90,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     private void createShapeBlockProbabilityList()
     {
         shapeBlockProbabilityPool = new List<int>();
-        if (ActiveShapeBlockModule != null)
-            foreach (var shapeBlock in ActiveShapeBlockModule.ShapeBlocks)
-                AddShapeInProbabilityPool(shapeBlock.BlockID, shapeBlock.spawnProbability);
+        foreach (var shapeBlock in ActiveShapeBlocks)
+            AddShapeInProbabilityPool(shapeBlock.BlockID, shapeBlock.spawnProbability);
         shapeBlockProbabilityPool.Shuffle();
     }
 
@@ -150,7 +157,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var RandomShape = shapeBlockProbabilityPool[0];
         shapeBlockProbabilityPool.RemoveAt(0);
 
-        var newShapeBlock = ActiveShapeBlockModule.ShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
+        var newShapeBlock = ActiveShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
         var spawningShapeBlock = Instantiate(newShapeBlock);
         spawningShapeBlock.transform.SetParent(shapeContainer);
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
@@ -173,7 +180,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// <param name="shapeID">Shape I.</param>
     private void CreateShapeWithID(Transform shapeContainer, int shapeID)
     {
-        var newShapeBlock = ActiveShapeBlockModule.ShapeBlocks.Find(o => o.BlockID == shapeID).shapeBlock;
+        var newShapeBlock = ActiveShapeBlocks.Find(o => o.BlockID == shapeID).shapeBlock;
         var spawningShapeBlock = Instantiate(newShapeBlock);
         spawningShapeBlock.transform.SetParent(shapeContainer);
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;

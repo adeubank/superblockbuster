@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 7723144278853294160}
   - component: {fileID: 7471961027639372169}
   - component: {fileID: 8593513170260077202}
+  - component: {fileID: 8506899650786433069}
   m_Layer: 5
   m_Name: Powerup-Flood
   m_TagString: Untagged
@@ -208,6 +209,22 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8506899650786433069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8723126002886323038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64578ef65de320d41b14750530f2c8c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockImage: {fileID: 0}
+  ShapeID: 1000
+  startOffsetX: 0
+  startOffsetY: 0
 --- !u!1 &8723126002954393644
 GameObject:
   m_ObjectHideFlags: 0
