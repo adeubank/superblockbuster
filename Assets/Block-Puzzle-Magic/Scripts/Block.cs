@@ -82,7 +82,7 @@ public class Block : MonoBehaviour
     /// <param name="_blockID">Block I.</param>
     public void ConvertToFilledBlock(int _blockID)
     {
-        blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlockModule.ShapeBlocks
+        blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlocks
             .Find(o => o.BlockID == _blockID).shapeBlock.transform.GetChild(0).GetComponent<Image>().sprite;
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;

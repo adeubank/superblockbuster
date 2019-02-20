@@ -147,6 +147,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (highlightingBlocks.Count > 0)
             {
                 SetImageToPlacingBlocks();
+                AudioManager.Instance.PlaySound(blockPlaceSound);
+                if (currentShape.IsPowerup())
+                    currentShape.GetComponent<PowerupInfo>().PerformPowerup(highlightingBlocks);
                 Destroy(currentShape.gameObject);
                 currentShape = null;
                 MoveCount += 1;
@@ -250,7 +253,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (highlightingBlocks != null && highlightingBlocks.Count > 0)
             foreach (var c in highlightingBlocks)
                 c.SetBlockImage(currentShape.blockImage, currentShape.ShapeID);
-        AudioManager.Instance.PlaySound(blockPlaceSound);
     }
 
     /// <summary>

@@ -46,6 +46,11 @@ public class ShapeInfo : MonoBehaviour
             }
         }
     }
+
+    public virtual bool IsPowerup()
+    {
+        return false;
+    }
 }
 
 public class ShapeBlock
