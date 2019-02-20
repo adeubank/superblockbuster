@@ -18,7 +18,7 @@ public class PowerupInfo : ShapeInfo
 
                 foreach (var powerupBlock in CurrentBlocks)
                     for (var row = powerupBlock.rowID - 2; row <= powerupBlock.rowID + 2; row++)
-                    for (var col = powerupBlock.rowID - 2; col <= powerupBlock.columnID + 2; col++)
+                    for (var col = powerupBlock.columnID - 2; col <= powerupBlock.columnID + 2; col++)
                     {
                         Debug.Log("Played Flood Powerup: Filling row=" + row + " col=" + col);
 
