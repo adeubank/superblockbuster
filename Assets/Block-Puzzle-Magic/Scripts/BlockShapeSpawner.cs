@@ -116,31 +116,35 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         ReorderShapes();
 
+        var activeShapeContainers = GetActiveShapeContainers();
+        var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
+            .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
+
         if (!keepFilledAlways)
         {
             var emptyEnough = true;
-            foreach (var shapeContainer in GetActiveShapeContainers())
+            foreach (var shapeContainer in activeShapeContainers)
                 if (shapeContainer.childCount > 0)
                     emptyEnough = false;
 
             if (emptyEnough)
             {
                 shapesFilled = true;
-                foreach (var shapeContainer in GetActiveShapeContainers())
-                    AddRandomShapeToContainer(shapeContainer);
+                foreach (var shapeContainer in activeShapeContainers)
+                    playableShapes.Add(AddRandomShapeToContainer(shapeContainer));
             }
         }
         else
         {
-            foreach (var shapeContainer in GetActiveShapeContainers())
+            foreach (var shapeContainer in activeShapeContainers)
                 if (shapeContainer.childCount <= 0)
                 {
                     shapesFilled = true;
-                    AddRandomShapeToContainer(shapeContainer);
+                    playableShapes.Add(AddRandomShapeToContainer(shapeContainer));
                 }
         }
 
-        Invoke("CheckOnBoardShapeStatus", 0.2F);
+        CheckOnBoardShapeStatus(playableShapes);
 
         return shapesFilled;
     }
@@ -149,7 +153,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     ///     Adds the random shape to container.
     /// </summary>
     /// <param name="shapeContainer">Shape container.</param>
-    public void AddRandomShapeToContainer(Transform shapeContainer)
+    public ShapeInfo AddRandomShapeToContainer(Transform shapeContainer)
     {
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
             createShapeBlockProbabilityList();
@@ -171,6 +175,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 #if HBDOTween
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
+
+        return newShapeBlock.GetComponent<ShapeInfo>();
     }
 
     /// <summary>
@@ -193,16 +199,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// <summary>
     ///     Checks the on board shape status.
     /// </summary>
-    public void CheckOnBoardShapeStatus()
+    public void CheckOnBoardShapeStatus(List<ShapeInfo> playableShapes)
     {
-        var OnBoardBlockShapes = new List<ShapeInfo>();
-        foreach (var shapeContainer in GetActiveShapeContainers())
-            if (shapeContainer.childCount > 0)
-                OnBoardBlockShapes.Add(shapeContainer.GetChild(0).GetComponent<ShapeInfo>());
-
-        var canExistingBlocksPlaced = GamePlay.Instance.CanExistingBlocksPlaced(OnBoardBlockShapes);
-
-        if (canExistingBlocksPlaced == false) GamePlay.Instance.OnUnableToPlaceShape();
+        if (!GamePlay.Instance.CanExistingBlocksPlaced(playableShapes)) GamePlay.Instance.OnUnableToPlaceShape();
     }
 
     /// <summary>

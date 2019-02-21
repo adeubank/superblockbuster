@@ -59,7 +59,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8593513170260077202}
   - component: {fileID: 8506899650786433069}
   m_Layer: 5
-  m_Name: Powerup-Flood
+  m_Name: Powerup-Flood-1000
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

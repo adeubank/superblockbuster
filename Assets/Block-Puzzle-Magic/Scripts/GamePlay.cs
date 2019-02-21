@@ -146,14 +146,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             if (highlightingBlocks.Count > 0)
             {
-                SetImageToPlacingBlocks();
-                AudioManager.Instance.PlaySound(blockPlaceSound);
-                if (currentShape.IsPowerup())
-                    currentShape.GetComponent<PowerupInfo>().PerformPowerup(highlightingBlocks);
-                Destroy(currentShape.gameObject);
-                currentShape = null;
-                MoveCount += 1;
-                Invoke("CheckBoardStatus", 0.1F);
+                StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             }
             else
             {
@@ -258,20 +251,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Checks the board status.
     /// </summary>
-    private void CheckBoardStatus()
+    public IEnumerator PlaceBlockCheckBoardStatus()
     {
-        var placingShapeBlockCount = highlightingBlocks.Count;
-        var updatedRows = new List<int>();
-        var updatedColumns = new List<int>();
+        Debug.Log("Placing Block and Checking Board Status");
 
+        SetImageToPlacingBlocks();
+        AudioManager.Instance.PlaySound(blockPlaceSound);
+
+        if (currentShape.IsPowerup())
+            yield return currentShape.GetComponent<PowerupInfo>().PerformPowerup(highlightingBlocks);
+
+        Destroy(currentShape.gameObject);
+        currentShape = null;
+        MoveCount += 1;
+
+        yield return new WaitForEndOfFrame();
+
+        var placingShapeBlockCount = highlightingBlocks.Count;
         var breakingRows = new List<List<Block>>();
         var breakingColumns = new List<List<Block>>();
-
-        foreach (var b in highlightingBlocks)
-        {
-            if (!updatedRows.Contains(b.rowID)) updatedRows.Add(b.rowID);
-            if (!updatedColumns.Contains(b.columnID)) updatedColumns.Add(b.columnID);
-        }
 
         var firstHighlightedBlock = highlightingBlocks.First();
         var touchingSameColor = blockGrid
@@ -293,40 +291,42 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        foreach (var rowID in updatedRows)
+        for (var row = 0; row < GameBoardGenerator.Instance.TotalRows; row++)
         {
-            var currentRow = GetEntireRow(rowID);
+            var currentRow = GetEntireRow(row);
             if (currentRow != null) breakingRows.Add(currentRow);
         }
 
-        foreach (var columnID in updatedColumns)
+        for (var col = 0; col < GameBoardGenerator.Instance.TotalColumns; col++)
         {
-            var currentColumn = GetEntireColumn(columnID);
-            if (currentColumn != null) breakingColumns.Add(currentColumn);
+            var currentRow = GetEntireColumn(col);
+            if (currentRow != null) breakingRows.Add(currentRow);
         }
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
         {
-            StartCoroutine(BreakAllCompletedLines(breakingRows, breakingColumns, placingShapeBlockCount));
+            yield return BreakAllCompletedLines(breakingRows, breakingColumns, placingShapeBlockCount);
         }
         else
         {
-            AddShapesAndUpdateRound();
+            StartCoroutine(nameof(AddShapesAndUpdateRound));
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
         }
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
-            Invoke("UpdateBlockCount", 0.5F);
+            UpdateBlockCount();
     }
 
-    private void AddShapesAndUpdateRound()
+    public IEnumerator AddShapesAndUpdateRound()
     {
         if (BlockShapeSpawner.Instance.FillShapeContainer())
         {
-            var newRound = currentRound += 1;
+            var newRound = currentRound + 1;
             Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
             UpdateRound(newRound);
         }
+
+        return null;
     }
 
     private void UpdateRound(int newRound)
@@ -489,7 +489,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 
-        yield return 0;
+        yield return new WaitForEndOfFrame();
 
         #region time mode
 
@@ -501,18 +501,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
                 StartCoroutine(BreakThisLine(thisLine));
-        if (breakingRows.Count > 0) yield return new WaitForSeconds(0.1F);
 
         if (breakingColumns.Count > 0)
             foreach (var thisLine in breakingColumns)
                 StartCoroutine(BreakThisLine(thisLine));
-        if (breakingColumns.Count > 0)
-            if (breakingColumns.Count > 0)
-                yield return new WaitForSeconds(0.1F);
 
-        yield return 0;
+        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
+            yield return new WaitForEndOfFrame();
 
-        AddShapesAndUpdateRound();
+        yield return new WaitForEndOfFrame();
+
+        StartCoroutine(nameof(AddShapesAndUpdateRound));
 
         #region time mode
 
@@ -535,10 +534,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         foreach (var b in breakingLine)
         {
             b.ClearBlock();
-            yield return new WaitForSeconds(0.02F);
+            yield return new WaitForEndOfFrame();
         }
-
-        yield return 0;
     }
 
     /// <summary>
@@ -549,7 +546,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     ///     <c>false</c>.
     /// </returns>
     /// <param name="OnBoardBlockShapes">On board block shapes.</param>
-    public bool CanExistingBlocksPlaced(List<ShapeInfo> OnBoardBlockShapes)
+    public bool CanExistingBlocksPlaced(IEnumerable<ShapeInfo> OnBoardBlockShapes)
     {
         foreach (var block in blockGrid)
             if (!block.isFilled)
