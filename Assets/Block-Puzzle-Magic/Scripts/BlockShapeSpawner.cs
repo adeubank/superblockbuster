@@ -168,12 +168,11 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
 
         var randomColor = Random.Range(0, shapeColors.Length);
-        var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
+        var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
         foreach (var blockImage in blockImages)
         {
             var currentColorId = blockImage.sprite.name.TryParseInt(-1);
-            if (blockImage.sprite != null && currentColorId > 0 &&
-                shapeColors.ElementAtOrDefault(currentColorId) != null)
+            if (currentColorId > 0)
                 blockImage.sprite = shapeColors[randomColor];
         }
 
