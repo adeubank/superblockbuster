@@ -169,7 +169,13 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         var randomColor = Random.Range(0, shapeColors.Length);
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>();
-        foreach (var blockImage in blockImages) blockImage.sprite = shapeColors[randomColor];
+        foreach (var blockImage in blockImages)
+        {
+            var currentColorId = blockImage.sprite.name.TryParseInt(-1);
+            if (blockImage.sprite != null && currentColorId > 0 &&
+                shapeColors.ElementAtOrDefault(currentColorId) != null)
+                blockImage.sprite = shapeColors[randomColor];
+        }
 
 
 #if HBDOTween
