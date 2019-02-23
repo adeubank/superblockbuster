@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 3474677769499758366}
   - component: {fileID: 8485744676779803984}
   m_Layer: 5
-  m_Name: Powerup-Doubler-1001
+  m_Name: Powerup-1001-Doubler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,6 +220,7 @@ MonoBehaviour:
   ShapeID: 1001
   startOffsetX: 0
   startOffsetY: 0
+  doublerBlockIcon: {fileID: 7711982907229015869}
 --- !u!1 &7711982907229015869
 GameObject:
   m_ObjectHideFlags: 0
