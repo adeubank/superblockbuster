@@ -24,7 +24,7 @@ public class PowerupInfo : ShapeInfo
                     for (var row = powerupBlock.rowID - 2; row <= powerupBlock.rowID + 2; row++)
                     for (var col = powerupBlock.columnID - 2; col <= powerupBlock.columnID + 2; col++)
                     {
-                        Debug.Log("Played Flood Powerup: Filling row=" + row + " col=" + col);
+//                        Debug.Log("Played Flood Powerup: Filling row=" + row + " col=" + col);
 
                         var block = GamePlay.Instance.blockGrid.Find(b =>
                             b.rowID == row && b.columnID == col && !b.isFilled);
@@ -35,8 +35,8 @@ public class PowerupInfo : ShapeInfo
                             var col1 = col;
                             tweener = block.blockImage.DOColor(Color.blue, 1f).OnComplete(() =>
                             {
-                                Debug.Log("Played Flood Powerup: Tween Complete row=" + row1 + " col=" + col1 +
-                                          " currentColor=" + block.blockImage.color);
+//                                Debug.Log("Played Flood Powerup: Tween Complete row=" + row1 + " col=" + col1 +
+//                                          " currentColor=" + block.blockImage.color);
                             });
                         }
                     }

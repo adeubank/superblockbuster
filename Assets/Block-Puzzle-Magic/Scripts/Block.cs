@@ -102,7 +102,7 @@ public class Block : MonoBehaviour
             blockImage.sprite = null;
         });
 
-        transform.GetComponent<Image>().DOFade(1, 0.35F).SetDelay(0.3F);
+        transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
         blockImage.DOFade(0, 0.3F);
 
         blockID = -1;

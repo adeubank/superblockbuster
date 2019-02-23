@@ -484,7 +484,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
 
-        Debug.Log("You scored! newScore=" + newScore + " sameColorMultiplier=" + sameColorMultiplier +
+        Debug.Log("Breaking lines! breakingRows=" + breakingRows.Count + " breakingColumns=" + breakingColumns.Count +
+                  " newScore=" + newScore + " sameColorMultiplier=" + sameColorMultiplier +
                   " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
