@@ -299,8 +299,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         for (var col = 0; col < GameBoardGenerator.Instance.TotalColumns; col++)
         {
-            var currentRow = GetEntireColumn(col);
-            if (currentRow != null) breakingRows.Add(currentRow);
+            var currentColumn = GetEntireColumn(col);
+            if (currentColumn != null) breakingColumns.Add(currentColumn);
         }
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
