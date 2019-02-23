@@ -23,6 +23,9 @@ public class Block : MonoBehaviour
     //Determines whether this block is normal or bomb.
     [HideInInspector] public bool isBomb;
 
+    //Status whether block is empty or filled.
+    [HideInInspector] public bool isDoublePoints;
+
     //Status whether block is on the edge of the board
     [HideInInspector] public bool isEdge;
 
