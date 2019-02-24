@@ -436,35 +436,37 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private IEnumerator BreakAllCompletedLines(List<List<Block>> breakingRows, List<List<Block>> breakingColumns,
         int placingShapeBlockCount)
     {
-        var TotalBreakingLines = breakingRows.Count + breakingColumns.Count;
+        var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
+        var totalBreakingRowBlocks =
+            breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
+        var totalBreakingColumnBlocks =
+            breakingColumns.SelectMany(col => col.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
+        var totalBreakingBlocks = totalBreakingRowBlocks + totalBreakingColumnBlocks;
         var newScore = 0;
 
-        if (TotalBreakingLines == 1)
+        if (totalBreakingLines == 1)
         {
             AudioManager.Instance.PlaySound(lineClear1);
-            newScore = 100 + placingShapeBlockCount * 10;
+            newScore = (totalBreakingBlocks * 10) + placingShapeBlockCount * 10;
         }
-        else if (TotalBreakingLines == 2)
+        else if (totalBreakingLines == 2)
         {
             AudioManager.Instance.PlaySound(lineClear2);
-            newScore = 300 + placingShapeBlockCount * 10;
+            newScore = (totalBreakingBlocks * 10) + placingShapeBlockCount * 10;
         }
-        else if (TotalBreakingLines == 3)
+        else if (totalBreakingLines == 3)
         {
             AudioManager.Instance.PlaySound(lineClear3);
-            newScore = 600 + placingShapeBlockCount * 10;
+            newScore = (totalBreakingBlocks * 20) + placingShapeBlockCount * 10;
         }
-        else if (TotalBreakingLines >= 4)
+        else if (totalBreakingLines >= 4)
         {
             AudioManager.Instance.PlaySound(lineClear4);
-            if (TotalBreakingLines == 4)
-                newScore = 1000 + placingShapeBlockCount * 10;
-            else
-                newScore = 300 * TotalBreakingLines + placingShapeBlockCount * 10;
+            newScore = (totalBreakingBlocks * 30) + placingShapeBlockCount * 10;
         }
 
-        // clearing row and column at same time multipler
-        var rowAndColumnBreakMultiplier = breakingRows.Count() > 0 && breakingColumns.Count() > 0 ? 1 : 0;
+        // clearing row and column at same time multiplier
+        var rowAndColumnBreakMultiplier = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
 
         // find rows/columns with same color and add to multiplier
         var rowsWithSameColor = breakingRows.Aggregate(0, (total, row) =>
@@ -481,11 +483,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         });
 
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
-
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
 
-        Debug.Log("Breaking lines! breakingRows=" + breakingRows.Count + " breakingColumns=" + breakingColumns.Count +
-                  " newScore=" + newScore + " sameColorMultiplier=" + sameColorMultiplier +
+        Debug.Log("Breaking lines! " +
+                  "totalBreakingRowBlocks=" + totalBreakingRowBlocks +
+                  " totalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
+                  " newScore=" + newScore +
+                  " sameColorMultiplier=" + sameColorMultiplier +
                   " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
@@ -519,7 +523,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
         {
             timeSlider.ResumeTimer();
-            timeSlider.AddSeconds(TotalBreakingLines * multiplier * 5);
+            timeSlider.AddSeconds(totalBreakingLines * multiplier * 5);
         }
 
         #endregion

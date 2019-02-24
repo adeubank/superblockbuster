@@ -1909,16 +1909,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Side Timer
       objectReference: {fileID: 0}
-    - target: {fileID: 1399233225215110227, guid: badc8f32fff2c854eb86654180b9e1f2,
-        type: 3}
-      propertyPath: imageProgress
-      value: 
-      objectReference: {fileID: 114549484330403346}
-    - target: {fileID: 1399233225215110227, guid: badc8f32fff2c854eb86654180b9e1f2,
-        type: 3}
-      propertyPath: txtTimeRemaining
-      value: 
-      objectReference: {fileID: 3544892972203086905}
     - target: {fileID: 1289141135221522147, guid: badc8f32fff2c854eb86654180b9e1f2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2024,6 +2014,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1399233225215110227, guid: badc8f32fff2c854eb86654180b9e1f2,
+        type: 3}
+      propertyPath: imageProgress
+      value: 
+      objectReference: {fileID: 114549484330403346}
+    - target: {fileID: 1399233225215110227, guid: badc8f32fff2c854eb86654180b9e1f2,
+        type: 3}
+      propertyPath: txtTimeRemaining
+      value: 
+      objectReference: {fileID: 3544892972203086905}
     - target: {fileID: 1294072044483976234, guid: badc8f32fff2c854eb86654180b9e1f2,
         type: 3}
       propertyPath: m_AnchorMin.y

@@ -162,8 +162,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         shapeBlockProbabilityPool.RemoveAt(0);
 
         var newShapeBlock = ActiveShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
-        var spawningShapeBlock = Instantiate(newShapeBlock);
-        spawningShapeBlock.transform.SetParent(shapeContainer);
+        var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
 

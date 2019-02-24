@@ -97,6 +97,19 @@ public class Block : MonoBehaviour
     /// </summary>
     public void ClearBlock()
     {
+        // remove extra game objects added to the block
+        foreach (Transform t in blockImage.transform)
+        {
+            // ignore self and legacy text counter
+            if (blockImage.transform == t || t.name == "Text-Counter" ||
+                (txtCounter != null && t == txtCounter.transform))
+            {
+                continue;
+            }
+
+            Destroy(t.gameObject);
+        }
+
         transform.GetComponent<Image>().color = new Color(1, 1, 1, 0);
 #if HBDOTween
         blockImage.transform.DOScale(Vector3.zero, 0.35F).OnComplete(() =>

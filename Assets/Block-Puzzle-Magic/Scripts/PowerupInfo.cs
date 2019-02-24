@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PowerupInfo : ShapeInfo
 {
@@ -57,7 +58,9 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && !b.isFilled);
                 if (block)
                 {
+                    Sprite oldSprite = block.blockImage.sprite;
                     block.ConvertToFilledBlock(powerupBlock.blockID);
+                    block.blockImage.sprite = oldSprite;
                     var row1 = row;
                     var col1 = col;
                     tweener = block.blockImage.DOColor(Color.blue, 1f).OnComplete(() =>
@@ -84,10 +87,12 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && b.isFilled);
                 if (block)
                 {
+                    var oldBlockSprite = block.blockImage.sprite;
                     block.ConvertToFilledBlock(currentBlock.blockID);
                     block.isDoublePoints = true;
+                    block.blockImage.sprite = oldBlockSprite;
                     // add the doubler block icon
-                    Instantiate(doublerBlockIcon, block.transform, false);
+                    Instantiate(doublerBlockIcon, block.blockImage.transform, false);
                 }
             }
     }
