@@ -447,22 +447,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (totalBreakingLines == 1)
         {
             AudioManager.Instance.PlaySound(lineClear1);
-            newScore = (totalBreakingBlocks * 10) + placingShapeBlockCount * 10;
+            newScore = totalBreakingBlocks * 10 + placingShapeBlockCount * 10;
         }
         else if (totalBreakingLines == 2)
         {
             AudioManager.Instance.PlaySound(lineClear2);
-            newScore = (totalBreakingBlocks * 10) + placingShapeBlockCount * 10;
+            newScore = totalBreakingBlocks * 10 + placingShapeBlockCount * 10;
         }
         else if (totalBreakingLines == 3)
         {
             AudioManager.Instance.PlaySound(lineClear3);
-            newScore = (totalBreakingBlocks * 20) + placingShapeBlockCount * 10;
+            newScore = totalBreakingBlocks * 20 + placingShapeBlockCount * 10;
         }
         else if (totalBreakingLines >= 4)
         {
             AudioManager.Instance.PlaySound(lineClear4);
-            newScore = (totalBreakingBlocks * 30) + placingShapeBlockCount * 10;
+            newScore = totalBreakingBlocks * 30 + placingShapeBlockCount * 10;
         }
 
         // clearing row and column at same time multiplier

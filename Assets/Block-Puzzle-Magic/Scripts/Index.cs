@@ -58,18 +58,12 @@ public class Index
     /// <summary>
     ///     The X component of the index.
     /// </summary>
-    public int X
-    {
-        get { return x; }
-    }
+    public int X => x;
 
     /// <summary>
     ///     The Y component of the index.
     /// </summary>
-    public int Y
-    {
-        get { return y; }
-    }
+    public int Y => y;
 
     // Methods
     /// <summary>

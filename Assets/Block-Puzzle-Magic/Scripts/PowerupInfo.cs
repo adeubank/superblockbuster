@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PowerupInfo : ShapeInfo
 {
@@ -58,7 +57,7 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && !b.isFilled);
                 if (block)
                 {
-                    Sprite oldSprite = block.blockImage.sprite;
+                    var oldSprite = block.blockImage.sprite;
                     block.ConvertToFilledBlock(powerupBlock.blockID);
                     block.blockImage.sprite = oldSprite;
                     var row1 = row;

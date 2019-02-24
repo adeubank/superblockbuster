@@ -102,10 +102,8 @@ public class Block : MonoBehaviour
         {
             // ignore self and legacy text counter
             if (blockImage.transform == t || t.name == "Text-Counter" ||
-                (txtCounter != null && t == txtCounter.transform))
-            {
+                txtCounter != null && t == txtCounter.transform)
                 continue;
-            }
 
             Destroy(t.gameObject);
         }
