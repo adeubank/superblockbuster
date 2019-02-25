@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PowerupInfo : ShapeInfo
 {
+    public GameObject dandelionBlockIcon;
     public GameObject doublerBlockIcon;
 
     public override bool IsPowerup()
@@ -37,6 +38,15 @@ public class PowerupInfo : ShapeInfo
                 yield return new WaitForEndOfFrame();
 
                 break;
+            case (int) Powerups.Dandelion:
+
+                Debug.Log("Played Flood Dandelion");
+
+                HandleDandelionBlocks(currentBlocks);
+
+                yield return new WaitForEndOfFrame();
+
+                break;
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
@@ -57,9 +67,7 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && !b.isFilled);
                 if (block)
                 {
-                    var oldSprite = block.blockImage.sprite;
                     block.ConvertToFilledBlock(powerupBlock.blockID);
-                    block.blockImage.sprite = oldSprite;
                     var row1 = row;
                     var col1 = col;
                     tweener = block.blockImage.DOColor(Color.blue, 1f).OnComplete(() =>
@@ -86,19 +94,33 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && b.isFilled);
                 if (block)
                 {
-                    var oldBlockSprite = block.blockImage.sprite;
                     block.ConvertToFilledBlock(currentBlock.blockID);
                     block.isDoublePoints = true;
-                    block.blockImage.sprite = oldBlockSprite;
                     // add the doubler block icon
                     Instantiate(doublerBlockIcon, block.blockImage.transform, false);
                 }
             }
     }
 
+    private void HandleDandelionBlocks(IEnumerable<Block> currentBlocks)
+    {
+        var seedBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).Aggregate(new List<Block>(),
+            (blocks, block) =>
+            {
+                blocks.Add(blocks[Random.Range(0, GamePlay.Instance.blockGrid.Count)]);
+                return blocks;
+            });
+        seedBlocks.ForEach(b =>
+        {
+            b.isDandelionSeed = true;
+            Instantiate(dandelionBlockIcon, b.blockImage.transform, false);
+        });
+    }
+
     private enum Powerups
     {
         Flood = 1000,
-        Doubler = 1001
+        Doubler = 1001,
+        Dandelion = 1002
     }
 }

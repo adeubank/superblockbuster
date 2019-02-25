@@ -23,7 +23,10 @@ public class Block : MonoBehaviour
     //Determines whether this block is normal or bomb.
     [HideInInspector] public bool isBomb;
 
-    //Status whether block is empty or filled.
+    //Status whether block is marked to produce blocks in a 1 block radius next round
+    [HideInInspector] public bool isDandelionSeed;
+
+    //Status whether block is marked for double points
     [HideInInspector] public bool isDoublePoints;
 
     //Status whether block is on the edge of the board
@@ -85,8 +88,9 @@ public class Block : MonoBehaviour
     /// <param name="_blockID">Block I.</param>
     public void ConvertToFilledBlock(int _blockID)
     {
-        blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlocks
-            .Find(o => o.BlockID == _blockID).shapeBlock.transform.GetChild(0).GetComponent<Image>().sprite;
+        if (blockImage.sprite == null)
+            blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlocks
+                .Find(o => o.BlockID == _blockID).shapeBlock.transform.GetChild(0).GetComponent<Image>().sprite;
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;
         isFilled = true;

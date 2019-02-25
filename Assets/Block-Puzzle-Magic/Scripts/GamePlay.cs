@@ -326,6 +326,28 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             UpdateRound(newRound);
         }
 
+
+        #region dandelion seed sprout
+
+        foreach (var seedBlock in blockGrid.Where(b => b.isDandelionSeed))
+        {
+            Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
+
+            for (var row = -1; row <= 1; row++)
+            for (var col = -1; col <= 1; col++)
+            {
+                var possibleBlock = blockGrid.Find(b =>
+                    b.rowID == seedBlock.rowID + row && b.columnID == seedBlock.columnID + col);
+                if (possibleBlock && !possibleBlock.isFilled)
+                {
+                    possibleBlock.ClearBlock();
+                    possibleBlock.ConvertToFilledBlock(0);
+                }
+            }
+        }
+
+        #endregion
+
         return null;
     }
 
