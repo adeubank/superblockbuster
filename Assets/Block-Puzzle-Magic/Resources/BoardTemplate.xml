@@ -1,13 +1,14 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Resources>
-	<ModeName></ModeName>
-	<BlockData></BlockData>
-	<ShapeInfo></ShapeInfo>
-	<Score></Score>
-	<TotalRescueDone></TotalRescueDone>
-	<TotalFreeRescueDone></TotalFreeRescueDone>
-	<CoinEarned></CoinEarned>
-	<PlacedBombs></PlacedBombs>
-	<RemainingTime></RemainingTime>
-	<MovesCount></MovesCount>
+    <ModeName></ModeName>
+    <BlockData></BlockData>
+    <ShapeInfo></ShapeInfo>
+    <Score></Score>
+    <TotalRescueDone></TotalRescueDone>
+    <TotalFreeRescueDone></TotalFreeRescueDone>
+    <CoinEarned></CoinEarned>
+    <PlacedBombs></PlacedBombs>
+    <RemainingTime></RemainingTime>
+    <MovesCount></MovesCount>
 </Resources>

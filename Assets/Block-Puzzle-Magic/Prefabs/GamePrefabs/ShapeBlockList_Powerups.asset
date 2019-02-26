@@ -24,4 +24,4 @@ MonoBehaviour:
   - BlockID: 1002
     shapeBlock: {fileID: 1779432844893486631, guid: 07df661c8ce2ec649af7eeecbf4fa843,
       type: 3}
-    spawnProbability: 10
+    spawnProbability: 1

@@ -268,9 +268,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitForEndOfFrame();
 
         var placingShapeBlockCount = highlightingBlocks.Count;
-        var breakingRows = new List<List<Block>>();
-        var breakingColumns = new List<List<Block>>();
-
         var firstHighlightedBlock = highlightingBlocks.First();
         var touchingSameColor = blockGrid
             .FindAll(o => o.colorId == firstHighlightedBlock.colorId && o.blockID != firstHighlightedBlock.blockID).Any(
@@ -291,17 +288,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        for (var row = 0; row < GameBoardGenerator.Instance.TotalRows; row++)
-        {
-            var currentRow = GetEntireRow(row);
-            if (currentRow != null) breakingRows.Add(currentRow);
-        }
-
-        for (var col = 0; col < GameBoardGenerator.Instance.TotalColumns; col++)
-        {
-            var currentColumn = GetEntireColumn(col);
-            if (currentColumn != null) breakingColumns.Add(currentColumn);
-        }
+        var breakingRows = GetFilledRows();
+        var breakingColumns = GetFilledColumns();
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
         {
@@ -317,18 +305,42 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             UpdateBlockCount();
     }
 
-    public IEnumerator AddShapesAndUpdateRound()
+    public List<List<Block>> GetFilledRows()
     {
-        if (BlockShapeSpawner.Instance.FillShapeContainer())
+        var breakingRows = new List<List<Block>>();
+        for (var row = 0; row < GameBoardGenerator.Instance.TotalRows; row++)
         {
-            var newRound = currentRound + 1;
-            Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
-            UpdateRound(newRound);
+            var currentRow = GetEntireRow(row);
+            if (currentRow != null) breakingRows.Add(currentRow);
         }
 
+        return breakingRows;
+    }
+
+    public List<List<Block>> GetFilledColumns()
+    {
+        var breakinColumns = new List<List<Block>>();
+        for (var column = 0; column < GameBoardGenerator.Instance.TotalColumns; column++)
+        {
+            var currentColumn = GetEntireColumn(column);
+            if (currentColumn != null) breakinColumns.Add(currentColumn);
+        }
+
+        return breakinColumns;
+    }
+
+    public IEnumerator AddShapesAndUpdateRound()
+    {
+        // if no blocks added, just return
+        if (!BlockShapeSpawner.Instance.FillShapeContainer()) yield break;
+
+        var newRound = currentRound + 1;
+        Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
+        UpdateRound(newRound);
 
         #region dandelion seed sprout
 
+        var possibleTweens = new List<Tweener>();
         foreach (var seedBlock in blockGrid.Where(b => b.isDandelionSeed))
         {
             Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
@@ -340,15 +352,27 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     b.rowID == seedBlock.rowID + row && b.columnID == seedBlock.columnID + col);
                 if (possibleBlock && !possibleBlock.isFilled)
                 {
-                    possibleBlock.ClearBlock();
+                    possibleBlock.ClearExtraChildren();
                     possibleBlock.ConvertToFilledBlock(0);
+                    var tweener =
+                        possibleBlock.transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
+                    possibleTweens.Add(tweener);
                 }
             }
+
+            seedBlock.ClearExtraChildren();
+            seedBlock.isDandelionSeed = false;
         }
 
-        #endregion
+        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsPlaying()));
 
-        return null;
+        var breakingRows = GetFilledRows();
+        var breakingColumns = GetFilledColumns();
+
+        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
+            yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
+
+        #endregion
     }
 
     private void UpdateRound(int newRound)

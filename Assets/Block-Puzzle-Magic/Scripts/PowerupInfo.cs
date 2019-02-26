@@ -104,16 +104,25 @@ public class PowerupInfo : ShapeInfo
 
     private void HandleDandelionBlocks(IEnumerable<Block> currentBlocks)
     {
-        var seedBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).Aggregate(new List<Block>(),
-            (blocks, block) =>
-            {
-                blocks.Add(blocks[Random.Range(0, GamePlay.Instance.blockGrid.Count)]);
-                return blocks;
-            });
+        var placedBlock = currentBlocks.First();
+        var seedBlocks = new List<Block>();
+
+        // give open blocks more priority over empty
+        var availableBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).ToList();
+        availableBlocks.ToList().AddRange(GamePlay.Instance.blockGrid);
+
+        while (seedBlocks.Count < 5)
+        {
+            var randomIndex = Random.Range(0, availableBlocks.Count());
+            seedBlocks.Add(availableBlocks[randomIndex]);
+        }
+
         seedBlocks.ForEach(b =>
         {
             b.isDandelionSeed = true;
-            Instantiate(dandelionBlockIcon, b.blockImage.transform, false);
+            var newSeedBlock = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
+                b.blockImage.transform);
+            newSeedBlock.transform.DOMove(b.blockImage.transform.position, 0.4f);
         });
     }
 

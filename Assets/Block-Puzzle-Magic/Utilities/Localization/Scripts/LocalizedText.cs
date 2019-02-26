@@ -1,39 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent (typeof(Text))]
+[RequireComponent(typeof(Text))]
 public class LocalizedText : MonoBehaviour
 {
-	public string txtTag;
-	Text thisText;
+    private Text thisText;
+    public string txtTag;
 
-	void Awake ()
-	{
-		thisText = GetComponent<Text> ();
-	}
+    private void Awake()
+    {
+        thisText = GetComponent<Text>();
+    }
 
-	void OnEnable ()
-	{
-		LocalizationManager.OnLanguageChangedEvent += OnLanguageChangedEvent;
-		Invoke ("SetLocalizedText", 0.01F);
-	}
+    private void OnEnable()
+    {
+        LocalizationManager.OnLanguageChangedEvent += OnLanguageChangedEvent;
+        Invoke("SetLocalizedText", 0.01F);
+    }
 
-	void OnDisable ()
-	{
-		LocalizationManager.OnLanguageChangedEvent -= OnLanguageChangedEvent;
-	}
+    private void OnDisable()
+    {
+        LocalizationManager.OnLanguageChangedEvent -= OnLanguageChangedEvent;
+    }
 
-	public void SetLocalizedText ()
-	{
-		if (!string.IsNullOrEmpty (txtTag.Trim ())) {
-			thisText.SetLocalizedTextForTag (txtTag);
-		}
-	}
+    public void SetLocalizedText()
+    {
+        if (!string.IsNullOrEmpty(txtTag.Trim())) thisText.SetLocalizedTextForTag(txtTag);
+    }
 
-	void OnLanguageChangedEvent (string langCode)
-	{
-		SetLocalizedText ();
-	}
+    private void OnLanguageChangedEvent(string langCode)
+    {
+        SetLocalizedText();
+    }
 }

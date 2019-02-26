@@ -220,10 +220,7 @@ namespace DG.Tweening
                 t = tween;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active && !t.IsComplete(); }
-            }
+            public override bool keepWaiting => t.active && !t.IsComplete();
         }
 
         public class WaitForRewind : CustomYieldInstruction
@@ -235,10 +232,8 @@ namespace DG.Tweening
                 t = tween;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active && (!t.playedOnce || t.position * (t.CompletedLoops() + 1) > 0); }
-            }
+            public override bool keepWaiting =>
+                t.active && (!t.playedOnce || t.position * (t.CompletedLoops() + 1) > 0);
         }
 
         public class WaitForKill : CustomYieldInstruction
@@ -250,10 +245,7 @@ namespace DG.Tweening
                 t = tween;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active; }
-            }
+            public override bool keepWaiting => t.active;
         }
 
         public class WaitForElapsedLoops : CustomYieldInstruction
@@ -267,10 +259,7 @@ namespace DG.Tweening
                 this.elapsedLoops = elapsedLoops;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active && t.CompletedLoops() < elapsedLoops; }
-            }
+            public override bool keepWaiting => t.active && t.CompletedLoops() < elapsedLoops;
         }
 
         public class WaitForPosition : CustomYieldInstruction
@@ -284,10 +273,7 @@ namespace DG.Tweening
                 this.position = position;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active && t.position * (t.CompletedLoops() + 1) < position; }
-            }
+            public override bool keepWaiting => t.active && t.position * (t.CompletedLoops() + 1) < position;
         }
 
         public class WaitForStart : CustomYieldInstruction
@@ -299,10 +285,7 @@ namespace DG.Tweening
                 t = tween;
             }
 
-            public override bool keepWaiting
-            {
-                get { return t.active && !t.playedOnce; }
-            }
+            public override bool keepWaiting => t.active && !t.playedOnce;
         }
     }
 #endif

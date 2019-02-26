@@ -88,7 +88,7 @@ public class Block : MonoBehaviour
     /// <param name="_blockID">Block I.</param>
     public void ConvertToFilledBlock(int _blockID)
     {
-        if (blockImage.sprite == null)
+        if (blockImage.sprite == null || blockImage.sprite.name == "empty-counter")
             blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlocks
                 .Find(o => o.BlockID == _blockID).shapeBlock.transform.GetChild(0).GetComponent<Image>().sprite;
         blockImage.color = new Color(1, 1, 1, 1);
@@ -96,10 +96,7 @@ public class Block : MonoBehaviour
         isFilled = true;
     }
 
-    /// <summary>
-    ///     Clears the block.
-    /// </summary>
-    public void ClearBlock()
+    public void ClearExtraChildren()
     {
         // remove extra game objects added to the block
         foreach (Transform t in blockImage.transform)
@@ -111,6 +108,14 @@ public class Block : MonoBehaviour
 
             Destroy(t.gameObject);
         }
+    }
+
+    /// <summary>
+    ///     Clears the block.
+    /// </summary>
+    public void ClearBlock()
+    {
+        ClearExtraChildren();
 
         transform.GetComponent<Image>().color = new Color(1, 1, 1, 0);
 #if HBDOTween
