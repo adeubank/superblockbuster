@@ -21,8 +21,8 @@ public class PowerupInfo : ShapeInfo
             case (int) Powerups.Flood:
                 Debug.Log("Played Flood Powerup");
 
-                yield return new WaitWhile(
-                    () => { return HandleFloodBlocks(currentBlocks).Any(t => t != null && !t.IsComplete()); });
+                var floodPowerups = HandleFloodBlocks(currentBlocks);
+                yield return new WaitWhile(() => floodPowerups.Any(t => t != null && !t.IsComplete()));
 
                 DOTween.CompleteAll(true);
 
@@ -31,7 +31,7 @@ public class PowerupInfo : ShapeInfo
                 break;
             case (int) Powerups.Doubler:
 
-                Debug.Log("Played Flood Doubler");
+                Debug.Log("Played Doubler Powerup");
 
                 HandleDoublerBlocks(currentBlocks);
 
@@ -40,9 +40,12 @@ public class PowerupInfo : ShapeInfo
                 break;
             case (int) Powerups.Dandelion:
 
-                Debug.Log("Played Flood Dandelion");
+                Debug.Log("Played Dandelion Powerup");
 
-                HandleDandelionBlocks(currentBlocks);
+                var dandelionBlocks = HandleDandelionBlocks(currentBlocks);
+                yield return new WaitWhile(() => dandelionBlocks.Any(t => t != null && t.IsPlaying()));
+
+                DOTween.CompleteAll(true);
 
                 yield return new WaitForEndOfFrame();
 
@@ -52,7 +55,6 @@ public class PowerupInfo : ShapeInfo
                 break;
         }
     }
-
     private IEnumerable<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
     {
         return currentBlocks.Select(powerupBlock =>
@@ -102,7 +104,7 @@ public class PowerupInfo : ShapeInfo
             }
     }
 
-    private void HandleDandelionBlocks(IEnumerable<Block> currentBlocks)
+    private IEnumerable<Tweener> HandleDandelionBlocks(IEnumerable<Block> currentBlocks)
     {
         var placedBlock = currentBlocks.First();
         var seedBlocks = new List<Block>();
@@ -117,13 +119,16 @@ public class PowerupInfo : ShapeInfo
             seedBlocks.Add(availableBlocks[randomIndex]);
         }
 
-        seedBlocks.ForEach(b =>
+        List<Tweener> seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
         {
             b.isDandelionSeed = true;
             var newSeedBlock = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
                 b.blockImage.transform);
-            newSeedBlock.transform.DOMove(b.blockImage.transform.position, 0.4f);
+            tweeners.Add(newSeedBlock.transform.DOMove(b.blockImage.transform.position, 0.4f));
+            return tweeners;
         });
+
+        return seedTweeners;
     }
 
     private enum Powerups
