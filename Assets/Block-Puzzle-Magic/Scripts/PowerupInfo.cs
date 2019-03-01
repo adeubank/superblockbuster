@@ -122,9 +122,9 @@ public class PowerupInfo : ShapeInfo
         List<Tweener> seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
         {
             b.isDandelionSeed = true;
-            var newSeedBlock = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
+            var newSeedBlockIcon = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
                 b.blockImage.transform);
-            tweeners.Add(newSeedBlock.transform.DOMove(b.blockImage.transform.position, 0.4f));
+            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
             return tweeners;
         });
 

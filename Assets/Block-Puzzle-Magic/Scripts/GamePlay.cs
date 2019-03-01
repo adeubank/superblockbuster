@@ -354,6 +354,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     possibleBlock.ClearExtraChildren();
                     possibleBlock.ConvertToFilledBlock(0);
+                    possibleBlock.blockImage.color = Color.green;
                     var tweener =
                         possibleBlock.transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
                     possibleTweens.Add(tweener);
@@ -560,6 +561,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
             yield return new WaitForEndOfFrame();
 
+        yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
+
+        DOTween.CompleteAll(true);
+        
         yield return new WaitForEndOfFrame();
 
         StartCoroutine(nameof(AddShapesAndUpdateRound));
