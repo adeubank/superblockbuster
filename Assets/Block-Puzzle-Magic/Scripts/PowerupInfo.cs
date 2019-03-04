@@ -8,6 +8,7 @@ public class PowerupInfo : ShapeInfo
 {
     public GameObject dandelionBlockIcon;
     public GameObject doublerBlockIcon;
+    public GameObject bandageBlockIcon;
 
     public override bool IsPowerup()
     {
@@ -48,6 +49,17 @@ public class PowerupInfo : ShapeInfo
                 DOTween.CompleteAll(true);
 
                 yield return new WaitForEndOfFrame();
+
+                break;
+            case (int) Powerups.Bandage:
+                
+                Debug.Log("Played Bandage Powerup");
+
+                foreach (var block in currentBlocks)
+                {
+                    block.isBandagePowerup = true;
+                    block.ConvertToBandage();
+                }
 
                 break;
             default:
@@ -135,6 +147,7 @@ public class PowerupInfo : ShapeInfo
     {
         Flood = 1000,
         Doubler = 1001,
-        Dandelion = 1002
+        Dandelion = 1002,
+        Bandage = 1003
     }
 }

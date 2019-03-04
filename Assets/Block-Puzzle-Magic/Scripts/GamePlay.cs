@@ -589,6 +589,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         foreach (var b in breakingLine)
         {
+            if (b.isBandagePowerup)
+            {
+                BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
+            }
             b.ClearBlock();
             yield return new WaitForEndOfFrame();
         }

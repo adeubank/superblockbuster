@@ -15,9 +15,12 @@ public class ShapeInfo : MonoBehaviour
     [HideInInspector] public int startOffsetX;
     [HideInInspector] public int startOffsetY;
 
+    public bool isBandageShape;
+    
     private void Start()
     {
-        CreateBlockList();
+        if (ShapeBlocks == null)
+            CreateBlockList();
 
         firstBlock = ShapeBlocks[0];
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
@@ -25,7 +28,7 @@ public class ShapeInfo : MonoBehaviour
         startOffsetY = firstBlock.columnID;
     }
 
-    private void CreateBlockList()
+    public void CreateBlockList()
     {
         ShapeBlocks = new List<ShapeBlock>();
         var shapeAllBlocks = transform.GetComponentsInChildren<Transform>().ToList();
@@ -44,6 +47,16 @@ public class ShapeInfo : MonoBehaviour
                 var thisBlock = new ShapeBlock(block, rowID, columnID);
                 if (!ShapeBlocks.Contains(thisBlock)) ShapeBlocks.Add(thisBlock);
             }
+        }
+    }
+
+    public void ConvertToBandageShape()
+    {
+        var bandageBlockIcon = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay/PowerupBlockIcons/Powerup-Icon-1003-Bandage"));
+        isBandageShape = true;
+        foreach (var block in ShapeBlocks)
+        {
+            Instantiate(bandageBlockIcon, block.block, false);
         }
     }
 

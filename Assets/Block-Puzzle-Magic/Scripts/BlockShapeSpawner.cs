@@ -15,6 +15,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
+    /** [HideInInspector] */ 
+    public bool isNextRoundBandageBlock;
+    
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
@@ -144,6 +147,18 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 }
         }
 
+        #region bandage block spawn
+
+        if (isNextRoundBandageBlock && shapesFilled)
+        {
+            isNextRoundBandageBlock = false;
+            foreach (var playableShape in playableShapes)
+            {
+                playableShape.ConvertToBandageShape();
+            }
+        }
+        #endregion
+
         CheckOnBoardShapeStatus(playableShapes);
 
         return shapesFilled;
@@ -155,16 +170,11 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// <param name="shapeContainer">Shape container.</param>
     public ShapeInfo AddRandomShapeToContainer(Transform shapeContainer)
     {
-        if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
-            createShapeBlockProbabilityList();
-
-        var RandomShape = shapeBlockProbabilityPool[0];
-        shapeBlockProbabilityPool.RemoveAt(0);
-
-        var newShapeBlock = ActiveShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
+        var newShapeBlock = NextShapeBlock();
         var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
+        spawningShapeBlock.GetComponent<ShapeInfo>().CreateBlockList();
 
         var randomColor = Random.Range(0, shapeColors.Length);
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
@@ -175,12 +185,34 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 blockImage.sprite = shapeColors[randomColor];
         }
 
-
 #if HBDOTween
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
 
         return newShapeBlock.GetComponent<ShapeInfo>();
+    }
+
+    public List<ShapeBlockSpawn> NormalBlocks()
+    {
+        return ActiveShapeBlocks.Where(s => s.BlockID < 100).ToList();
+    }
+
+    public GameObject NextShapeBlock()
+    {
+        // need normal blocks only when bandage block
+        if (isNextRoundBandageBlock)
+        {
+            var normalBlocks = NormalBlocks();
+            return normalBlocks[Random.Range(0, normalBlocks.Count)].shapeBlock;
+        }
+        
+        if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
+            createShapeBlockProbabilityList();
+
+        var RandomShape = shapeBlockProbabilityPool[0];
+        shapeBlockProbabilityPool.RemoveAt(0);
+
+        return ActiveShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
     }
 
     /// <summary>

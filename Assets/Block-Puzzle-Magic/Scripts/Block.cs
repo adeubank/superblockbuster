@@ -10,31 +10,47 @@ public class Block : MonoBehaviour
     public int blockID = -1;
 
     //Block image instance.
-    [HideInInspector] public Image blockImage;
+    /** [HideInInspector] */
+    public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
-    [HideInInspector] public int bombCounter;
+    /** [HideInInspector] */
+    public int bombCounter;
 
-    [HideInInspector] public int colorId = -1;
+    /** [HideInInspector] */
+    public int colorId = -1;
 
     //Column Index of block.
     public int columnID;
 
     //Determines whether this block is normal or bomb.
-    [HideInInspector] public bool isBomb;
+    /** [HideInInspector] */
+    public bool isBomb;
 
     //Status whether block is marked to produce blocks in a 1 block radius next round
-    [HideInInspector] public bool isDandelionSeed;
+    /** [HideInInspector] */
+    public bool isDandelionSeed;
 
     //Status whether block is marked for double points
-    [HideInInspector] public bool isDoublePoints;
+    /** [HideInInspector] */
+    public bool isDoublePoints;
 
     //Status whether block is on the edge of the board
-    [HideInInspector] public bool isEdge;
+    /** [HideInInspector] */
+    public bool isEdge;
 
     //Status whether block is empty or filled.
-    [HideInInspector] public bool isFilled;
+    /** [HideInInspector] */
+    public bool isFilled;
 
+    //Status whether block is a bandage powerup block.
+    /** [HideInInspector] */
+    public bool isBandagePowerup;
+    
+    //Status whether block is a bandage block capable of being played over other blocks.
+    /** [HideInInspector] */
+    public bool isBandage;
+    
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
@@ -184,4 +200,11 @@ public class Block : MonoBehaviour
     }
 
     #endregion
+
+    public void ConvertToBandage()
+    {
+        var bandageBlockIcon = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay/PowerupBlockIcons/Powerup-Icon-1003-Bandage"));
+        Instantiate(bandageBlockIcon, blockImage.transform, false);
+        isBandage = true;
+    }
 }
