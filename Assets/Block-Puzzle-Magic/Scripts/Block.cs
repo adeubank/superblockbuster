@@ -12,6 +12,7 @@ public class Block : MonoBehaviour
     //Block image instance.
     /** [HideInInspector] */
     public Image blockImage;
+    public Sprite prevBlockImageSprite;
 
     //Bomb blast counter, will keep reducing with each move.
     /** [HideInInspector] */
@@ -46,11 +47,7 @@ public class Block : MonoBehaviour
     //Status whether block is a bandage powerup block.
     /** [HideInInspector] */
     public bool isBandagePowerup;
-    
-    //Status whether block is a bandage block capable of being played over other blocks.
-    /** [HideInInspector] */
-    public bool isBandage;
-    
+
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
@@ -71,6 +68,8 @@ public class Block : MonoBehaviour
     /// <param name="sprite">Sprite.</param>
     public void SetHighlightImage(Sprite sprite)
     {
+        if (blockImage.sprite)
+            prevBlockImageSprite = blockImage.sprite;
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 0.5F);
     }
@@ -80,8 +79,17 @@ public class Block : MonoBehaviour
     /// </summary>
     public void StopHighlighting()
     {
-        blockImage.sprite = null;
-        blockImage.color = new Color(1, 1, 1, 0);
+        if (prevBlockImageSprite && isFilled)
+        {
+            blockImage.sprite = prevBlockImageSprite;
+            prevBlockImageSprite = null;
+            blockImage.color = new Color(1, 1, 1, 1);
+        }
+        else
+        {
+            blockImage.sprite = null;
+            blockImage.color = new Color(1, 1, 1, 0);
+        }
     }
 
     /// <summary>
@@ -146,6 +154,10 @@ public class Block : MonoBehaviour
 
         blockID = -1;
         isFilled = false;
+        isBandagePowerup = false;
+        isBomb = false;
+        isDandelionSeed = false;
+        isDoublePoints = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
 #endif
@@ -203,8 +215,7 @@ public class Block : MonoBehaviour
 
     public void ConvertToBandage()
     {
-        var bandageBlockIcon = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay/PowerupBlockIcons/Powerup-Icon-1003-Bandage"));
-        Instantiate(bandageBlockIcon, blockImage.transform, false);
-        isBandage = true;
+        Instantiate(BlockShapeSpawner.Instance.powerupIconBandagePrefab, blockImage.transform, false);
+        isBandagePowerup = true;
     }
 }

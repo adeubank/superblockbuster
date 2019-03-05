@@ -1397,6 +1397,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ActiveShapeBlockModule: {fileID: 0}
   ActiveShapeBlocks: []
+  isNextRoundBandageBlock: 0
+  powerupIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
+    type: 3}
   keepFilledAlways: 0
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,

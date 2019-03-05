@@ -15,9 +15,10 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
-    /** [HideInInspector] */ 
+    /** [HideInInspector] */
     public bool isNextRoundBandageBlock;
-    
+    public GameObject powerupIconBandagePrefab;
+
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
@@ -147,17 +148,14 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 }
         }
 
-        #region bandage block spawn
+        # region bandage block spawn
 
         if (isNextRoundBandageBlock && shapesFilled)
         {
             isNextRoundBandageBlock = false;
-            foreach (var playableShape in playableShapes)
-            {
-                playableShape.ConvertToBandageShape();
-            }
         }
-        #endregion
+
+        # endregion
 
         CheckOnBoardShapeStatus(playableShapes);
 
@@ -172,9 +170,18 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         var newShapeBlock = NextShapeBlock();
         var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
+        var spawningShapeInfo = spawningShapeBlock.GetComponent<ShapeInfo>();
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningShapeBlock.GetComponent<ShapeInfo>().CreateBlockList();
+        if (isNextRoundBandageBlock)
+        {
+            spawningShapeInfo.ConvertToBandageShape();
+        }
+        else
+        {
+            spawningShapeInfo.isBandageShape = false;
+        }
 
         var randomColor = Random.Range(0, shapeColors.Length);
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
@@ -205,7 +212,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             var normalBlocks = NormalBlocks();
             return normalBlocks[Random.Range(0, normalBlocks.Count)].shapeBlock;
         }
-        
+
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
             createShapeBlockProbabilityList();
 

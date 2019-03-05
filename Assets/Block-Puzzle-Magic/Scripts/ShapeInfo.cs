@@ -8,15 +8,16 @@ public class ShapeInfo : MonoBehaviour
     [HideInInspector] public Sprite blockImage;
 
     [HideInInspector] public ShapeBlock firstBlock;
-
+    
     public List<ShapeBlock> ShapeBlocks;
     public int ShapeID;
 
     [HideInInspector] public int startOffsetX;
     [HideInInspector] public int startOffsetY;
 
+    //Status whether block is a bandage block capable of being played over other blocks.
     public bool isBandageShape;
-    
+
     private void Start()
     {
         if (ShapeBlocks == null)
@@ -26,6 +27,8 @@ public class ShapeInfo : MonoBehaviour
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
         startOffsetX = firstBlock.rowID;
         startOffsetY = firstBlock.columnID;
+
+        Debug.Log("Started a new shape! " + this);
     }
 
     public void CreateBlockList()
@@ -52,11 +55,11 @@ public class ShapeInfo : MonoBehaviour
 
     public void ConvertToBandageShape()
     {
-        var bandageBlockIcon = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay/PowerupBlockIcons/Powerup-Icon-1003-Bandage"));
+        Debug.Log("Converting shape to bandage. " + this);
         isBandageShape = true;
         foreach (var block in ShapeBlocks)
         {
-            Instantiate(bandageBlockIcon, block.block, false);
+            Instantiate(BlockShapeSpawner.Instance.powerupIconBandagePrefab, block.block, false);
         }
     }
 

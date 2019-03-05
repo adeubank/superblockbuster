@@ -203,7 +203,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 o.rowID == currentRowID + c.rowID + currentShape.startOffsetX &&
                 o.columnID == currentColumnID + (c.columnID - currentShape.startOffsetY));
 
-            if (checkingCell == null || checkingCell != null && checkingCell.isFilled)
+            if (checkingCell == null || checkingCell != null && !currentShape.isBandageShape && checkingCell.isFilled)
             {
                 canPlaceShape = false;
                 highlightingBlocks.Clear();
@@ -591,6 +591,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             if (b.isBandagePowerup)
             {
+                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes.");
                 BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
             b.ClearBlock();

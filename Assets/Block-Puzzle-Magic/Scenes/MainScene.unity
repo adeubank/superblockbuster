@@ -2505,50 +2505,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultLangCode: en
   LanguageList:
-  - LanguageName: English
+  - imgFlag: {fileID: 21300000, guid: 9eadbb82b04795a4d9400623ed23949a, type: 3}
+    isAvailable: 1
     LangaugeCode: EN
-    imgFlag: {fileID: 21300000, guid: 9eadbb82b04795a4d9400623ed23949a, type: 3}
+    LanguageName: English
+  - imgFlag: {fileID: 21300000, guid: d24127178385abb4fa1eddc35c8e87bf, type: 3}
     isAvailable: 1
-  - LanguageName: "fran\xE7ais"
     LangaugeCode: FR
-    imgFlag: {fileID: 21300000, guid: d24127178385abb4fa1eddc35c8e87bf, type: 3}
+    LanguageName: "fran\xE7ais"
+  - imgFlag: {fileID: 21300000, guid: 3b4e2ce93ed3cb54c8d04f57cb285470, type: 3}
     isAvailable: 1
-  - LanguageName: Deutsche
     LangaugeCode: DE
-    imgFlag: {fileID: 21300000, guid: 3b4e2ce93ed3cb54c8d04f57cb285470, type: 3}
+    LanguageName: Deutsche
+  - imgFlag: {fileID: 21300000, guid: b4390e2cbdef80e42a3b49fa51a871e0, type: 3}
     isAvailable: 1
-  - LanguageName: italiano
     LangaugeCode: IT
-    imgFlag: {fileID: 21300000, guid: b4390e2cbdef80e42a3b49fa51a871e0, type: 3}
+    LanguageName: italiano
+  - imgFlag: {fileID: 21300000, guid: 032271bc0f89a6b4a9645c15bdaa812f, type: 3}
     isAvailable: 1
-  - LanguageName: "\u65E5\u672C\u8A9E "
     LangaugeCode: JA
-    imgFlag: {fileID: 21300000, guid: 032271bc0f89a6b4a9645c15bdaa812f, type: 3}
+    LanguageName: "\u65E5\u672C\u8A9E "
+  - imgFlag: {fileID: 21300000, guid: f19fabdbd39a6174e954fb5128463c6d, type: 3}
     isAvailable: 1
-  - LanguageName: "\uD55C\uAD6D\uC5B4"
     LangaugeCode: KO
-    imgFlag: {fileID: 21300000, guid: f19fabdbd39a6174e954fb5128463c6d, type: 3}
+    LanguageName: "\uD55C\uAD6D\uC5B4"
+  - imgFlag: {fileID: 21300000, guid: f1085b5466ada674c91cb11648f95ba8, type: 3}
     isAvailable: 1
-  - LanguageName: "Portugu\xEAs"
     LangaugeCode: PT
-    imgFlag: {fileID: 21300000, guid: f1085b5466ada674c91cb11648f95ba8, type: 3}
+    LanguageName: "Portugu\xEAs"
+  - imgFlag: {fileID: 21300000, guid: f1c5bd7fd02f81e46941ddb39ffb9ab8, type: 3}
     isAvailable: 1
-  - LanguageName: "\u0440\u0443\u0441\u0441\u043A\u0438\u0439"
     LangaugeCode: RU
-    imgFlag: {fileID: 21300000, guid: f1c5bd7fd02f81e46941ddb39ffb9ab8, type: 3}
+    LanguageName: "\u0440\u0443\u0441\u0441\u043A\u0438\u0439"
+  - imgFlag: {fileID: 21300000, guid: 94f7b05e765400442b8b754d76e9baac, type: 3}
     isAvailable: 1
-  - LanguageName: "Espa\xF1ol "
     LangaugeCode: ES
-    imgFlag: {fileID: 21300000, guid: 94f7b05e765400442b8b754d76e9baac, type: 3}
+    LanguageName: "Espa\xF1ol "
+  - imgFlag: {fileID: 21300000, guid: 51e8d087024474d48844a05e86b794da, type: 3}
     isAvailable: 1
-  - LanguageName: svenska
     LangaugeCode: SV
-    imgFlag: {fileID: 21300000, guid: 51e8d087024474d48844a05e86b794da, type: 3}
+    LanguageName: svenska
+  - imgFlag: {fileID: 21300000, guid: b172d52cb8a8b2c4c8a6b51cfb15f2d7, type: 3}
     isAvailable: 1
-  - LanguageName: turkiska
     LangaugeCode: TR
-    imgFlag: {fileID: 21300000, guid: b172d52cb8a8b2c4c8a6b51cfb15f2d7, type: 3}
-    isAvailable: 1
+    LanguageName: turkiska
 --- !u!1 &1947819125 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1000013255847208, guid: 5f85bd03f9b08054ab97bbcbc9005aba,
