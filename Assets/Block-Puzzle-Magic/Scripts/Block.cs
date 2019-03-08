@@ -45,9 +45,12 @@ public class Block : MonoBehaviour
     public bool isFilled;
 
     //Status whether block is a bandage powerup block.
-    /** [HideInInspector] */
+    [HideInInspector]
     public bool isBandagePowerup;
-
+    //Status whether block is a bomb powerup block.
+    [HideInInspector]
+    public bool isBombPowerup;
+    
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
@@ -215,7 +218,13 @@ public class Block : MonoBehaviour
 
     public void ConvertToBandage()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupIconBandagePrefab, blockImage.transform, false);
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, blockImage.transform, false);
         isBandagePowerup = true;
+    }
+    
+    public void ConvertToBomb()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBombPrefab, blockImage.transform, false);
+        isBombPowerup = true;
     }
 }

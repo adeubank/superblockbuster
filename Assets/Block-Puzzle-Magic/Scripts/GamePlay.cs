@@ -22,7 +22,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public AudioClip blockSelectSound;
 
     public Sprite BombSprite;
-    public int currentRound = 1;
 
     private ShapeInfo currentShape;
 
@@ -44,14 +43,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int MaxAllowedVideoWatchRescue;
 
     [HideInInspector] public int MoveCount;
+    [HideInInspector] public Text txtCurrentRound;
+    [HideInInspector] public int currentRound = 1;
 
     public Timer timeSlider;
 
     [HideInInspector] public int TotalFreeRescueDone;
 
     [HideInInspector] public int TotalRescueDone;
-
-    public Text txtCurrentRound;
 
     #region IBeginDragHandler implementation
 
@@ -591,8 +590,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             if (b.isBandagePowerup)
             {
-                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes.");
+                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. "  + b);
                 BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
+            }
+
+            if (b.isBombPowerup)
+            {
+                Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
             }
             b.ClearBlock();
             yield return new WaitForEndOfFrame();

@@ -515,7 +515,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: HBIAP;HBDOTween
     4: HBIAP;HBDOTween
-    7: HBDOTween
+    7: HBIAP;HBDOTween
     13: HBIAP;HBDOTween
     14: HBIAP;HBDOTween
   platformArchitecture: {}

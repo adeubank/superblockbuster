@@ -671,7 +671,6 @@ MonoBehaviour:
   blockPlaceSound: {fileID: 8300000, guid: 5f2bd1a3704c6e249a71a649e936e6b2, type: 3}
   blockSelectSound: {fileID: 8300000, guid: c0f1083b827f4db4399cf9ef58a7d767, type: 3}
   BombSprite: {fileID: 21300000, guid: f69f794b3f5ab754da6c57e3de814758, type: 3}
-  currentRound: 1
   isHelpOnScreen: 0
   lineClear1: {fileID: 8300000, guid: 1effb7535a3dba84bb91f2577c4380ee, type: 3}
   lineClear2: {fileID: 8300000, guid: 94a6fd2777105df419dc7365d6b8bde4, type: 3}
@@ -680,10 +679,11 @@ MonoBehaviour:
   MaxAllowedRescuePerGame: -1
   MaxAllowedVideoWatchRescue: 1
   MoveCount: 0
+  txtCurrentRound: {fileID: 1629}
+  currentRound: 1
   timeSlider: {fileID: 114742203467833454}
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
-  txtCurrentRound: {fileID: 1629}
 --- !u!114 &1305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1398,7 +1398,9 @@ MonoBehaviour:
   ActiveShapeBlockModule: {fileID: 0}
   ActiveShapeBlocks: []
   isNextRoundBandageBlock: 0
-  powerupIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
+  powerupBlockIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
+    type: 3}
+  powerupBlockIconBombPrefab: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,
     type: 3}
   keepFilledAlways: 0
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
@@ -2081,6 +2083,18 @@ MonoBehaviour:
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114549484330403346 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1399001549767379503, guid: badc8f32fff2c854eb86654180b9e1f2,
+    type: 3}
+  m_PrefabInstance: {fileID: 1368168881871178813}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114742203467833454 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1399233225215110227, guid: badc8f32fff2c854eb86654180b9e1f2,
@@ -2099,18 +2113,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1368168881871178813}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &114549484330403346 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1399001549767379503, guid: badc8f32fff2c854eb86654180b9e1f2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1368168881871178813}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2728901761853542824
 PrefabInstance:
   m_ObjectHideFlags: 0

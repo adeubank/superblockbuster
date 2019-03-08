@@ -16,7 +16,7 @@ public class ShapeInfo : MonoBehaviour
     [HideInInspector] public int startOffsetY;
 
     //Status whether block is a bandage block capable of being played over other blocks.
-    public bool isBandageShape;
+    [HideInInspector] public bool isBandageShape;
 
     private void Start()
     {
@@ -59,7 +59,7 @@ public class ShapeInfo : MonoBehaviour
         isBandageShape = true;
         foreach (var block in ShapeBlocks)
         {
-            Instantiate(BlockShapeSpawner.Instance.powerupIconBandagePrefab, block.block, false);
+            Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, block.block, false);
         }
     }
 

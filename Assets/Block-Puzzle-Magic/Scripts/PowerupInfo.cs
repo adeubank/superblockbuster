@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class PowerupInfo : ShapeInfo
 {
+    // todo these should go in the BlockShapeSpawner
     public GameObject dandelionBlockIcon;
     public GameObject doublerBlockIcon;
-    public GameObject bandageBlockIcon;
 
     public override bool IsPowerup()
     {
@@ -59,6 +59,17 @@ public class PowerupInfo : ShapeInfo
                 {
                     block.isBandagePowerup = true;
                     block.ConvertToBandage();
+                }
+
+                break;
+            case (int) Powerups.Bomb:
+                
+                Debug.Log("Played Bomb Powerup");
+                
+                foreach (var block in currentBlocks)
+                {
+                    block.isBombPowerup = true;
+                    block.ConvertToBomb();
                 }
 
                 break;
@@ -142,12 +153,32 @@ public class PowerupInfo : ShapeInfo
 
         return seedTweeners;
     }
+ 
+    private void HandleBombBlocks(IEnumerable<Block> currentBlocks)
+    {
+        foreach (var currentBlock in currentBlocks)
+            for (var row = currentBlock.rowID - 1; row <= currentBlock.rowID + 1; row++)
+            for (var col = currentBlock.columnID - 1; col <= currentBlock.columnID + 1; col++)
+            {
+                Debug.Log("Played Bomb Powerup: Filling row=" + row + " col=" + col);
 
+                var block = GamePlay.Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col && b.isFilled);
+                if (block)
+                {
+                    block.ConvertToFilledBlock(currentBlock.blockID);
+                    block.isDoublePoints = true;
+                    // add the doubler block icon
+                    Instantiate(doublerBlockIcon, block.blockImage.transform, false);
+                }
+            }
+    }
+    
     private enum Powerups
     {
         Flood = 1000,
         Doubler = 1001,
         Dandelion = 1002,
-        Bandage = 1003
+        Bandage = 1003,
+        Bomb = 1004
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -15,9 +16,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
-    /** [HideInInspector] */
-    public bool isNextRoundBandageBlock;
-    public GameObject powerupIconBandagePrefab;
+    [HideInInspector] public bool isNextRoundBandageBlock;
+    public GameObject powerupBlockIconBandagePrefab;
+    public GameObject powerupBlockIconBombPrefab;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
