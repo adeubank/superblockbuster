@@ -2,21 +2,21 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Purchasing;
+using UnityEngine.UI;
 
 public class IAPDemoProductUI : MonoBehaviour
 {
-    public Button purchaseButton;
-    public Button receiptButton;
-    public Text titleText;
     public Text descriptionText;
-    public Text priceText;
-    public Text statusText;
 
     private string m_ProductID;
     private Action<string> m_PurchaseCallback;
     private string m_Receipt;
+    public Text priceText;
+    public Button purchaseButton;
+    public Button receiptButton;
+    public Text statusText;
+    public Text titleText;
 
     public void SetProduct(Product p, Action<string> purchaseCallback)
     {
@@ -35,15 +35,12 @@ public class IAPDemoProductUI : MonoBehaviour
 
     public void SetPendingTime(int secondsRemaining)
     {
-        statusText.text = "Pending " + secondsRemaining.ToString();
+        statusText.text = "Pending " + secondsRemaining;
     }
 
     public void PurchaseButtonClick()
     {
-        if (m_PurchaseCallback != null && !string.IsNullOrEmpty(m_ProductID))
-        {
-            m_PurchaseCallback(m_ProductID);
-        }
+        if (m_PurchaseCallback != null && !string.IsNullOrEmpty(m_ProductID)) m_PurchaseCallback(m_ProductID);
     }
 
     public void ReceiptButtonClick()

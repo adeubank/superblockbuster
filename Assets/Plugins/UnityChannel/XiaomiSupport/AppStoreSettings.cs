@@ -9,11 +9,11 @@ using UnityEngine.Store;
 namespace AppStoresSupport
 {
     [System.Serializable]
-    public class AppStoreSetting 
+    public class AppStoreSetting
     {
         public string AppID = "";
         public string AppKey = "";
-        public bool IsTestMode = false;
+        public bool IsTestMode;
     }
 
     [System.Serializable]
@@ -24,9 +24,10 @@ namespace AppStoresSupport
         public string UnityClientRSAPublicKey = "";
 
         public AppStoreSetting XiaomiAppStoreSetting = new AppStoreSetting();
-        
-        public AppInfo getAppInfo() {
-            AppInfo appInfo = new AppInfo();
+
+        public AppInfo getAppInfo()
+        {
+            var appInfo = new AppInfo();
             appInfo.clientId = UnityClientID;
             appInfo.clientKey = UnityClientKey;
             appInfo.appId = XiaomiAppStoreSetting.AppID;
@@ -37,7 +38,7 @@ namespace AppStoresSupport
 
 #if UNITY_EDITOR
         [MenuItem("Assets/Create/App Store Settings", false, 1011)]
-        static void CreateAppStoreSettingsAsset()
+        private static void CreateAppStoreSettingsAsset()
         {
             const string appStoreSettingsAssetFolder = "Assets/Plugins/UnityChannel/XiaomiSupport/Resources";
             const string appStoreSettingsAssetPath = appStoreSettingsAssetFolder + "/AppStoreSettings.asset";

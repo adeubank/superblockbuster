@@ -52,7 +52,7 @@ public class PowerupInfo : ShapeInfo
 
                 break;
             case (int) Powerups.Bandage:
-                
+
                 Debug.Log("Played Bandage Powerup");
 
                 foreach (var block in currentBlocks)
@@ -63,9 +63,9 @@ public class PowerupInfo : ShapeInfo
 
                 break;
             case (int) Powerups.Bomb:
-                
+
                 Debug.Log("Played Bomb Powerup");
-                
+
                 foreach (var block in currentBlocks)
                 {
                     block.isBombPowerup = true;
@@ -78,6 +78,7 @@ public class PowerupInfo : ShapeInfo
                 break;
         }
     }
+
     private IEnumerable<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
     {
         return currentBlocks.Select(powerupBlock =>
@@ -142,7 +143,7 @@ public class PowerupInfo : ShapeInfo
             seedBlocks.Add(availableBlocks[randomIndex]);
         }
 
-        List<Tweener> seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
+        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
         {
             b.isDandelionSeed = true;
             var newSeedBlockIcon = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
@@ -153,7 +154,7 @@ public class PowerupInfo : ShapeInfo
 
         return seedTweeners;
     }
- 
+
     private void HandleBombBlocks(IEnumerable<Block> currentBlocks)
     {
         foreach (var currentBlock in currentBlocks)
@@ -172,7 +173,7 @@ public class PowerupInfo : ShapeInfo
                 }
             }
     }
-    
+
     private enum Powerups
     {
         Flood = 1000,

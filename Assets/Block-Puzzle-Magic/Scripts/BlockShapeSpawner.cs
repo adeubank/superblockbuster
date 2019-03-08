@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -17,12 +16,13 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
     [HideInInspector] public bool isNextRoundBandageBlock;
-    public GameObject powerupBlockIconBandagePrefab;
-    public GameObject powerupBlockIconBombPrefab;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
+
+    public GameObject powerupBlockIconBandagePrefab;
+    public GameObject powerupBlockIconBombPrefab;
 
     [SerializeField] private ShapeBlockList shapeBlockList;
 
@@ -151,10 +151,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         # region bandage block spawn
 
-        if (isNextRoundBandageBlock && shapesFilled)
-        {
-            isNextRoundBandageBlock = false;
-        }
+        if (isNextRoundBandageBlock && shapesFilled) isNextRoundBandageBlock = false;
 
         # endregion
 
@@ -176,13 +173,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningShapeBlock.GetComponent<ShapeInfo>().CreateBlockList();
         if (isNextRoundBandageBlock)
-        {
             spawningShapeInfo.ConvertToBandageShape();
-        }
         else
-        {
             spawningShapeInfo.isBandageShape = false;
-        }
 
         var randomColor = Random.Range(0, shapeColors.Length);
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);

@@ -8,15 +8,15 @@ public class ShapeInfo : MonoBehaviour
     [HideInInspector] public Sprite blockImage;
 
     [HideInInspector] public ShapeBlock firstBlock;
-    
+
+    //Status whether block is a bandage block capable of being played over other blocks.
+    [HideInInspector] public bool isBandageShape;
+
     public List<ShapeBlock> ShapeBlocks;
     public int ShapeID;
 
     [HideInInspector] public int startOffsetX;
     [HideInInspector] public int startOffsetY;
-
-    //Status whether block is a bandage block capable of being played over other blocks.
-    [HideInInspector] public bool isBandageShape;
 
     private void Start()
     {
@@ -58,9 +58,7 @@ public class ShapeInfo : MonoBehaviour
         Debug.Log("Converting shape to bandage. " + this);
         isBandageShape = true;
         foreach (var block in ShapeBlocks)
-        {
             Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, block.block, false);
-        }
     }
 
     public virtual bool IsPowerup()

@@ -1,42 +1,40 @@
 #if UNITY_PURCHASING
-using UnityEditor;
+using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Purchasing;
-using System.IO;
-using System.Collections.Generic;
 
 namespace UnityEditor.Purchasing
 {
-	public static class IAPButtonMenu
-	{
+    public static class IAPButtonMenu
+    {
         [MenuItem("GameObject/Unity IAP/IAP Button", false, 10)]
         public static void GameObjectCreateUnityIAPButton()
         {
             CreateUnityIAPButton();
         }
 
-		[MenuItem ("Window/Unity IAP/Create IAP Button", false, 5)]
-		public static void CreateUnityIAPButton()
-		{
-			// Create Button
-			EditorApplication.ExecuteMenuItem("GameObject/UI/Button");
+        [MenuItem("Window/Unity IAP/Create IAP Button", false, 5)]
+        public static void CreateUnityIAPButton()
+        {
+            // Create Button
+            EditorApplication.ExecuteMenuItem("GameObject/UI/Button");
 
-			// Get GameObject of Button
-			GameObject gO = Selection.activeGameObject;
+            // Get GameObject of Button
+            var gO = Selection.activeGameObject;
 
-			// Add IAP Button component to GameObject
-			IAPButton iapButton = null;
-			if (gO) {
-				iapButton = gO.AddComponent<IAPButton>();
-			}
+            // Add IAP Button component to GameObject
+            IAPButton iapButton = null;
+            if (gO) iapButton = gO.AddComponent<IAPButton>();
 
-			if (iapButton != null) {
-				UnityEditorInternal.ComponentUtility.MoveComponentUp(iapButton);
-				UnityEditorInternal.ComponentUtility.MoveComponentUp(iapButton);
-				UnityEditorInternal.ComponentUtility.MoveComponentUp(iapButton);
-			}
-		}
-	}
+            if (iapButton != null)
+            {
+                ComponentUtility.MoveComponentUp(iapButton);
+                ComponentUtility.MoveComponentUp(iapButton);
+                ComponentUtility.MoveComponentUp(iapButton);
+            }
+        }
+    }
 
     public static class IAPListenerMenu
     {
@@ -46,17 +44,18 @@ namespace UnityEditor.Purchasing
             CreateUnityIAPListener();
         }
 
-        [MenuItem ("Window/Unity IAP/Create IAP Listener", false, 6)]
+        [MenuItem("Window/Unity IAP/Create IAP Listener", false, 6)]
         public static void CreateUnityIAPListener()
         {
             // Create empty GameObject
             EditorApplication.ExecuteMenuItem("GameObject/Create Empty");
 
             // Get GameObject
-            GameObject gO = Selection.activeGameObject;
+            var gO = Selection.activeGameObject;
 
             // Add IAP Listener component to GameObject
-            if (gO) {
+            if (gO)
+            {
                 gO.AddComponent<IAPListener>();
                 gO.name = "IAP Listener";
             }
@@ -64,56 +63,59 @@ namespace UnityEditor.Purchasing
     }
 
 
-	[CustomEditor(typeof(IAPButton))]
-	[CanEditMultipleObjects]
-	public class IAPButtonEditor : Editor
-	{
-		private static readonly string[] excludedFields = new string[] { "m_Script" };
-		private static readonly string[] restoreButtonExcludedFields = new string[] { "m_Script", "consumePurchase", "onPurchaseComplete", "onPurchaseFailed", "titleText", "descriptionText", "priceText" };
-		private const string kNoProduct = "<None>";
+    [CustomEditor(typeof(IAPButton))]
+    [CanEditMultipleObjects]
+    public class IAPButtonEditor : Editor
+    {
+        private const string kNoProduct = "<None>";
+        private static readonly string[] excludedFields = {"m_Script"};
 
-		private List<string> m_ValidIDs = new List<string>();
-		private SerializedProperty m_ProductIDProperty;
+        private static readonly string[] restoreButtonExcludedFields =
+        {
+            "m_Script", "consumePurchase", "onPurchaseComplete", "onPurchaseFailed", "titleText", "descriptionText",
+            "priceText"
+        };
 
-		public void OnEnable()
-		{
-			m_ProductIDProperty = serializedObject.FindProperty("productId");
-		}
+        private SerializedProperty m_ProductIDProperty;
 
-		public override void OnInspectorGUI()
-		{
-			IAPButton button = (IAPButton)target;
+        private readonly List<string> m_ValidIDs = new List<string>();
 
-			serializedObject.Update();
+        public void OnEnable()
+        {
+            m_ProductIDProperty = serializedObject.FindProperty("productId");
+        }
 
-			if (button.buttonType == IAPButton.ButtonType.Purchase) {
-				EditorGUILayout.LabelField(new GUIContent("Product ID:", "Select a product from the IAP catalog"));
+        public override void OnInspectorGUI()
+        {
+            var button = (IAPButton) target;
 
-				var catalog = ProductCatalog.LoadDefaultCatalog();
+            serializedObject.Update();
 
-				m_ValidIDs.Clear();
-				m_ValidIDs.Add(kNoProduct);
-				foreach (var product in catalog.allProducts) {
-					m_ValidIDs.Add(product.id);
-				}
+            if (button.buttonType == IAPButton.ButtonType.Purchase)
+            {
+                EditorGUILayout.LabelField(new GUIContent("Product ID:", "Select a product from the IAP catalog"));
 
-				int currentIndex = string.IsNullOrEmpty(button.productId) ? 0 : m_ValidIDs.IndexOf(button.productId);
-				int newIndex = EditorGUILayout.Popup(currentIndex, m_ValidIDs.ToArray());
-				if (newIndex > 0 && newIndex < m_ValidIDs.Count) {
-					m_ProductIDProperty.stringValue = m_ValidIDs[newIndex];
-				} else {
-					m_ProductIDProperty.stringValue = string.Empty;
-				}
+                var catalog = ProductCatalog.LoadDefaultCatalog();
 
-				if (GUILayout.Button("IAP Catalog...")) {
-					ProductCatalogEditor.ShowWindow();
-				}
-			}
+                m_ValidIDs.Clear();
+                m_ValidIDs.Add(kNoProduct);
+                foreach (var product in catalog.allProducts) m_ValidIDs.Add(product.id);
 
-			DrawPropertiesExcluding(serializedObject, button.buttonType == IAPButton.ButtonType.Restore ? restoreButtonExcludedFields : excludedFields);
+                var currentIndex = string.IsNullOrEmpty(button.productId) ? 0 : m_ValidIDs.IndexOf(button.productId);
+                var newIndex = EditorGUILayout.Popup(currentIndex, m_ValidIDs.ToArray());
+                if (newIndex > 0 && newIndex < m_ValidIDs.Count)
+                    m_ProductIDProperty.stringValue = m_ValidIDs[newIndex];
+                else
+                    m_ProductIDProperty.stringValue = string.Empty;
 
-			serializedObject.ApplyModifiedProperties();
-		}
-	}
+                if (GUILayout.Button("IAP Catalog...")) ProductCatalogEditor.ShowWindow();
+            }
+
+            DrawPropertiesExcluding(serializedObject,
+                button.buttonType == IAPButton.ButtonType.Restore ? restoreButtonExcludedFields : excludedFields);
+
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
 }
 #endif

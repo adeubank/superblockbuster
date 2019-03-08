@@ -12,7 +12,6 @@ public class Block : MonoBehaviour
     //Block image instance.
     /** [HideInInspector] */
     public Image blockImage;
-    public Sprite prevBlockImageSprite;
 
     //Bomb blast counter, will keep reducing with each move.
     /** [HideInInspector] */
@@ -24,9 +23,15 @@ public class Block : MonoBehaviour
     //Column Index of block.
     public int columnID;
 
+    //Status whether block is a bandage powerup block.
+    [HideInInspector] public bool isBandagePowerup;
+
     //Determines whether this block is normal or bomb.
     /** [HideInInspector] */
     public bool isBomb;
+
+    //Status whether block is a bomb powerup block.
+    [HideInInspector] public bool isBombPowerup;
 
     //Status whether block is marked to produce blocks in a 1 block radius next round
     /** [HideInInspector] */
@@ -43,14 +48,8 @@ public class Block : MonoBehaviour
     //Status whether block is empty or filled.
     /** [HideInInspector] */
     public bool isFilled;
+    public Sprite prevBlockImageSprite;
 
-    //Status whether block is a bandage powerup block.
-    [HideInInspector]
-    public bool isBandagePowerup;
-    //Status whether block is a bomb powerup block.
-    [HideInInspector]
-    public bool isBombPowerup;
-    
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
@@ -166,6 +165,18 @@ public class Block : MonoBehaviour
 #endif
     }
 
+    public void ConvertToBandage()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, blockImage.transform, false);
+        isBandagePowerup = true;
+    }
+
+    public void ConvertToBomb()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBombPrefab, blockImage.transform, false);
+        isBombPowerup = true;
+    }
+
     #region bomb mode specific
 
     /// <summary>
@@ -215,16 +226,4 @@ public class Block : MonoBehaviour
     }
 
     #endregion
-
-    public void ConvertToBandage()
-    {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, blockImage.transform, false);
-        isBandagePowerup = true;
-    }
-    
-    public void ConvertToBomb()
-    {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBombPrefab, blockImage.transform, false);
-        isBombPowerup = true;
-    }
 }

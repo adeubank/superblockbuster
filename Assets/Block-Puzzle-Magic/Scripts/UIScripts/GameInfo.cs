@@ -27,7 +27,7 @@ public class GameInfo : Singleton<GameInfo>
 #if UNITY_ANDROID
 		ReviewURL = ReviewURL_Google;
 #elif UNITY_IOS
-		ReviewURL = ReviewURL_iOS;
+        ReviewURL = ReviewURL_iOS;
 #endif
     }
 }

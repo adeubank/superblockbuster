@@ -1,8 +1,6 @@
 #if UNITY_PURCHASING
+using System;
 using UnityEngine.Events;
-using UnityEngine.UI;
-using System.IO;
-using System.Collections.Generic;
 
 namespace UnityEngine.Purchasing
 {
@@ -10,16 +8,6 @@ namespace UnityEngine.Purchasing
     [HelpURL("https://docs.unity3d.com/Manual/UnityIAP.html")]
     public class IAPListener : MonoBehaviour
     {
-        [System.Serializable]
-        public class OnPurchaseCompletedEvent : UnityEvent<Product>
-        {
-        };
-
-        [System.Serializable]
-        public class OnPurchaseFailedEvent : UnityEvent<Product, PurchaseFailureReason>
-        {
-        };
-
         [Tooltip("Consume successful purchases immediately")]
         public bool consumePurchase = true;
 
@@ -32,14 +20,14 @@ namespace UnityEngine.Purchasing
         [Tooltip("Event fired after a failed purchase of this product")]
         public OnPurchaseFailedEvent onPurchaseFailed;
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
             CodelessIAPStoreListener.Instance.AddListener(this);
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             CodelessIAPStoreListener.Instance.RemoveListener(this);
         }
@@ -54,7 +42,7 @@ namespace UnityEngine.Purchasing
 
             onPurchaseComplete.Invoke(e.purchasedProduct);
 
-            return (consumePurchase) ? PurchaseProcessingResult.Complete : PurchaseProcessingResult.Pending;
+            return consumePurchase ? PurchaseProcessingResult.Complete : PurchaseProcessingResult.Pending;
         }
 
         /**
@@ -66,6 +54,16 @@ namespace UnityEngine.Purchasing
                 reason));
 
             onPurchaseFailed.Invoke(product, reason);
+        }
+
+        [Serializable]
+        public class OnPurchaseCompletedEvent : UnityEvent<Product>
+        {
+        }
+
+        [Serializable]
+        public class OnPurchaseFailedEvent : UnityEvent<Product, PurchaseFailureReason>
+        {
         }
     }
 }
