@@ -151,8 +151,10 @@ public class Block : MonoBehaviour
         blockID = -1;
         isFilled = false;
         isBandagePowerup = false;
+        isBombPowerup = false;
         isBomb = false;
         isDandelionSeed = false;
+        isDandelionPowerup = false;
         isDoublePoints = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
@@ -171,7 +173,7 @@ public class Block : MonoBehaviour
         isBombPowerup = true;
     }
 
-    
+
     public void ConvertToDandelion()
     {
         Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, blockImage.transform, false);
@@ -227,5 +229,4 @@ public class Block : MonoBehaviour
     }
 
     #endregion
-
 }
