@@ -10,15 +10,12 @@ public class Block : MonoBehaviour
     public int blockID = -1;
 
     //Block image instance.
-    /** [HideInInspector] */
-    public Image blockImage;
+    [HideInInspector] public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
-    /** [HideInInspector] */
-    public int bombCounter;
+    [HideInInspector] public int bombCounter;
 
-    /** [HideInInspector] */
-    public int colorId = -1;
+    [HideInInspector] public int colorId = -1;
 
     //Column Index of block.
     public int columnID;
@@ -27,27 +24,24 @@ public class Block : MonoBehaviour
     [HideInInspector] public bool isBandagePowerup;
 
     //Determines whether this block is normal or bomb.
-    /** [HideInInspector] */
-    public bool isBomb;
+    [HideInInspector] public bool isBomb;
 
     //Status whether block is a bomb powerup block.
     [HideInInspector] public bool isBombPowerup;
 
     //Status whether block is marked to produce blocks in a 1 block radius next round
-    /** [HideInInspector] */
-    public bool isDandelionSeed;
+    [HideInInspector] public bool isDandelionSeed;
 
     //Status whether block is marked for double points
-    /** [HideInInspector] */
-    public bool isDoublePoints;
+    [HideInInspector] public bool isDoublePoints;
+
+    [HideInInspector] public bool isDandelionPowerup;
 
     //Status whether block is on the edge of the board
-    /** [HideInInspector] */
-    public bool isEdge;
+    [HideInInspector] public bool isEdge;
 
     //Status whether block is empty or filled.
-    /** [HideInInspector] */
-    public bool isFilled;
+    [HideInInspector] public bool isFilled;
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
@@ -177,6 +171,13 @@ public class Block : MonoBehaviour
         isBombPowerup = true;
     }
 
+    
+    public void ConvertToDandelion()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, blockImage.transform, false);
+        isDandelionPowerup = true;
+    }
+
     #region bomb mode specific
 
     /// <summary>
@@ -226,4 +227,5 @@ public class Block : MonoBehaviour
     }
 
     #endregion
+
 }

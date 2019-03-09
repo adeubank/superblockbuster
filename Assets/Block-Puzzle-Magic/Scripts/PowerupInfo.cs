@@ -43,12 +43,10 @@ public class PowerupInfo : ShapeInfo
 
                 Debug.Log("Played Dandelion Powerup");
 
-                var dandelionBlocks = HandleDandelionBlocks(currentBlocks);
-                yield return new WaitWhile(() => dandelionBlocks.Any(t => t != null && t.IsPlaying()));
-
-                DOTween.CompleteAll(true);
-
-                yield return new WaitForEndOfFrame();
+                foreach (var block in currentBlocks)
+                {
+                    block.ConvertToDandelion();
+                }
 
                 break;
             case (int) Powerups.Bandage:
@@ -57,7 +55,6 @@ public class PowerupInfo : ShapeInfo
 
                 foreach (var block in currentBlocks)
                 {
-                    block.isBandagePowerup = true;
                     block.ConvertToBandage();
                 }
 
@@ -68,7 +65,6 @@ public class PowerupInfo : ShapeInfo
 
                 foreach (var block in currentBlocks)
                 {
-                    block.isBombPowerup = true;
                     block.ConvertToBomb();
                 }
 
@@ -118,52 +114,6 @@ public class PowerupInfo : ShapeInfo
 
                 var block = GamePlay.Instance.blockGrid.Find(b =>
                     b.rowID == row && b.columnID == col && b.isFilled);
-                if (block)
-                {
-                    block.ConvertToFilledBlock(currentBlock.blockID);
-                    block.isDoublePoints = true;
-                    // add the doubler block icon
-                    Instantiate(doublerBlockIcon, block.blockImage.transform, false);
-                }
-            }
-    }
-
-    private IEnumerable<Tweener> HandleDandelionBlocks(IEnumerable<Block> currentBlocks)
-    {
-        var placedBlock = currentBlocks.First();
-        var seedBlocks = new List<Block>();
-
-        // give open blocks more priority over empty
-        var availableBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).ToList();
-        availableBlocks.ToList().AddRange(GamePlay.Instance.blockGrid);
-
-        while (seedBlocks.Count < 5)
-        {
-            var randomIndex = Random.Range(0, availableBlocks.Count());
-            seedBlocks.Add(availableBlocks[randomIndex]);
-        }
-
-        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
-        {
-            b.isDandelionSeed = true;
-            var newSeedBlockIcon = Instantiate(dandelionBlockIcon, placedBlock.transform.position, Quaternion.identity,
-                b.blockImage.transform);
-            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
-            return tweeners;
-        });
-
-        return seedTweeners;
-    }
-
-    private void HandleBombBlocks(IEnumerable<Block> currentBlocks)
-    {
-        foreach (var currentBlock in currentBlocks)
-            for (var row = currentBlock.rowID - 1; row <= currentBlock.rowID + 1; row++)
-            for (var col = currentBlock.columnID - 1; col <= currentBlock.columnID + 1; col++)
-            {
-                Debug.Log("Played Bomb Powerup: Filling row=" + row + " col=" + col);
-
-                var block = GamePlay.Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col && b.isFilled);
                 if (block)
                 {
                     block.ConvertToFilledBlock(currentBlock.blockID);

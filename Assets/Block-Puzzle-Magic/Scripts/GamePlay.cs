@@ -588,13 +588,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         foreach (var b in breakingLine)
         {
-            if (b.isBandagePowerup)
+            if (b.isDandelionSeed)
+            {
+                Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + b);
+                HandleDandelionPowerup(b);
+            }
+            
+            else if (b.isBandagePowerup)
             {
                 Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
                 BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
 
-            if (b.isBombPowerup) Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
+            else if (b.isBombPowerup)
+            {
+                Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
+                HandleBombPowerup(b);
+            }
             b.ClearBlock();
             yield return new WaitForEndOfFrame();
         }
@@ -927,5 +937,54 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
     }
 
+    #endregion
+    
+    #region powerup dandelion activation
+    private IEnumerable<Tweener> HandleDandelionPowerup(Block dandelionPowerup)
+    {
+        var seedBlocks = new List<Block>();
+
+        // give open blocks more priority over empty
+        var availableBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).ToList();
+        availableBlocks.ToList().AddRange(GamePlay.Instance.blockGrid);
+
+        while (seedBlocks.Count < 5)
+        {
+            var randomIndex = Random.Range(0, availableBlocks.Count());
+            seedBlocks.Add(availableBlocks[randomIndex]);
+        }
+
+        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
+        {
+            b.isDandelionSeed = true;
+            var newSeedBlockIcon = Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, dandelionPowerup.transform.position, Quaternion.identity,
+                b.blockImage.transform);
+            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
+            return tweeners;
+        });
+
+        return seedTweeners;
+    }
+    #endregion
+    
+    #region powerup bomb activation
+
+    private IEnumerable<Tweener> HandleBombPowerup(Block bombPowerup)
+    {
+            for (var row = bombPowerup.rowID - 1; row <= bombPowerup.rowID + 1; row++)
+            for (var col = bombPowerup.columnID - 1; col <= bombPowerup.columnID + 1; col++)
+            {
+                Debug.Log("Played Bomb Powerup: Filling row=" + row + " col=" + col);
+
+                var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col && b.isFilled);
+                if (block)
+                {
+                    block.ConvertToFilledBlock(bombPowerup.blockID);
+                    Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBombPrefab, block.blockImage.transform, false);
+                }
+            }
+
+        return null;
+    }
     #endregion
 }
