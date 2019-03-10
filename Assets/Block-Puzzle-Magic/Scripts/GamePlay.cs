@@ -287,6 +287,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
+        #region bomb powerup activation
+
+        // find any bomb blocks about to be detonated
+        var activeBombPowerups = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line)
+            .Where(b => b.isBombPowerup).ToList();
+        if (activeBombPowerups.Any())
+            HandleBombPowerup(activeBombPowerups);
+
+        #endregion
+
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
@@ -591,7 +601,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + b);
                 yield return HandleDandelionPowerup(b);
             }
-            
+
             else if (b.isBandagePowerup)
             {
                 Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
@@ -601,9 +611,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             else if (b.isBombPowerup)
             {
                 Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
-                HandleBombPowerup(b);
+                b.ConvertToExplosion();
             }
-            
+
             b.ClearBlock();
 
             yield return new WaitForEndOfFrame();
@@ -612,16 +622,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
 
         DOTween.CompleteAll(true);
-        
-        
+
+
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-        {
             yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
-        }
-
     }
 
     /// <summary>
@@ -817,6 +824,56 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         StackManager.Instance.DeactivateGamePlay();
     }
 
+    #region powerup dandelion activation
+
+    private IEnumerator HandleDandelionPowerup(Block dandelionPowerup)
+    {
+        var seedBlocks = new List<Block>();
+
+        // give open blocks more priority over empty
+        var availableBlocks = Instance.blockGrid.Where(b => !b.isFilled).ToList();
+        availableBlocks.ToList().AddRange(Instance.blockGrid);
+
+        while (seedBlocks.Count < 5)
+        {
+            var randomIndex = Random.Range(0, availableBlocks.Count());
+            seedBlocks.Add(availableBlocks[randomIndex]);
+        }
+
+        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
+        {
+            b.isDandelionSeed = true;
+            var newSeedBlockIcon = Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab,
+                dandelionPowerup.transform.position, Quaternion.identity,
+                b.blockImage.transform);
+            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
+            return tweeners;
+        });
+
+        yield return new WaitWhile(() => seedTweeners.Any(t => t != null && t.IsPlaying()));
+    }
+
+    #endregion
+
+    #region powerup bomb activation
+
+    private void HandleBombPowerup(IEnumerable<Block> clearingBlocks)
+    {
+        foreach (var bombPowerup in clearingBlocks.Where(block => block.isBombPowerup))
+            for (var row = bombPowerup.rowID - 1; row <= bombPowerup.rowID + 1; row++)
+            for (var col = bombPowerup.columnID - 1; col <= bombPowerup.columnID + 1; col++)
+            {
+                var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
+                if (block && !block.isFilled)
+                {
+                    block.ConvertToFilledBlock(bombPowerup.blockID);
+                    block.blockImage.sprite = bombPowerup.blockImage.sprite;
+                }
+            }
+    }
+
+    #endregion
+
     #region Bomb Mode Specific
 
     /// <summary>
@@ -949,62 +1006,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (inGameHelp == null) inGameHelp = gameObject.AddComponent<InGameHelp>();
             inGameHelp.ShowBasicHelp();
         }
-    }
-
-    #endregion
-    
-    #region powerup dandelion activation
-    private IEnumerator HandleDandelionPowerup(Block dandelionPowerup)
-    {
-        var seedBlocks = new List<Block>();
-
-        // give open blocks more priority over empty
-        var availableBlocks = GamePlay.Instance.blockGrid.Where(b => !b.isFilled).ToList();
-        availableBlocks.ToList().AddRange(GamePlay.Instance.blockGrid);
-
-        while (seedBlocks.Count < 5)
-        {
-            var randomIndex = Random.Range(0, availableBlocks.Count());
-            seedBlocks.Add(availableBlocks[randomIndex]);
-        }
-
-        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
-        {
-            b.isDandelionSeed = true;
-            var newSeedBlockIcon = Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, dandelionPowerup.transform.position, Quaternion.identity,
-                b.blockImage.transform);
-            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
-            return tweeners;
-        });
-  
-        yield return new WaitWhile(() => seedTweeners.Any(t => t != null && t.IsPlaying()));   
-    }
-    #endregion
-
-    #region powerup bomb activation
-
-    private IEnumerator HandleBombPowerup(Block bombPowerup)
-    {
-        // TODO need to make sure that we are not filling blocks that are about to be cleared
-        for (var row = bombPowerup.rowID - 1; row <= bombPowerup.rowID + 1; row++)
-        for (var col = bombPowerup.columnID - 1; col <= bombPowerup.columnID + 1; col++)
-        {
-            Debug.Log("Played Bomb Powerup: Filling row=" + row + " col=" + col);
-
-            var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
-            if (block)
-            {
-                if (!block.isFilled)
-                {                    
-                    block.ConvertToFilledBlock(bombPowerup.blockID);
-                    block.blockImage.sprite = bombPowerup.blockImage.sprite;
-                }
-
-                // TODO add bomb explosions
-            }
-        }
-        
-        yield return new WaitForEndOfFrame();
     }
 
     #endregion

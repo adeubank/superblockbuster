@@ -29,13 +29,13 @@ public class Block : MonoBehaviour
     //Status whether block is a bomb powerup block.
     [HideInInspector] public bool isBombPowerup;
 
+    [HideInInspector] public bool isDandelionPowerup;
+
     //Status whether block is marked to produce blocks in a 1 block radius next round
     [HideInInspector] public bool isDandelionSeed;
 
     //Status whether block is marked for double points
     [HideInInspector] public bool isDoublePoints;
-
-    [HideInInspector] public bool isDandelionPowerup;
 
     //Status whether block is on the edge of the board
     [HideInInspector] public bool isEdge;
@@ -173,11 +173,19 @@ public class Block : MonoBehaviour
         isBombPowerup = true;
     }
 
-
     public void ConvertToDandelion()
     {
         Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, blockImage.transform, false);
         isDandelionPowerup = true;
+    }
+
+    public void ConvertToExplosion()
+    {
+        var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.GetComponent<Renderer>().material.color = Color.red;
+        sphere.transform.position = transform.position;
+        sphere.transform.localScale = Vector3.zero;
+        sphere.transform.DOScale(Vector3.one * 1.25f, 0.4f).OnComplete(() => { Destroy(sphere); });
     }
 
     #region bomb mode specific

@@ -43,30 +43,21 @@ public class PowerupInfo : ShapeInfo
 
                 Debug.Log("Played Dandelion Powerup");
 
-                foreach (var block in currentBlocks)
-                {
-                    block.ConvertToDandelion();
-                }
+                foreach (var block in currentBlocks) block.ConvertToDandelion();
 
                 break;
             case (int) Powerups.Bandage:
 
                 Debug.Log("Played Bandage Powerup");
 
-                foreach (var block in currentBlocks)
-                {
-                    block.ConvertToBandage();
-                }
+                foreach (var block in currentBlocks) block.ConvertToBandage();
 
                 break;
             case (int) Powerups.Bomb:
 
                 Debug.Log("Played Bomb Powerup");
 
-                foreach (var block in currentBlocks)
-                {
-                    block.ConvertToBomb();
-                }
+                foreach (var block in currentBlocks) block.ConvertToBomb();
 
                 break;
             default:
