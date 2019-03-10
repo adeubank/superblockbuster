@@ -195,9 +195,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return newShapeBlock.GetComponent<ShapeInfo>();
     }
 
-    public List<ShapeBlockSpawn> NormalBlocks()
+    public IEnumerable<ShapeBlockSpawn> NormalBlocks()
     {
-        return ActiveShapeBlocks.Where(s => s.BlockID < 100).ToList();
+        return ActiveShapeBlocks.Where(s => s.BlockID < 100);
     }
 
     public GameObject NextShapeBlock()
@@ -205,7 +205,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         // need normal blocks only when bandage block
         if (isNextRoundBandageBlock)
         {
-            var normalBlocks = NormalBlocks();
+            var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToList();
             return normalBlocks[Random.Range(0, normalBlocks.Count)].shapeBlock;
         }
 
