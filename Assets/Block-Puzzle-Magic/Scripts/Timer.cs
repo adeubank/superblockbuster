@@ -5,9 +5,9 @@ public class Timer : MonoBehaviour
 {
     [SerializeField] private Image imageProgress;
 
-    [SerializeField] private int MaxTimeCounter = 60;
+    [SerializeField] private int MaxTimeCounter = 120;
 
-    private float timeRemaining = 60.0F;
+    private float timeRemaining = 120.0F;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;

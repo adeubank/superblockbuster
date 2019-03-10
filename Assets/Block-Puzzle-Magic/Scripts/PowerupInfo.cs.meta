@@ -3,7 +3,12 @@ guid: 64578ef65de320d41b14750530f2c8c9
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - blockImage: {instanceID: 0}
+  - dandelionBlockIcon: {fileID: 1851252032709409074, guid: 6ba777b361dd18042b2f4f099f77392f,
+      type: 3}
+  - doublerBlockIcon: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

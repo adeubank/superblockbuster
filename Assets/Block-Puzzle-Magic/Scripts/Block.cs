@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -28,6 +29,7 @@ public class Block : MonoBehaviour
 
     //Status whether block is a bomb powerup block.
     [HideInInspector] public bool isBombPowerup;
+    [HideInInspector] public bool isExploding;
 
     [HideInInspector] public bool isDandelionPowerup;
 
@@ -41,7 +43,7 @@ public class Block : MonoBehaviour
     [HideInInspector] public bool isEdge;
 
     //Status whether block is empty or filled.
-    [HideInInspector] public bool isFilled;
+    public bool isFilled;
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
@@ -156,6 +158,8 @@ public class Block : MonoBehaviour
         isDandelionSeed = false;
         isDandelionPowerup = false;
         isDoublePoints = false;
+        isExploding = false;
+        prevBlockImageSprite = null;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
 #endif
@@ -237,4 +241,24 @@ public class Block : MonoBehaviour
     }
 
     #endregion
+
+    public void ConvertToExplodingBlock()
+    {
+        isFilled = true;
+        isExploding = true;
+    }
+
+    public void ConvertToNotExploding()
+    {
+        isFilled = false;
+        isExploding = false;
+    }
+
+    public Tweener ConvertToSeedSproutBlock()
+    {
+        ClearExtraChildren();
+        ConvertToFilledBlock(0);
+        blockImage.color = Color.green;
+        return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
+    }
 }

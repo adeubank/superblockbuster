@@ -293,7 +293,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var activeBombPowerups = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line)
             .Where(b => b.isBombPowerup).ToList();
         if (activeBombPowerups.Any())
-            HandleBombPowerup(activeBombPowerups);
+        {
+            PrepDetonatingBombBlockPowerups(activeBombPowerups);
+        }
 
         #endregion
 
@@ -354,19 +356,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
 
-            for (var row = -1; row <= 1; row++)
-            for (var col = -1; col <= 1; col++)
+            foreach (var surroundingBlock in SurroundingBlocks(seedBlock))
             {
-                var possibleBlock = blockGrid.Find(b =>
-                    b.rowID == seedBlock.rowID + row && b.columnID == seedBlock.columnID + col);
-                if (possibleBlock && !possibleBlock.isFilled)
+                if (!surroundingBlock.isFilled)
                 {
-                    possibleBlock.ClearExtraChildren();
-                    possibleBlock.ConvertToFilledBlock(0);
-                    possibleBlock.blockImage.color = Color.green;
-                    var tweener =
-                        possibleBlock.transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
-                    possibleTweens.Add(tweener);
+                    possibleTweens.Add(surroundingBlock.ConvertToSeedSproutBlock());
                 }
             }
 
@@ -612,6 +606,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
                 b.ConvertToExplosion();
+                foreach (var surroundingBlock in SurroundingBlocks(b))
+                {
+                    surroundingBlock.ConvertToNotExploding();
+                }
             }
 
             b.ClearBlock();
@@ -857,19 +855,24 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #region powerup bomb activation
 
-    private void HandleBombPowerup(IEnumerable<Block> clearingBlocks)
+    private void PrepDetonatingBombBlockPowerups(IEnumerable<Block> clearingBlocks)
     {
         foreach (var bombPowerup in clearingBlocks.Where(block => block.isBombPowerup))
-            for (var row = bombPowerup.rowID - 1; row <= bombPowerup.rowID + 1; row++)
-            for (var col = bombPowerup.columnID - 1; col <= bombPowerup.columnID + 1; col++)
+        {
+            Debug.Log("Found bomb block. Prepping surrounding blocks. rowId=" + bombPowerup.rowID + " columnId=" +
+                      bombPowerup.columnID);
+
+            foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
             {
-                var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
-                if (block && !block.isFilled)
+                if (!surroundingBlock.isFilled)
                 {
-                    block.ConvertToFilledBlock(bombPowerup.blockID);
-                    block.blockImage.sprite = bombPowerup.blockImage.sprite;
+                    Debug.Log("Prepping this block for exploding. rowId=" + surroundingBlock.rowID + " columnId=" +
+                              surroundingBlock.columnID);
+
+                    surroundingBlock.ConvertToExplodingBlock();
                 }
             }
+        }
     }
 
     #endregion
@@ -1009,4 +1012,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     }
 
     #endregion
+
+    public IEnumerable<Block> SurroundingBlocks(Block centerBlock)
+    {
+        return SurroundingBlocksInRadius(centerBlock, 1);
+    }
+
+    public IEnumerable<Block> SurroundingBlocksInRadius(Block centerBlock, int radius)
+    {
+        for (var row = centerBlock.rowID - radius; row <= centerBlock.rowID + radius; row++)
+        for (var col = centerBlock.columnID - radius; col <= centerBlock.columnID + radius; col++)
+        {
+            var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
+            if (block)
+            {
+                yield return block;
+            }
+        }
+    }
 }
