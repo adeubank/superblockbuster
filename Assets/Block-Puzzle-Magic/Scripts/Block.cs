@@ -248,12 +248,6 @@ public class Block : MonoBehaviour
         isExploding = true;
     }
 
-    public void ConvertToNotExploding()
-    {
-        isFilled = false;
-        isExploding = false;
-    }
-
     public Tweener ConvertToSeedSproutBlock()
     {
         ClearExtraChildren();

@@ -287,7 +287,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        #region bomb powerup activation
+        #region bomb powerup preperation
 
         // find any bomb blocks about to be detonated
         var activeBombPowerups = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line)
@@ -356,7 +356,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
 
-            foreach (var surroundingBlock in SurroundingBlocks(seedBlock))
+            foreach (var surroundingBlock in SurroundingBlocksInRadius(seedBlock, 2, true))
             {
                 if (!surroundingBlock.isFilled)
                 {
@@ -561,12 +561,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             foreach (var thisLine in breakingColumns)
                 StartCoroutine(BreakThisLine(thisLine));
 
-        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-            yield return new WaitForEndOfFrame();
-
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
         yield return new WaitForEndOfFrame();
+
+        Debug.Log("Finished breaking lines.");
+
+        // remove still exploding blocks and reset them
+        foreach (var wasExplodingBlock in blockGrid.Where(b => b.isExploding))
+        {
+            Debug.Log("Removing the isExploding flag from block. " + wasExplodingBlock);
+            wasExplodingBlock.isFilled = false;
+            wasExplodingBlock.isExploding = false;
+        }
 
         StartCoroutine(nameof(AddShapesAndUpdateRound));
 
@@ -588,6 +595,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="breakingLine">Breaking line.</param>
     private IEnumerator BreakThisLine(List<Block> breakingLine)
     {
+        Debug.Log("Breaking a line starting with block. " + breakingLine.First());
+
         foreach (var b in breakingLine)
         {
             if (b.isDandelionPowerup)
@@ -606,10 +615,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
                 b.ConvertToExplosion();
-                foreach (var surroundingBlock in SurroundingBlocks(b))
-                {
-                    surroundingBlock.ConvertToNotExploding();
-                }
             }
 
             b.ClearBlock();
@@ -618,15 +623,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
-
-        DOTween.CompleteAll(true);
-
-
-        var breakingRows = GetFilledRows();
-        var breakingColumns = GetFilledColumns();
-
-        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-            yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
     }
 
     /// <summary>
@@ -853,23 +849,45 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #endregion
 
-    #region powerup bomb activation
+    #region powerup bomb prepping for detonation
 
     private void PrepDetonatingBombBlockPowerups(IEnumerable<Block> clearingBlocks)
     {
-        foreach (var bombPowerup in clearingBlocks.Where(block => block.isBombPowerup))
+        List<Block> analyzedBlocks = new List<Block>();
+        Stack<Block> bombPowerups = new Stack<Block>(clearingBlocks.Where(block => block.isBombPowerup));
+
+        while(bombPowerups.Any())
         {
+            
+            var bombPowerup = bombPowerups.Pop();
+            if (analyzedBlocks.Contains(bombPowerup))
+            {
+                continue;
+            }
+            analyzedBlocks.Add(bombPowerup);
+
             Debug.Log("Found bomb block. Prepping surrounding blocks. rowId=" + bombPowerup.rowID + " columnId=" +
                       bombPowerup.columnID);
 
             foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
             {
+                if (analyzedBlocks.Contains(surroundingBlock))
+                {
+                    continue;
+                }
+                analyzedBlocks.Add(surroundingBlock);
+
                 if (!surroundingBlock.isFilled)
                 {
                     Debug.Log("Prepping this block for exploding. rowId=" + surroundingBlock.rowID + " columnId=" +
                               surroundingBlock.columnID);
 
                     surroundingBlock.ConvertToExplodingBlock();
+                }
+
+                if (surroundingBlock.isBombPowerup)
+                {
+                    bombPowerups.Push(surroundingBlock);
                 }
             }
         }
@@ -959,7 +977,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #endregion
 
-
     #region show help if mode opened first time
 
     /// <summary>
@@ -1015,16 +1032,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     public IEnumerable<Block> SurroundingBlocks(Block centerBlock)
     {
-        return SurroundingBlocksInRadius(centerBlock, 1);
+        return SurroundingBlocksInRadius(centerBlock, 1, false);
     }
 
-    public IEnumerable<Block> SurroundingBlocksInRadius(Block centerBlock, int radius)
+    public IEnumerable<Block> SurroundingBlocksInRadius(Block centerBlock, int radius, bool includeCenterBlock)
     {
         for (var row = centerBlock.rowID - radius; row <= centerBlock.rowID + radius; row++)
         for (var col = centerBlock.columnID - radius; col <= centerBlock.columnID + radius; col++)
         {
             var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
-            if (block)
+            if (block && centerBlock != block)
             {
                 yield return block;
             }
