@@ -356,7 +356,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
 
-            foreach (var surroundingBlock in SurroundingBlocksInRadius(seedBlock, 2, true))
+            foreach (var surroundingBlock in SurroundingBlocksInRadius(seedBlock, 1, true))
             {
                 if (!surroundingBlock.isFilled)
                 {
@@ -856,14 +856,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         List<Block> analyzedBlocks = new List<Block>();
         Stack<Block> bombPowerups = new Stack<Block>(clearingBlocks.Where(block => block.isBombPowerup));
 
-        while(bombPowerups.Any())
+        while (bombPowerups.Any())
         {
-            
             var bombPowerup = bombPowerups.Pop();
-            if (analyzedBlocks.Contains(bombPowerup))
-            {
-                continue;
-            }
+
+            if (analyzedBlocks.Contains(bombPowerup)) continue;
+
             analyzedBlocks.Add(bombPowerup);
 
             Debug.Log("Found bomb block. Prepping surrounding blocks. rowId=" + bombPowerup.rowID + " columnId=" +
@@ -871,10 +869,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
             {
-                if (analyzedBlocks.Contains(surroundingBlock))
-                {
-                    continue;
-                }
+                if (analyzedBlocks.Contains(surroundingBlock)) continue;
+
                 analyzedBlocks.Add(surroundingBlock);
 
                 if (!surroundingBlock.isFilled)
@@ -1041,9 +1037,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         for (var col = centerBlock.columnID - radius; col <= centerBlock.columnID + radius; col++)
         {
             var block = Instance.blockGrid.Find(b => b.rowID == row && b.columnID == col);
-            if (block && centerBlock != block)
+            if (block)
             {
-                yield return block;
+                if (centerBlock != block || includeCenterBlock)
+                    yield return block;
             }
         }
     }
