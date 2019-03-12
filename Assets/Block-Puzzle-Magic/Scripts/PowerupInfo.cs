@@ -107,7 +107,6 @@ public class PowerupInfo : ShapeInfo
                     b.rowID == row && b.columnID == col && b.isFilled);
                 if (block)
                 {
-                    block.ConvertToFilledBlock(currentBlock.blockID);
                     block.isDoublePoints = true;
                     // add the doubler block icon
                     Instantiate(doublerBlockIcon, block.blockImage.transform, false);
