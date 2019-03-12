@@ -665,7 +665,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     o.rowID == currentRowID + c.rowID + placingBlockShape.startOffsetX &&
                     o.columnID == currentColumnID + (c.columnID - placingBlockShape.startOffsetY));
 
-                if (checkingCell == null || checkingCell != null && checkingCell.isFilled) return false;
+                if (checkingCell == null || checkingCell != null && !placingBlockShape.isBandageShape && checkingCell.isFilled) return false;
             }
 
         return true;
