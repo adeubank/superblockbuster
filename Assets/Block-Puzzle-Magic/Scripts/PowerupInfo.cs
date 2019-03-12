@@ -23,7 +23,7 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Flood Powerup");
 
                 var floodPowerups = HandleFloodBlocks(currentBlocks);
-                yield return new WaitWhile(() => floodPowerups.Any(t => t != null && !t.IsComplete()));
+                yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
 
                 DOTween.CompleteAll(true);
 
@@ -64,8 +64,8 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Bomb Powerup");
 
                 var colorCoderTweeners = HandleColorCoderBlocks(currentBlocks);
-                
-                yield return new WaitWhile(() => colorCoderTweeners.Any(t => t != null && !t.IsComplete()));
+
+                yield return new WaitWhile(() => colorCoderTweeners.Any(t => t.IsActive()));
 
                 DOTween.CompleteAll(true);
 
@@ -76,11 +76,11 @@ public class PowerupInfo : ShapeInfo
         }
     }
 
-    private IEnumerable<Tweener> HandleColorCoderBlocks(IEnumerable<Block> currentBlocks)
+    private List<Tweener> HandleColorCoderBlocks(IEnumerable<Block> currentBlocks)
     {
         return currentBlocks.SelectMany(powerupBlock =>
         {
-            List<Tweener> tweeners = new List<Tweener>();
+            List<Block> tweeners = new List<Block>();
             var rowId = powerupBlock.rowID;
             var colId = powerupBlock.columnID;
             for (var index = 1;
@@ -89,28 +89,40 @@ public class PowerupInfo : ShapeInfo
                 index++)
             {
                 var nextTweeners = GamePlay.Instance.blockGrid.Where(b =>
-                    !b.isFilled && ((b.rowID == rowId && b.columnID == (colId - index)) ||
-                                    (b.rowID == rowId && b.columnID == (colId + index)) ||
-                                    (b.rowID == (rowId + index) && b.columnID == colId) ||
-                                    (b.rowID == (rowId - index) && b.columnID == colId))
-                ).Select(nextColorCodeBlock =>
-                {
-                    // transition block to the next color
-                    return nextColorCodeBlock.blockImage.DOFade(0.1f, 0.4f).OnComplete(() =>
-                    {
-                        nextColorCodeBlock.colorId = powerupBlock.colorId;
-                        nextColorCodeBlock.blockImage.sprite = powerupBlock.blockImage.sprite;
-                        nextColorCodeBlock.blockImage.color = Color.white;
-                    });
-                });
+                    (b.rowID == rowId && b.columnID == (colId - index)) ||
+                    (b.rowID == rowId && b.columnID == (colId + index)) ||
+                    (b.rowID == (rowId + index) && b.columnID == colId) ||
+                    (b.rowID == (rowId - index) && b.columnID == colId)
+                ).Select(nextColorCodeBlock => { return nextColorCodeBlock; });
                 tweeners.AddRange(nextTweeners);
             }
 
-            return tweeners;
-        });
+            return tweeners.Select(block =>
+                {
+                    var prevColor = block.blockImage.color;
+                    var prevImageSprite = block.blockImage.sprite;
+                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
+                    // transition block to the next color
+                    return block.blockImage.DOFade(0.1f, 0.4f).OnComplete(() =>
+                    {
+                        if (block.isFilled)
+                        {
+                            block.colorId = powerupBlock.colorId;
+                            block.blockImage.color = prevColor;
+                            block.blockImage.sprite = powerupBlock.blockImage.sprite;
+                        }
+                        else
+                        {
+                            block.blockImage.color = prevColor;
+                            block.blockImage.sprite = prevImageSprite;
+                        }
+                    });
+                }
+            ).ToList();
+        }).ToList();
     }
 
-    private IEnumerable<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
+    private List<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
     {
         return currentBlocks.Select(powerupBlock =>
         {
@@ -127,7 +139,7 @@ public class PowerupInfo : ShapeInfo
                     block.ConvertToFilledBlock(powerupBlock.blockID);
                     var row1 = row;
                     var col1 = col;
-                    tweener = block.blockImage.DOColor(Color.blue, 1f).OnComplete(() =>
+                    tweener = block.blockImage.DOColor(Color.blue, 0.4f).OnComplete(() =>
                     {
                         //                                Debug.Log("Played Flood Powerup: Tween Complete row=" + row1 + " col=" + col1 +
                         //                                          " currentColor=" + block.blockImage.color);
@@ -136,7 +148,7 @@ public class PowerupInfo : ShapeInfo
             }
 
             return tweener;
-        });
+        }).Where(t => t != null).ToList();
     }
 
     private void HandleDoublerBlocks(IEnumerable<Block> currentBlocks)
