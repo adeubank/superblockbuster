@@ -658,14 +658,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var currentRowID = placingBlock.rowID;
         var currentColumnID = placingBlock.columnID;
 
-        if (placingBlockShape != null && placingBlockShape.ShapeBlocks != null)
+        if (placingBlockShape != null && placingBlockShape.ShapeBlocks != null && !placingBlockShape.isBandageShape)
             foreach (var c in placingBlockShape.ShapeBlocks)
             {
                 var checkingCell = blockGrid.Find(o =>
                     o.rowID == currentRowID + c.rowID + placingBlockShape.startOffsetX &&
                     o.columnID == currentColumnID + (c.columnID - placingBlockShape.startOffsetY));
 
-                if (checkingCell == null || checkingCell != null && !placingBlockShape.isBandageShape && checkingCell.isFilled) return false;
+                if (checkingCell == null || checkingCell != null && checkingCell.isFilled) return false;
             }
 
         return true;

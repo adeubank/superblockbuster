@@ -33,3 +33,7 @@ MonoBehaviour:
     shapeBlock: {fileID: 8754179494913528949, guid: 515fb4a7f81934ffcba113e1360a41dc,
       type: 3}
     spawnProbability: 1
+  - BlockID: 1005
+    shapeBlock: {fileID: 1068036229970413566, guid: f05aa45251c59204bbecc6fbefd081c2,
+      type: 3}
+    spawnProbability: 10

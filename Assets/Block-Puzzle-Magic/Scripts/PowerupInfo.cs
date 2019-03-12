@@ -60,10 +60,54 @@ public class PowerupInfo : ShapeInfo
                 foreach (var block in currentBlocks) block.ConvertToBomb();
 
                 break;
+            case (int) Powerups.ColorCoder:
+                Debug.Log("Played Bomb Powerup");
+
+                var colorCoderTweeners = HandleColorCoderBlocks(currentBlocks);
+                
+                yield return new WaitWhile(() => colorCoderTweeners.Any(t => t != null && !t.IsComplete()));
+
+                DOTween.CompleteAll(true);
+
+                break;
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
         }
+    }
+
+    private IEnumerable<Tweener> HandleColorCoderBlocks(IEnumerable<Block> currentBlocks)
+    {
+        return currentBlocks.SelectMany(powerupBlock =>
+        {
+            List<Tweener> tweeners = new List<Tweener>();
+            var rowId = powerupBlock.rowID;
+            var colId = powerupBlock.columnID;
+            for (var index = 1;
+                index < GameBoardGenerator.Instance.TotalRows ||
+                index < GameBoardGenerator.Instance.TotalColumns;
+                index++)
+            {
+                var nextTweeners = GamePlay.Instance.blockGrid.Where(b =>
+                    !b.isFilled && ((b.rowID == rowId && b.columnID == (colId - index)) ||
+                                    (b.rowID == rowId && b.columnID == (colId + index)) ||
+                                    (b.rowID == (rowId + index) && b.columnID == colId) ||
+                                    (b.rowID == (rowId - index) && b.columnID == colId))
+                ).Select(nextColorCodeBlock =>
+                {
+                    // transition block to the next color
+                    return nextColorCodeBlock.blockImage.DOFade(0.1f, 0.4f).OnComplete(() =>
+                    {
+                        nextColorCodeBlock.colorId = powerupBlock.colorId;
+                        nextColorCodeBlock.blockImage.sprite = powerupBlock.blockImage.sprite;
+                        nextColorCodeBlock.blockImage.color = Color.white;
+                    });
+                });
+                tweeners.AddRange(nextTweeners);
+            }
+
+            return tweeners;
+        });
     }
 
     private IEnumerable<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
@@ -120,6 +164,7 @@ public class PowerupInfo : ShapeInfo
         Doubler = 1001,
         Dandelion = 1002,
         Bandage = 1003,
-        Bomb = 1004
+        Bomb = 1004,
+        ColorCoder = 1005
     }
 }
