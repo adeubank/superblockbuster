@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -29,11 +28,14 @@ public class Block : MonoBehaviour
 
     //Status whether block is a bomb powerup block.
     [HideInInspector] public bool isBombPowerup;
-    [HideInInspector] public bool isExploding;
 
+    // status of whether a block is a color coder powerup    
+    [HideInInspector] public bool isColorCoderPowerup;
+
+    //Status whether block is marked to produce seed blocks when cleared
     [HideInInspector] public bool isDandelionPowerup;
 
-    //Status whether block is marked to produce blocks in a 1 block radius next round
+    // Status whether this block will sprout blocks at end of round
     [HideInInspector] public bool isDandelionSeed;
 
     //Status whether block is marked for double points
@@ -41,6 +43,9 @@ public class Block : MonoBehaviour
 
     //Status whether block is on the edge of the board
     [HideInInspector] public bool isEdge;
+
+    // Status of whether this block was in the blast radius of a bomb powerup
+    [HideInInspector] public bool isExploding;
 
     //Status whether block is empty or filled.
     public bool isFilled;
@@ -192,6 +197,26 @@ public class Block : MonoBehaviour
         sphere.transform.DOScale(Vector3.one * 1.25f, 0.4f).OnComplete(() => { Destroy(sphere); });
     }
 
+    public void ConvertToExplodingBlock()
+    {
+        isFilled = true;
+        isExploding = true;
+    }
+
+    public Tweener ConvertToSeedSproutBlock()
+    {
+        ClearExtraChildren();
+        ConvertToFilledBlock(0);
+        blockImage.color = Color.green;
+        return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
+    }
+
+    public void ConvertToColorCoder()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconColorCoderPrefab, blockImage.transform, false);
+        isColorCoderPowerup = true;
+    }
+
     #region bomb mode specific
 
     /// <summary>
@@ -241,18 +266,4 @@ public class Block : MonoBehaviour
     }
 
     #endregion
-
-    public void ConvertToExplodingBlock()
-    {
-        isFilled = true;
-        isExploding = true;
-    }
-
-    public Tweener ConvertToSeedSproutBlock()
-    {
-        ClearExtraChildren();
-        ConvertToFilledBlock(0);
-        blockImage.color = Color.green;
-        return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
-    }
 }

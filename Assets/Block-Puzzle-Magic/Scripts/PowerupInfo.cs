@@ -23,9 +23,8 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Flood Powerup");
 
                 var floodPowerups = HandleFloodBlocks(currentBlocks);
-                yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
 
-                DOTween.CompleteAll(true);
+                yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
 
                 yield return new WaitForEndOfFrame();
 
@@ -61,65 +60,15 @@ public class PowerupInfo : ShapeInfo
 
                 break;
             case (int) Powerups.ColorCoder:
-                Debug.Log("Played Bomb Powerup");
+                Debug.Log("Played Coder Coder Powerup");
 
-                var colorCoderTweeners = HandleColorCoderBlocks(currentBlocks);
-
-                yield return new WaitWhile(() => colorCoderTweeners.Any(t => t.IsActive()));
-
-                DOTween.CompleteAll(true);
+                foreach (var block in currentBlocks) block.ConvertToColorCoder();
 
                 break;
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
         }
-    }
-
-    private List<Tweener> HandleColorCoderBlocks(IEnumerable<Block> currentBlocks)
-    {
-        return currentBlocks.SelectMany(powerupBlock =>
-        {
-            List<Block> tweeners = new List<Block>();
-            var rowId = powerupBlock.rowID;
-            var colId = powerupBlock.columnID;
-            for (var index = 1;
-                index < GameBoardGenerator.Instance.TotalRows ||
-                index < GameBoardGenerator.Instance.TotalColumns;
-                index++)
-            {
-                var nextTweeners = GamePlay.Instance.blockGrid.Where(b =>
-                    (b.rowID == rowId && b.columnID == (colId - index)) ||
-                    (b.rowID == rowId && b.columnID == (colId + index)) ||
-                    (b.rowID == (rowId + index) && b.columnID == colId) ||
-                    (b.rowID == (rowId - index) && b.columnID == colId)
-                ).Select(nextColorCodeBlock => { return nextColorCodeBlock; });
-                tweeners.AddRange(nextTweeners);
-            }
-
-            return tweeners.Select(block =>
-                {
-                    var prevColor = block.blockImage.color;
-                    var prevImageSprite = block.blockImage.sprite;
-                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
-                    // transition block to the next color
-                    return block.blockImage.DOFade(0.1f, 0.4f).OnComplete(() =>
-                    {
-                        if (block.isFilled)
-                        {
-                            block.colorId = powerupBlock.colorId;
-                            block.blockImage.color = prevColor;
-                            block.blockImage.sprite = powerupBlock.blockImage.sprite;
-                        }
-                        else
-                        {
-                            block.blockImage.color = prevColor;
-                            block.blockImage.sprite = prevImageSprite;
-                        }
-                    });
-                }
-            ).ToList();
-        }).ToList();
     }
 
     private List<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
@@ -133,17 +82,12 @@ public class PowerupInfo : ShapeInfo
                 //                        Debug.Log("Played Flood Powerup: Filling row=" + row + " col=" + col);
 
                 var block = GamePlay.Instance.blockGrid.Find(b =>
-                    b.rowID == row && b.columnID == col && !b.isFilled);
+                    b.rowID == row && b.columnID == col);
                 if (block)
                 {
                     block.ConvertToFilledBlock(powerupBlock.blockID);
-                    var row1 = row;
-                    var col1 = col;
-                    tweener = block.blockImage.DOColor(Color.blue, 0.4f).OnComplete(() =>
-                    {
-                        //                                Debug.Log("Played Flood Powerup: Tween Complete row=" + row1 + " col=" + col1 +
-                        //                                          " currentColor=" + block.blockImage.color);
-                    });
+                    block.colorId = powerupBlock.colorId;
+                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
                 }
             }
 
