@@ -1398,14 +1398,17 @@ MonoBehaviour:
   ActiveShapeBlockModule: {fileID: 0}
   ActiveShapeBlocks: []
   isNextRoundBandageBlock: 0
+  isNextRoundSticksGaloreBlocks: 0
   keepFilledAlways: 0
   powerupBlockIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
     type: 3}
   powerupBlockIconBombPrefab: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,
     type: 3}
+  powerupBlockIconColorCoderPrefab: {fileID: 774068445903749328, guid: 3576b90a6ec9eb941811a34124209a01,
+    type: 3}
   powerupBlockIconDandelionPrefab: {fileID: 1851252032709409074, guid: 6ba777b361dd18042b2f4f099f77392f,
     type: 3}
-  powerupBlockIconColorCoderPrefab: {fileID: 774068445903749328, guid: 3576b90a6ec9eb941811a34124209a01,
+  powerupBlockIconSticksGalorePrefab: {fileID: 6684866531750910742, guid: b5a359b9908bf0e42a1d842c3430f2f4,
     type: 3}
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,

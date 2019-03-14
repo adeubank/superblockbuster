@@ -1,10 +1,16 @@
-﻿using UnityEditor;
+﻿using DG.Tweening;
+using UnityEditor;
 using UnityEngine;
 
 public class GameController : Singleton<GameController>
 {
     public static GameMode gameMode = GameMode.CLASSIC;
     public Canvas UICanvas;
+
+    private void Start()
+    {
+        DOTween.SetTweensCapacity(1000, 20);
+    }
 
     // Checks if interner is available or not.
     public bool isInternetAvailable()

@@ -51,6 +51,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+    private int _sticksGaloreRounds;
 
     #region IBeginDragHandler implementation
 
@@ -409,6 +410,26 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
         UpdateRound(newRound);
 
+        
+        # region sticks galore spawn
+
+        // increment sticks galore round before spawning any shapes
+        if (BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks)
+        {
+            _sticksGaloreRounds++;
+
+            Debug.Log("Spawning Stick Galore blocks! _sticksGaloreRounds=" + _sticksGaloreRounds);
+
+            if (_sticksGaloreRounds > 2)
+            {
+                BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = false;
+                _sticksGaloreRounds = 0;
+                BlockShapeSpawner.Instance.sticksGaloreColorId = -1;
+            }
+        }
+
+        #endregion
+        
         #region dandelion seed sprout
 
         var possibleTweens = new List<Tweener>();
@@ -661,16 +682,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 yield return HandleDandelionPowerup(b);
             }
 
-            else if (b.isBandagePowerup)
+            if (b.isBandagePowerup)
             {
                 Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
                 BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
 
-            else if (b.isBombPowerup)
+            if (b.isBombPowerup)
             {
                 Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
                 b.ConvertToExplosion();
+            }
+
+            if (b.isSticksGalorePowerup)
+            {
+                Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + b);
+                BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
+                BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
             }
 
             b.ClearBlock();

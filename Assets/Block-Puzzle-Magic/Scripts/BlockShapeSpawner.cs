@@ -16,6 +16,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
     [HideInInspector] public bool isNextRoundBandageBlock;
+    [HideInInspector] public bool isNextRoundSticksGaloreBlocks;
+    [HideInInspector] public int sticksGaloreColorId = -1;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
@@ -25,6 +27,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public GameObject powerupBlockIconBombPrefab;
     public GameObject powerupBlockIconColorCoderPrefab;
     public GameObject powerupBlockIconDandelionPrefab;
+    public GameObject powerupBlockIconSticksGalorePrefab;
 
     [SerializeField] private ShapeBlockList shapeBlockList;
 
@@ -179,13 +182,14 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         else
             spawningShapeInfo.isBandageShape = false;
 
-        var randomColor = Random.Range(0, shapeColors.Length);
+        var colorSprite = NextColorSprite();
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
         foreach (var blockImage in blockImages)
         {
+            // just make sure that the Image parses to Int correctly so we only set block colors
             var currentColorId = blockImage.sprite.name.TryParseInt(-1);
             if (currentColorId > 0)
-                blockImage.sprite = shapeColors[randomColor];
+                blockImage.sprite = colorSprite;
         }
 
 #if HBDOTween
@@ -195,18 +199,39 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return newShapeBlock.GetComponent<ShapeInfo>();
     }
 
+    private Sprite NextColorSprite()
+    {
+        if (isNextRoundSticksGaloreBlocks && sticksGaloreColorId > 0)
+            return shapeColors.First(sprite => sprite.name.TryParseInt(-1) == sticksGaloreColorId);
+
+        // just return a random color
+        return shapeColors[Random.Range(0, shapeColors.Length)];
+    }
+
     public IEnumerable<ShapeBlockSpawn> NormalBlocks()
     {
         return ActiveShapeBlocks.Where(s => s.BlockID < 100);
     }
 
+    public IEnumerable<ShapeBlockSpawn> SticksGaloreBlocks()
+    {
+        return ActiveShapeBlocks.Where(s => s.BlockID == 10 || s.BlockID == 11);
+    }
+
     public GameObject NextShapeBlock()
     {
+        // only sticks on sticks galore
+        if (isNextRoundSticksGaloreBlocks)
+        {
+            var normalBlocks = SticksGaloreBlocks().ToArray();
+            return normalBlocks[Random.Range(0, normalBlocks.Count())].shapeBlock;
+        }
+
         // need normal blocks only when bandage block
         if (isNextRoundBandageBlock)
         {
-            var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToList();
-            return normalBlocks[Random.Range(0, normalBlocks.Count)].shapeBlock;
+            var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToArray();
+            return normalBlocks[Random.Range(0, normalBlocks.Count())].shapeBlock;
         }
 
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)

@@ -65,6 +65,12 @@ public class PowerupInfo : ShapeInfo
                 foreach (var block in currentBlocks) block.ConvertToColorCoder();
 
                 break;
+            case (int) Powerups.SticksGalore:
+                Debug.Log("Played Sticks Galore Powerup");
+
+                foreach (var block in currentBlocks) block.ConvertToSticksGalore();
+
+                break;
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
@@ -121,6 +127,7 @@ public class PowerupInfo : ShapeInfo
         Dandelion = 1002,
         Bandage = 1003,
         Bomb = 1004,
-        ColorCoder = 1005
+        ColorCoder = 1005,
+        SticksGalore = 1006
     }
 }

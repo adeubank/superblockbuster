@@ -49,11 +49,15 @@ public class Block : MonoBehaviour
 
     //Status whether block is empty or filled.
     public bool isFilled;
+
+    // when cleared starts a sticks galore powerup
+    [HideInInspector] public bool isSticksGalorePowerup;
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
+
 
     /// <summary>
     ///     Raises the enable event.
@@ -164,6 +168,8 @@ public class Block : MonoBehaviour
         isDandelionPowerup = false;
         isDoublePoints = false;
         isExploding = false;
+        isSticksGalorePowerup = false;
+        isColorCoderPowerup = false;
         prevBlockImageSprite = null;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
@@ -215,6 +221,12 @@ public class Block : MonoBehaviour
     {
         Instantiate(BlockShapeSpawner.Instance.powerupBlockIconColorCoderPrefab, blockImage.transform, false);
         isColorCoderPowerup = true;
+    }
+
+    public void ConvertToSticksGalore()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconSticksGalorePrefab, blockImage.transform, false);
+        isSticksGalorePowerup = true;
     }
 
     #region bomb mode specific
