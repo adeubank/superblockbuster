@@ -409,7 +409,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var newRound = currentRound + 1;
         Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
         UpdateRound(newRound);
-        
+
         # region sticks galore spawn
 
         // increment sticks galore round before spawning any shapes
@@ -421,13 +421,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             if (_sticksGaloreRounds >= 2)
             {
-                BlockShapeSpawner.Instance.DeactivateSticksGalore(); 
+                BlockShapeSpawner.Instance.DeactivateSticksGalore();
                 _sticksGaloreRounds = 0;
             }
         }
 
         #endregion
-        
+
         #region dandelion seed sprout
 
         var possibleTweens = new List<Tweener>();
