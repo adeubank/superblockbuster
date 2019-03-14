@@ -333,4 +333,10 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         return ShapeContainers.ToList().Where(o => o.gameObject.activeInHierarchy).ToList();
     }
+
+    public void DeactivateSticksGalore()
+    {
+        isNextRoundSticksGaloreBlocks = false;
+        sticksGaloreColorId = -1;
+    }
 }

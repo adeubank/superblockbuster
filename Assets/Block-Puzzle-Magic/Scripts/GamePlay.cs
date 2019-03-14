@@ -409,7 +409,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var newRound = currentRound + 1;
         Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
         UpdateRound(newRound);
-
         
         # region sticks galore spawn
 
@@ -420,11 +419,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             Debug.Log("Spawning Stick Galore blocks! _sticksGaloreRounds=" + _sticksGaloreRounds);
 
-            if (_sticksGaloreRounds > 2)
+            if (_sticksGaloreRounds >= 2)
             {
-                BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = false;
+                BlockShapeSpawner.Instance.DeactivateSticksGalore(); 
                 _sticksGaloreRounds = 0;
-                BlockShapeSpawner.Instance.sticksGaloreColorId = -1;
             }
         }
 
