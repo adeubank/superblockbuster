@@ -14,6 +14,7 @@ using DG.Tweening;
 // This script has main logic to run entire gameplay.
 public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
 {
+    private int _sticksGaloreRounds;
     [HideInInspector] public List<Block> blockGrid;
 
     public AudioClip blockNotPlacedSound;
@@ -51,7 +52,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
-    private int _sticksGaloreRounds;
 
     #region IBeginDragHandler implementation
 

@@ -17,7 +17,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public bool isNextRoundBandageBlock;
     [HideInInspector] public bool isNextRoundSticksGaloreBlocks;
-    [HideInInspector] public int sticksGaloreColorId = -1;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
@@ -40,6 +39,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     [SerializeField] private Sprite[] shapeColors;
 
     [SerializeField] private Transform[] ShapeContainers;
+    [HideInInspector] public int sticksGaloreColorId = -1;
 
     /// <summary>
     ///     Awake this instance.
