@@ -443,7 +443,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             seedBlock.isDandelionSeed = false;
         }
 
-        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsPlaying()));
+        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive()));
 
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
@@ -700,6 +700,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + b);
                 BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
                 BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
+            }
+            
+            if (b.isLagPowerup)
+            {
+                Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
+                timeSlider.ActivateLagPowerup();
             }
 
             b.ClearBlock();

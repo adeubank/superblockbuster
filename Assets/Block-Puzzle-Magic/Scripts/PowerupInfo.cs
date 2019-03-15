@@ -7,7 +7,6 @@ using UnityEngine;
 public class PowerupInfo : ShapeInfo
 {
     // todo these should go in the BlockShapeSpawner
-    public GameObject dandelionBlockIcon;
     public GameObject doublerBlockIcon;
 
     public override bool IsPowerup()
@@ -20,57 +19,54 @@ public class PowerupInfo : ShapeInfo
         switch (ShapeID)
         {
             case (int) Powerups.Flood:
+                
                 Debug.Log("Played Flood Powerup");
-
                 var floodPowerups = HandleFloodBlocks(currentBlocks);
-
                 yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
-
-                yield return new WaitForEndOfFrame();
 
                 break;
             case (int) Powerups.Doubler:
 
                 Debug.Log("Played Doubler Powerup");
-
                 HandleDoublerBlocks(currentBlocks);
-
-                yield return new WaitForEndOfFrame();
-
                 break;
+            
             case (int) Powerups.Dandelion:
-
+                
                 Debug.Log("Played Dandelion Powerup");
-
                 foreach (var block in currentBlocks) block.ConvertToDandelion();
-
                 break;
+            
             case (int) Powerups.Bandage:
 
                 Debug.Log("Played Bandage Powerup");
-
                 foreach (var block in currentBlocks) block.ConvertToBandage();
-
                 break;
+            
             case (int) Powerups.Bomb:
-
+            
                 Debug.Log("Played Bomb Powerup");
-
                 foreach (var block in currentBlocks) block.ConvertToBomb();
-
                 break;
+            
             case (int) Powerups.ColorCoder:
+                
                 Debug.Log("Played Coder Coder Powerup");
-
                 foreach (var block in currentBlocks) block.ConvertToColorCoder();
-
                 break;
+            
             case (int) Powerups.SticksGalore:
+                
                 Debug.Log("Played Sticks Galore Powerup");
-
                 foreach (var block in currentBlocks) block.ConvertToSticksGalore();
-
                 break;
+            
+            case (int) Powerups.Lag:
+                
+                Debug.Log("Played Lag Powerup");
+                foreach (var block in currentBlocks) block.ConvertToLagBlock();
+                break;
+            
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
@@ -128,6 +124,7 @@ public class PowerupInfo : ShapeInfo
         Bandage = 1003,
         Bomb = 1004,
         ColorCoder = 1005,
-        SticksGalore = 1006
+        SticksGalore = 1006,
+        Lag = 1007
     }
 }

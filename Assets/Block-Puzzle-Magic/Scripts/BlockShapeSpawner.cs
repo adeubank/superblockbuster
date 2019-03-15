@@ -11,7 +11,6 @@ using DG.Tweening;
 public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 {
     private readonly int shapeBlockPoolCount = 1;
-    [HideInInspector] public ShapeBlockList ActiveShapeBlockModule;
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
@@ -26,6 +25,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public GameObject powerupBlockIconBombPrefab;
     public GameObject powerupBlockIconColorCoderPrefab;
     public GameObject powerupBlockIconDandelionPrefab;
+    public GameObject powerupBlockIconLagPrefab;
     public GameObject powerupBlockIconSticksGalorePrefab;
 
     [SerializeField] private ShapeBlockList shapeBlockList;
@@ -46,12 +46,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void Awake()
     {
-        // TODO remove me
-//        if (GameController.gameMode == GameMode.ADVANCE || GameController.gameMode == GameMode.CHALLENGE)
-//            ActiveShapeBlockModule = shapeBlockList_Plus;
-//        else
-//            ActiveShapeBlockModule = shapeBlockList;
-
         ActiveShapeBlocks =
             new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + shapeBlockList_Powerups.ShapeBlocks.Count);
         ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);

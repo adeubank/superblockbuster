@@ -50,6 +50,9 @@ public class Block : MonoBehaviour
     //Status whether block is empty or filled.
     public bool isFilled;
 
+    // status whether block is a lag powerup
+    [HideInInspector] public bool isLagPowerup;
+
     // when cleared starts a sticks galore powerup
     [HideInInspector] public bool isSticksGalorePowerup;
     public Sprite prevBlockImageSprite;
@@ -158,6 +161,7 @@ public class Block : MonoBehaviour
 
         transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
         blockImage.DOFade(0, 0.3F);
+#endif
 
         blockID = -1;
         isFilled = false;
@@ -171,9 +175,9 @@ public class Block : MonoBehaviour
         isSticksGalorePowerup = false;
         isColorCoderPowerup = false;
         prevBlockImageSprite = null;
+        isLagPowerup = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
-#endif
     }
 
     public void ConvertToBandage()
@@ -227,6 +231,12 @@ public class Block : MonoBehaviour
     {
         Instantiate(BlockShapeSpawner.Instance.powerupBlockIconSticksGalorePrefab, blockImage.transform, false);
         isSticksGalorePowerup = true;
+    }
+
+    public void ConvertToLagBlock()
+    {
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconLagPrefab, blockImage.transform, false);
+        isLagPowerup = true;
     }
 
     #region bomb mode specific

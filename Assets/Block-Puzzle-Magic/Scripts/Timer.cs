@@ -7,25 +7,25 @@ public class Timer : MonoBehaviour
 
     [SerializeField] private int MaxTimeCounter = 120;
 
-    private float timeRemaining = 120.0F;
+    private float _timeRemaining = 120.0F;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;
 
     private void Start()
     {
-        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", timerRate, timerRate);
+        if (!IsInvoking(nameof(ElapseTimer))) InvokeRepeating(nameof(ElapseTimer), timerRate, timerRate);
     }
 
     private void ElapseTimer()
     {
-        timeRemaining -= timerRate;
-        SetTimeSlider(timeRemaining);
+        _timeRemaining -= timerRate;
+        SetTimeSlider(_timeRemaining);
     }
 
     private void SetTimeSlider(float timeRemaining)
     {
-        if (timeRemaining <= 0)
+        if (timeRemaining <= Mathf.Epsilon)
         {
             GamePlayUI.Instance.ShowRescue(GameOverReason.TIME_OVER);
         }
@@ -46,27 +46,33 @@ public class Timer : MonoBehaviour
 
     public void AddSeconds(int secondsToAdd)
     {
-        timeRemaining += secondsToAdd;
-        timeRemaining = Mathf.Clamp(timeRemaining, 0, MaxTimeCounter);
+        _timeRemaining += secondsToAdd;
+        _timeRemaining = Mathf.Clamp(_timeRemaining, 0, MaxTimeCounter);
     }
 
     public void PauseTimer()
     {
-        if (IsInvoking("ElapseTimer")) CancelInvoke("ElapseTimer");
+        if (IsInvoking(nameof(ElapseTimer))) CancelInvoke(nameof(ElapseTimer));
     }
 
     public void ResumeTimer()
     {
-        if (!IsInvoking("ElapseTimer")) InvokeRepeating("ElapseTimer", timerRate, timerRate);
+        if (!IsInvoking(nameof(ElapseTimer))) InvokeRepeating(nameof(ElapseTimer), timerRate, timerRate);
     }
 
     public int GetRemainingTime()
     {
-        return (int) timeRemaining;
+        return (int) _timeRemaining;
     }
 
     public void SetTime(int timeSeconds)
     {
-        timeRemaining = timeSeconds;
+        _timeRemaining = timeSeconds;
+    }
+
+    public void ActivateLagPowerup()
+    {
+        Debug.Log("Activating Lag Powerup! _timeRemaining=" + _timeRemaining);
+        AddSeconds(10);
     }
 }
