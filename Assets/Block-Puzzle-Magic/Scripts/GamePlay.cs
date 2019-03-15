@@ -642,6 +642,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         Debug.Log("Finished breaking lines.");
 
+        #region clearing was exploding blocks
+        
         // remove still exploding blocks and reset them
         foreach (var wasExplodingBlock in blockGrid.Where(b => b.isExploding))
         {
@@ -649,6 +651,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             wasExplodingBlock.isFilled = false;
             wasExplodingBlock.isExploding = false;
         }
+        
+        #endregion
 
         StartCoroutine(nameof(AddShapesAndUpdateRound));
 
@@ -657,7 +661,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
         {
             timeSlider.ResumeTimer();
-            timeSlider.AddSeconds(totalBreakingLines * multiplier * 5);
         }
 
         #endregion
