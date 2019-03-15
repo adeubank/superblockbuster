@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
@@ -33,7 +34,9 @@ public class Timer : MonoBehaviour
         {
             var sliderValue = timeRemaining / MaxTimeCounter;
             imageProgress.fillAmount = sliderValue;
-            txtTimeRemaining.text = "Seconds left " + timeRemaining.ToString("F2");
+            var minutesRemaining = (_timeRemaining / 60).ToString("F0");
+            var secondsRemaining = (_timeRemaining % 60).ToString("F0");
+            txtTimeRemaining.text = minutesRemaining + ":" + secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
         }
     }
 

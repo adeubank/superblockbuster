@@ -193,7 +193,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return newShapeBlock.GetComponent<ShapeInfo>();
     }
 
-    private Sprite NextColorSprite()
+    public Sprite NextColorSprite()
     {
         if (isNextRoundSticksGaloreBlocks && sticksGaloreColorId > 0)
             return shapeColors.First(sprite => sprite.name.TryParseInt(-1) == sticksGaloreColorId);

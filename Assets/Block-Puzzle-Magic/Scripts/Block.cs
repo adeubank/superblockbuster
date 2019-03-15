@@ -123,8 +123,7 @@ public class Block : MonoBehaviour
     public void ConvertToFilledBlock(int _blockID)
     {
         if (blockImage.sprite == null || blockImage.sprite.name == "empty-counter")
-            blockImage.sprite = BlockShapeSpawner.Instance.ActiveShapeBlocks
-                .Find(o => o.BlockID == _blockID).shapeBlock.transform.GetChild(0).GetComponent<Image>().sprite;
+            blockImage.sprite = BlockShapeSpawner.Instance.NextColorSprite();
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;
         isFilled = true;
