@@ -20,7 +20,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
-
+    
+    public GameObject powerupBlockIconDoublerPrefab;
     public GameObject powerupBlockIconBandagePrefab;
     public GameObject powerupBlockIconBombPrefab;
     public GameObject powerupBlockIconColorCoderPrefab;

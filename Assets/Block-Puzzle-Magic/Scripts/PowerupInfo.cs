@@ -6,20 +6,17 @@ using UnityEngine;
 
 public class PowerupInfo : ShapeInfo
 {
-    // todo these should go in the BlockShapeSpawner
-    public GameObject doublerBlockIcon;
-
     public override bool IsPowerup()
     {
         return true;
     }
 
-    public IEnumerator PerformPowerup(IEnumerable<Block> currentBlocks)
+    public IEnumerator PerformPowerup(List<Block> currentBlocks)
     {
         switch (ShapeID)
         {
             case (int) Powerups.Flood:
-                
+
                 Debug.Log("Played Flood Powerup");
                 var floodPowerups = HandleFloodBlocks(currentBlocks);
                 yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
@@ -30,43 +27,43 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Doubler Powerup");
                 HandleDoublerBlocks(currentBlocks);
                 break;
-            
+
             case (int) Powerups.Dandelion:
-                
+
                 Debug.Log("Played Dandelion Powerup");
                 foreach (var block in currentBlocks) block.ConvertToDandelion();
                 break;
-            
+
             case (int) Powerups.Bandage:
 
                 Debug.Log("Played Bandage Powerup");
                 foreach (var block in currentBlocks) block.ConvertToBandage();
                 break;
-            
+
             case (int) Powerups.Bomb:
-            
+
                 Debug.Log("Played Bomb Powerup");
                 foreach (var block in currentBlocks) block.ConvertToBomb();
                 break;
-            
+
             case (int) Powerups.ColorCoder:
-                
+
                 Debug.Log("Played Coder Coder Powerup");
                 foreach (var block in currentBlocks) block.ConvertToColorCoder();
                 break;
-            
+
             case (int) Powerups.SticksGalore:
-                
+
                 Debug.Log("Played Sticks Galore Powerup");
                 foreach (var block in currentBlocks) block.ConvertToSticksGalore();
                 break;
-            
+
             case (int) Powerups.Lag:
-                
+
                 Debug.Log("Played Lag Powerup");
                 foreach (var block in currentBlocks) block.ConvertToLagBlock();
                 break;
-            
+
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;
@@ -100,20 +97,10 @@ public class PowerupInfo : ShapeInfo
     private void HandleDoublerBlocks(IEnumerable<Block> currentBlocks)
     {
         foreach (var currentBlock in currentBlocks)
-            for (var row = currentBlock.rowID - 2; row <= currentBlock.rowID + 2; row++)
-            for (var col = currentBlock.columnID - 2; col <= currentBlock.columnID + 2; col++)
-            {
-                Debug.Log("Played Doubler Powerup: Filling row=" + row + " col=" + col);
-
-                var block = GamePlay.Instance.blockGrid.Find(b =>
-                    b.rowID == row && b.columnID == col && b.isFilled);
-                if (block)
-                {
-                    block.isDoublePoints = true;
-                    // add the doubler block icon
-                    Instantiate(doublerBlockIcon, block.blockImage.transform, false);
-                }
-            }
+            GamePlay.Instance.SurroundingBlocksInRadius(currentBlock, 2, true)
+                .Where(block => block.isFilled)
+                .ToList()
+                .ForEach(b => b.ConvertToDoublerBlock());
     }
 
     private enum Powerups

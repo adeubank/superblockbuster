@@ -287,4 +287,10 @@ public class Block : MonoBehaviour
     }
 
     #endregion
+
+    public void ConvertToDoublerBlock()
+    {
+        isDoublePoints = true;
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDoublerPrefab, blockImage.transform, false);
+    }
 }
