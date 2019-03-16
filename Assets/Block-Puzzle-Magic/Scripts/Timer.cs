@@ -34,8 +34,8 @@ public class Timer : MonoBehaviour
         {
             var sliderValue = timeRemaining / MaxTimeCounter;
             imageProgress.fillAmount = sliderValue;
-            var minutesRemaining = (_timeRemaining / 60).ToString("F0");
-            var secondsRemaining = (_timeRemaining % 60).ToString("F0");
+            var minutesRemaining = ((int)_timeRemaining / 60).ToString("F0");
+            var secondsRemaining = ((int)_timeRemaining % 60).ToString("F0");
             txtTimeRemaining.text = minutesRemaining + ":" + secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
         }
     }
