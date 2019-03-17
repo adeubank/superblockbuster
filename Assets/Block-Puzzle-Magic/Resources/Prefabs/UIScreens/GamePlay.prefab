@@ -1398,6 +1398,8 @@ MonoBehaviour:
   isNextRoundBandageBlock: 0
   isNextRoundSticksGaloreBlocks: 0
   keepFilledAlways: 0
+  powerupBlockIconDoublerPrefab: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
+    type: 3}
   powerupBlockIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
     type: 3}
   powerupBlockIconBombPrefab: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,

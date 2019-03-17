@@ -2591,11 +2591,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 1457, guid: 754c4c4a151906148b0bc0b44f5c4124, type: 3}
-      propertyPath: powerupBlockIconDoublerPrefab
-      value: 
-      objectReference: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 754c4c4a151906148b0bc0b44f5c4124, type: 3}
 --- !u!224 &2001503111 stripped
