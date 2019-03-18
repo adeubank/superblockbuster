@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Object = System.Object;
 using Random = UnityEngine.Random;
 #if HBDOTween
 using DG.Tweening;
@@ -707,6 +708,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
                 timeSlider.ActivateLagPowerup();
             }
+            
+            if (b.isStormPowerup)
+            {
+                Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
+                StartCoroutine(ActivateStormPowerup());
+            }
 
             b.ClearBlock();
 
@@ -714,6 +721,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
+    }
+
+    private IEnumerator ActivateStormPowerup()
+    {
+        var rowCounts = new List<Dictionary<string, Object>>();
+        for (var index = 0; index < GameBoardGenerator.Instance.TotalRows; index++)
+        {
+            var row = GetEntireRow(index);
+            rowCounts.Add(new Dictionary<string, object> {{"count", row.Count}, {"row", row}});
+        }
+        rowCounts.Sort((a,b) => ((int) b["count"]).CompareTo((int)a["count"]));
+        yield return rowCounts.Take(3).ToList().Select(rowCount => BreakThisLine((List<Block>)rowCount["row"]));
     }
 
     /// <summary>

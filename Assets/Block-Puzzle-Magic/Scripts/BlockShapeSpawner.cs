@@ -28,6 +28,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public GameObject powerupBlockIconDandelionPrefab;
     public GameObject powerupBlockIconLagPrefab;
     public GameObject powerupBlockIconSticksGalorePrefab;
+    public GameObject powerupBlockIconStormPrefab;
 
     [SerializeField] private ShapeBlockList shapeBlockList;
 

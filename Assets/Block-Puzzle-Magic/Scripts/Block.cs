@@ -52,7 +52,10 @@ public class Block : MonoBehaviour
 
     // status whether block is a lag powerup
     [HideInInspector] public bool isLagPowerup;
-
+    
+    // status whether block is a storm powerup
+    [HideInInspector] public bool isStormPowerup;
+    
     // when cleared starts a sticks galore powerup
     [HideInInspector] public bool isSticksGalorePowerup;
     public Sprite prevBlockImageSprite;
@@ -293,4 +296,11 @@ public class Block : MonoBehaviour
         isDoublePoints = true;
         Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDoublerPrefab, blockImage.transform, false);
     }
+
+    public void ConvertToStormBlock()
+    {
+        isStormPowerup = true;
+        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconStormPrefab, blockImage.transform, false);
+    }
+
 }

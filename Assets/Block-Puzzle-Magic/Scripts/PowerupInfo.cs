@@ -63,6 +63,12 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Lag Powerup");
                 foreach (var block in currentBlocks) block.ConvertToLagBlock();
                 break;
+            
+            case (int) Powerups.Storm:
+
+                Debug.Log("Played Storm Powerup");
+                foreach (var block in currentBlocks) block.ConvertToStormBlock();
+                break;
 
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
@@ -112,6 +118,7 @@ public class PowerupInfo : ShapeInfo
         Bomb = 1004,
         ColorCoder = 1005,
         SticksGalore = 1006,
-        Lag = 1007
+        Lag = 1007,
+        Storm = 1008
     }
 }
