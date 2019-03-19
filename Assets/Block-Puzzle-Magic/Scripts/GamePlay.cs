@@ -725,14 +725,28 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateStormPowerup()
     {
-        var rowCounts = new List<Dictionary<string, Object>>();
+        var allRows = new List<List<Block>>();
         for (var index = 0; index < GameBoardGenerator.Instance.TotalRows; index++)
         {
-            var row = GetEntireRow(index);
-            rowCounts.Add(new Dictionary<string, object> {{"count", row.Count}, {"row", row}});
+            var row = GetEntireRowForRescue(index);
+            allRows.Add(row);
         }
-        rowCounts.Sort((a,b) => ((int) b["count"]).CompareTo((int)a["count"]));
-        yield return rowCounts.Take(3).ToList().Select(rowCount => BreakThisLine((List<Block>)rowCount["row"]));
+
+        var stormRows = new List<List<Block>>();
+        while (stormRows.Count < 3)
+        {
+            var randomIndex = Random.Range(0, allRows.Count);
+            var stormRow = allRows[randomIndex];
+            stormRows.Add(stormRow);
+            allRows.RemoveAt(randomIndex);
+        }
+        
+        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList().ForEach(b =>
+        {
+            b.ConvertToFilledBlock(0);
+        });
+        
+        yield return BreakAllCompletedLines(stormRows, new List<List<Block>>(0), 1);
     }
 
     /// <summary>

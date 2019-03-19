@@ -1412,6 +1412,8 @@ MonoBehaviour:
     type: 3}
   powerupBlockIconSticksGalorePrefab: {fileID: 6684866531750910742, guid: b5a359b9908bf0e42a1d842c3430f2f4,
     type: 3}
+  powerupBlockIconStormPrefab: {fileID: 1974087653856483289, guid: 521457d00b6bcc5428f18e16381f4b0a,
+    type: 3}
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,
     type: 2}

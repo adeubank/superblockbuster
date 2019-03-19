@@ -178,6 +178,7 @@ public class Block : MonoBehaviour
         isColorCoderPowerup = false;
         prevBlockImageSprite = null;
         isLagPowerup = false;
+        isStormPowerup = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
     }

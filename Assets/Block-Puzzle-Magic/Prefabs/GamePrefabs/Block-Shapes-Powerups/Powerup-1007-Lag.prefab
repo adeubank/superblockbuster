@@ -147,8 +147,6 @@ MonoBehaviour:
   ShapeID: 1007
   startOffsetX: 0
   startOffsetY: 0
-  dandelionBlockIcon: {fileID: 0}
-  doublerBlockIcon: {fileID: 0}
 --- !u!1 &8444952746477878311
 GameObject:
   m_ObjectHideFlags: 0
