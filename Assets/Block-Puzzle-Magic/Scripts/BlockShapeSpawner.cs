@@ -34,7 +34,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [SerializeField] private ShapeBlockList shapeBlockList_Plus;
 
-    [SerializeField] private ShapeBlockList shapeBlockList_Powerups;
+    [SerializeField] private PowerupList powerupList;
 
     private List<int> shapeBlockProbabilityPool;
 
@@ -49,9 +49,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     private void Awake()
     {
         ActiveShapeBlocks =
-            new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + shapeBlockList_Powerups.ShapeBlocks.Count);
+            new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + powerupList.powerupBlockSpawns.Count);
         ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
-        ActiveShapeBlocks.AddRange(shapeBlockList_Powerups.ShapeBlocks);
+        ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns);
     }
 
     /// <summary>
@@ -334,5 +334,10 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         isNextRoundSticksGaloreBlocks = false;
         sticksGaloreColorId = -1;
+    }
+
+    public PowerupBlockSpawn FindPowerupById(int id)
+    {
+        return powerupList.powerupBlockSpawns.First(powerup => powerup.BlockID == id);
     }
 }

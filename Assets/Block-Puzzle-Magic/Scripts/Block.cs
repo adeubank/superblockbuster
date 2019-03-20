@@ -185,19 +185,22 @@ public class Block : MonoBehaviour
 
     public void ConvertToBandage()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBandagePrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Bandage);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isBandagePowerup = true;
     }
 
     public void ConvertToBomb()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconBombPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Bomb);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isBombPowerup = true;
     }
 
     public void ConvertToDandelion()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Dandelion);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isDandelionPowerup = true;
     }
 
@@ -226,19 +229,22 @@ public class Block : MonoBehaviour
 
     public void ConvertToColorCoder()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconColorCoderPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.ColorCoder);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isColorCoderPowerup = true;
     }
 
     public void ConvertToSticksGalore()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconSticksGalorePrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.SticksGalore);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isSticksGalorePowerup = true;
     }
 
     public void ConvertToLagBlock()
     {
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconLagPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Lag);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isLagPowerup = true;
     }
 
@@ -295,13 +301,15 @@ public class Block : MonoBehaviour
     public void ConvertToDoublerBlock()
     {
         isDoublePoints = true;
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDoublerPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Doubler);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
     public void ConvertToStormBlock()
     {
         isStormPowerup = true;
-        Instantiate(BlockShapeSpawner.Instance.powerupBlockIconStormPrefab, blockImage.transform, false);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Storm);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
 }

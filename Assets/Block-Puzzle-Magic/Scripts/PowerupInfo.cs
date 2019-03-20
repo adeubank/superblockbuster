@@ -109,7 +109,7 @@ public class PowerupInfo : ShapeInfo
                 .ForEach(b => b.ConvertToDoublerBlock());
     }
 
-    private enum Powerups
+    public enum Powerups
     {
         Flood = 1000,
         Doubler = 1001,

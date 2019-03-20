@@ -1417,8 +1417,7 @@ MonoBehaviour:
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,
     type: 2}
-  shapeBlockList_Powerups: {fileID: 11400000, guid: 745271ec1dbb40244a331c284640a2eb,
-    type: 2}
+  powerupList: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
   shapeColors:
   - {fileID: 21300000, guid: 9591cdaa499a9154dae4ff87a8473bb9, type: 3}
   - {fileID: 21300000, guid: 1cab8c72cd59d2c48934cf2d2dde3750, type: 3}

@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a94a12e72efe4aa8abd288c19b49ea05, type: 3}
+  m_Name: PowerupList
+  m_EditorClassIdentifier: 
+  powerupBlockSpawns:
+  - BlockID: 1000
+    shapeBlock: {fileID: 8723126002886323038, guid: 9ce1de2f31a71334db94965284e11cec,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 0}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1001
+    shapeBlock: {fileID: 4663193901120328477, guid: 9ddd2f55b5075e24e843951cbb24521a,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1002
+    shapeBlock: {fileID: 1779432844893486631, guid: 07df661c8ce2ec649af7eeecbf4fa843,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 1851252032709409074, guid: 6ba777b361dd18042b2f4f099f77392f,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1003
+    shapeBlock: {fileID: 5530475301742331395, guid: c1bb3ad12d4f0bc46a0d41b4b6d3b496,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1004
+    shapeBlock: {fileID: 8754179494913528949, guid: 515fb4a7f81934ffcba113e1360a41dc,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1005
+    shapeBlock: {fileID: 1068036229970413566, guid: f05aa45251c59204bbecc6fbefd081c2,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 774068445903749328, guid: 3576b90a6ec9eb941811a34124209a01,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1006
+    shapeBlock: {fileID: 5861542511104615321, guid: 6f132658d3c52c3408551de3bc25eaf7,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 6684866531750910742, guid: b5a359b9908bf0e42a1d842c3430f2f4,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1007
+    shapeBlock: {fileID: 7082705680584380297, guid: e62cf282a98c34359829dc5793c072df,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 6591912637850637455, guid: ccf124c2f342648cd8fbe8d03a78ed6b,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
+  - BlockID: 1008
+    shapeBlock: {fileID: 2126430919857311582, guid: e3d941253762c42489ddb38fb65f50ef,
+      type: 3}
+    spawnProbability: 1
+    powerupBlockIcon: {fileID: 1974087653856483289, guid: 521457d00b6bcc5428f18e16381f4b0a,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}
