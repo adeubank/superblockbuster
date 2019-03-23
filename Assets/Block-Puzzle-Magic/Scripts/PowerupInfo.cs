@@ -69,6 +69,12 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Storm Powerup");
                 foreach (var block in currentBlocks) block.ConvertToStormBlock();
                 break;
+            
+            case (int) Powerups.Quake:
+
+                Debug.Log("Played Quake Powerup");
+                foreach (var block in currentBlocks) block.ConvertToQuakeBlock();
+                break;
 
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
@@ -119,6 +125,7 @@ public class PowerupInfo : ShapeInfo
         ColorCoder = 1005,
         SticksGalore = 1006,
         Lag = 1007,
-        Storm = 1008
+        Storm = 1008,
+        Quake = 1009
     }
 }

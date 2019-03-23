@@ -75,3 +75,10 @@ MonoBehaviour:
     powerupBlockIcon: {fileID: 1974087653856483289, guid: 521457d00b6bcc5428f18e16381f4b0a,
       type: 3}
     powerupActivationSprite: {fileID: 0}
+  - BlockID: 1009
+    shapeBlock: {fileID: 5082242764420009170, guid: 65350312e66a5dd4ba25eb289ded9dca,
+      type: 3}
+    spawnProbability: 10
+    powerupBlockIcon: {fileID: 3724957255454156055, guid: 6e1804497d4ef3443adc486027c9c6d1,
+      type: 3}
+    powerupActivationSprite: {fileID: 0}

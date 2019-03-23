@@ -169,6 +169,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         GetComponent<GameBoardGenerator>().GenerateBoard();
         highlightingBlocks = new List<Block>();
 
+        Camera.main.GetComponent<CameraShake>().camTransform = gameObject.transform;
+        
         #region time mode
 
         // Timer will start with TIME and CHALLENGE mode.
@@ -289,23 +291,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
-
-        #region bomb powerup preperation
-
-        // find any bomb blocks about to be detonated
-        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).ToList();
-        if (activeBombPowerups.Any()) PrepDetonatingBombBlockPowerups(activeBombPowerups);
-
-        #endregion
-
-        #region color coder preparation
-
-        // find any bomb blocks about to be detonated
-        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).ToList();
-        if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
-
-        #endregion
+        yield return PrepPowerupsBeforeClearing();
 
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
@@ -322,6 +308,90 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
+    }
+
+    private IEnumerator PrepPowerupsBeforeClearing()
+    {
+        var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
+
+        #region quake powerup activation
+
+        // find any quake blocks activated
+        var activeQuakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).ToList();
+        if (activeQuakePowerups.Any()) yield return ActivateQuakePowerup(activeQuakePowerups);
+
+        #endregion
+
+        #region bomb powerup preperation
+
+        // find any bomb blocks about to be detonated
+        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).ToList();
+        if (activeBombPowerups.Any()) PrepDetonatingBombBlockPowerups(activeBombPowerups);
+
+        #endregion
+
+        #region color coder preparation
+
+        // find any bomb blocks about to be detonated
+        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).ToList();
+        if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
+
+        #endregion
+    }
+
+    private IEnumerator ActivateQuakePowerup(List<Block> activeQuakePowerups)
+    {
+        var cameraShake = Camera.main.GetComponent<CameraShake>();
+        cameraShake.shakeDuration += 1.3f; // start the shake
+
+        var allTweeners = activeQuakePowerups.SelectMany(nextQuakePowerup =>
+        {
+            Debug.Log("Activating Quake powerup. nextQuakePowerup=" + nextQuakePowerup);
+            var column = GetEntireColumnForRescue(nextQuakePowerup.columnID);
+            return ShakeColumnDown(column.Where(b => b != nextQuakePowerup).ToList());
+        }).ToList();
+
+        yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive()));
+    }
+
+    private List<Tweener> ShakeColumnDown(List<Block> column)
+    {
+        var alreadyFalling = new List<Block>();
+        column.Sort((a, b) => b.rowID.CompareTo(a.rowID));
+        return column.Aggregate(new List<Tweener>(), (tweeners, nextBlockToFill) =>
+        {
+            if (nextBlockToFill && !nextBlockToFill.isFilled)
+            {
+                var nextBlockToFall = column.FirstOrDefault(b =>
+                    b.columnID == nextBlockToFill.columnID && b.rowID < nextBlockToFill.rowID && b.isFilled && !alreadyFalling.Contains(b));
+                if (nextBlockToFall)
+                {
+                    alreadyFalling.Add(nextBlockToFall);
+                    nextBlockToFall.isFilled = false;
+                    Canvas canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
+
+                    canvas.overrideSorting = true;
+                    canvas.sortingOrder = 999;
+                    
+                    var transform1 = nextBlockToFall.transform;
+                    var origPos = transform1.localPosition;
+                    transform1.localPosition= new Vector3(origPos.x, origPos.y, 999f);
+                    var tweener = nextBlockToFall.transform.DOLocalMove(nextBlockToFill.transform.localPosition, 0.8f)
+                        .OnComplete(() =>
+                        {
+                            nextBlockToFill.isFilled = true;
+                            nextBlockToFill.Copy(nextBlockToFall);
+                            nextBlockToFall.ClearBlock(false);
+                            nextBlockToFall.transform.localPosition = origPos;
+                            Destroy(canvas);
+                        });
+
+                    tweeners.Add(tweener);
+                }
+            }
+
+            return tweeners;
+        }).ToList();
     }
 
     private IEnumerator ActivateClearedColorCoderBlocks(List<Block> clearedColorCoderBlocks)
@@ -446,11 +516,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive()));
 
+        yield return PrepPowerupsBeforeClearing();
+        
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
+        {
             yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
+        }
 
         #endregion
     }
@@ -644,7 +718,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Finished breaking lines.");
 
         #region clearing was exploding blocks
-        
+
         // remove still exploding blocks and reset them
         foreach (var wasExplodingBlock in blockGrid.Where(b => b.isExploding))
         {
@@ -652,7 +726,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             wasExplodingBlock.isFilled = false;
             wasExplodingBlock.isExploding = false;
         }
-        
+
         #endregion
 
         StartCoroutine(nameof(AddShapesAndUpdateRound));
@@ -702,20 +776,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
                 BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
             }
-            
+
             if (b.isLagPowerup)
             {
                 Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
                 timeSlider.ActivateLagPowerup();
             }
-            
+
             if (b.isStormPowerup)
             {
                 Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
                 StartCoroutine(ActivateStormPowerup());
             }
 
-            b.ClearBlock();
+            b.ClearBlock(true);
 
             yield return new WaitForEndOfFrame();
         }
@@ -740,12 +814,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             stormRows.Add(stormRow);
             allRows.RemoveAt(randomIndex);
         }
-        
-        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList().ForEach(b =>
-        {
-            b.ConvertToFilledBlock(0);
-        });
-        
+
+        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList().ForEach(b => { b.ConvertToFilledBlock(0); });
+
         yield return BreakAllCompletedLines(stormRows, new List<List<Block>>(0), 1);
     }
 

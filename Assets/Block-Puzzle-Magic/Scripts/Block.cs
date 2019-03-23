@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -10,7 +11,7 @@ public class Block : MonoBehaviour
     public int blockID = -1;
 
     //Block image instance.
-    [HideInInspector] public Image blockImage;
+    /*[HideInInspector] */public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
     [HideInInspector] public int bombCounter;
@@ -58,6 +59,10 @@ public class Block : MonoBehaviour
     
     // when cleared starts a sticks galore powerup
     [HideInInspector] public bool isSticksGalorePowerup;
+    
+    // status if block is a quake powerup
+    [HideInInspector] public bool isQuakePowerup;
+    
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
@@ -149,20 +154,32 @@ public class Block : MonoBehaviour
     /// <summary>
     ///     Clears the block.
     /// </summary>
-    public void ClearBlock()
+    /// <param name="animate"></param>
+    public void ClearBlock(bool animate)
     {
         ClearExtraChildren();
 
-        transform.GetComponent<Image>().color = new Color(1, 1, 1, 0);
 #if HBDOTween
-        blockImage.transform.DOScale(Vector3.zero, 0.35F).OnComplete(() =>
+        if (animate)
         {
+            transform.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+
+            blockImage.transform.DOScale(Vector3.zero, 0.35F).OnComplete(() =>
+            {
+                blockImage.transform.localScale = Vector3.one;
+                blockImage.sprite = null;
+            });
+
+            transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
+            blockImage.DOFade(0, 0.3F);    
+        }
+        else
+        {
+            transform.GetComponent<Image>().color = new Color(1, 1, 1, 0.65f);
+            blockImage.color = new Color(1, 1, 1, 0);
             blockImage.transform.localScale = Vector3.one;
             blockImage.sprite = null;
-        });
-
-        transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
-        blockImage.DOFade(0, 0.3F);
+        }
 #endif
 
         blockID = -1;
@@ -179,8 +196,28 @@ public class Block : MonoBehaviour
         prevBlockImageSprite = null;
         isLagPowerup = false;
         isStormPowerup = false;
+        isQuakePowerup = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
+    }
+
+    public void Copy(Block b)
+    {
+        blockID = b.blockID;
+        isBandagePowerup = b.isBandagePowerup;
+        isBombPowerup = b.isBombPowerup;
+        isBomb = b.isBomb;
+        isDandelionSeed = b.isDandelionSeed;
+        isDandelionPowerup = b.isDandelionPowerup;
+        isDoublePoints = b.isDoublePoints;
+        isExploding = b.isExploding;
+        isSticksGalorePowerup = b.isSticksGalorePowerup;
+        isColorCoderPowerup = b.isColorCoderPowerup;
+        isLagPowerup = b.isLagPowerup;
+        isStormPowerup = b.isStormPowerup;
+        isQuakePowerup = b.isQuakePowerup;
+        blockImage.sprite = b.blockImage.sprite;
+        blockImage.color = b.blockImage.color;
     }
 
     public void ConvertToBandage()
@@ -309,6 +346,13 @@ public class Block : MonoBehaviour
     {
         isStormPowerup = true;
         var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Storm);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+    
+    public void ConvertToQuakeBlock()
+    {
+        isQuakePowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Quake);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
