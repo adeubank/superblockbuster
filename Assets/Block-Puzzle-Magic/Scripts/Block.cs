@@ -63,11 +63,18 @@ public class Block : MonoBehaviour
     // status if block is a quake powerup
     [HideInInspector] public bool isQuakePowerup;
     
+    // status if block is an avalanche powerup
+    [HideInInspector] public bool isAvalanchePowerup;
+    
+    // status if block is an omnicolor block
+    [HideInInspector] public bool isOmnicolorBlock;
+    
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
+    
 
 
     /// <summary>
@@ -182,6 +189,7 @@ public class Block : MonoBehaviour
         }
 #endif
 
+        // reset all fields
         blockID = -1;
         isFilled = false;
         isBandagePowerup = false;
@@ -197,12 +205,14 @@ public class Block : MonoBehaviour
         isLagPowerup = false;
         isStormPowerup = false;
         isQuakePowerup = false;
+        isAvalanchePowerup = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
     }
 
     public void Copy(Block b)
     {
+        // copy most fields
         blockID = b.blockID;
         isBandagePowerup = b.isBandagePowerup;
         isBombPowerup = b.isBombPowerup;
@@ -218,6 +228,7 @@ public class Block : MonoBehaviour
         isQuakePowerup = b.isQuakePowerup;
         blockImage.sprite = b.blockImage.sprite;
         blockImage.color = b.blockImage.color;
+        isAvalanchePowerup = b.isAvalanchePowerup;
     }
 
     public void ConvertToBandage()
@@ -356,4 +367,17 @@ public class Block : MonoBehaviour
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
+    public void ConvertToAvalancheBlock()
+    {
+        isAvalanchePowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Avalanche);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void convertToOmnicolorBlock()
+    {
+        isOmnicolorBlock = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Avalanche);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
 }

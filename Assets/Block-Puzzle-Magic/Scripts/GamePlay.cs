@@ -53,6 +53,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+    [SerializeField] private int spawnAvalancheBlocks;
 
     #region IBeginDragHandler implementation
 
@@ -170,7 +171,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         highlightingBlocks = new List<Block>();
 
         Camera.main.GetComponent<CameraShake>().camTransform = gameObject.transform;
-        
+
         #region time mode
 
         // Timer will start with TIME and CHALLENGE mode.
@@ -363,19 +364,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (nextBlockToFill && !nextBlockToFill.isFilled)
             {
                 var nextBlockToFall = column.FirstOrDefault(b =>
-                    b.columnID == nextBlockToFill.columnID && b.rowID < nextBlockToFill.rowID && b.isFilled && !alreadyFalling.Contains(b));
+                    b.columnID == nextBlockToFill.columnID && b.rowID < nextBlockToFill.rowID && b.isFilled &&
+                    !alreadyFalling.Contains(b));
                 if (nextBlockToFall)
                 {
+                    // track the block so we don't consider it again
                     alreadyFalling.Add(nextBlockToFall);
-                    nextBlockToFall.isFilled = false;
-                    Canvas canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
+                    nextBlockToFall.isFilled = false; // mark it empty
 
+                    // have it render on top of everything as it falls down
+                    Canvas canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
                     canvas.overrideSorting = true;
                     canvas.sortingOrder = 999;
-                    
+
+                    // track original position as we animate the block down and then move it up after it is cleared
                     var transform1 = nextBlockToFall.transform;
                     var origPos = transform1.localPosition;
-                    transform1.localPosition= new Vector3(origPos.x, origPos.y, 999f);
+                    transform1.localPosition = new Vector3(origPos.x, origPos.y, 999f);
                     var tweener = nextBlockToFall.transform.DOLocalMove(nextBlockToFill.transform.localPosition, 0.8f)
                         .OnComplete(() =>
                         {
@@ -517,13 +522,32 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive()));
 
         yield return PrepPowerupsBeforeClearing();
-        
+
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
         {
             yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
+        }
+
+        #endregion
+
+        #region avalanche block spawn
+
+        for (; spawnAvalancheBlocks > 0; spawnAvalancheBlocks--)
+        {
+            blockGrid.Where(b =>
+            {
+                // top of the board
+                return b.rowID == (spawnAvalancheBlocks - 1) ||
+                       // right of the board
+                       b.columnID == (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks - 1) ||
+                       // bottom of the board
+                       b.rowID == (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks - 1) ||
+                       // left of the board
+                       b.columnID == (spawnAvalancheBlocks - 1);
+            }).ToList().ForEach(b => b.convertToOmnicolorBlock());
         }
 
         #endregion
@@ -713,8 +737,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
-        yield return new WaitForEndOfFrame();
-
         Debug.Log("Finished breaking lines.");
 
         #region clearing was exploding blocks
@@ -787,6 +809,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
                 StartCoroutine(ActivateStormPowerup());
+            }
+
+            if (b.isAvalanchePowerup)
+            {
+                Debug.Log("Cleared a Avalanche powerup! Spawning omnicolored blocks. " + b);
+                spawnAvalancheBlocks += 1;
             }
 
             b.ClearBlock(true);
