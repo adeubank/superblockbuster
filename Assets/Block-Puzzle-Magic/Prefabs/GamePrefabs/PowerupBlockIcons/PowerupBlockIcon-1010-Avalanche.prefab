@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8888787860540200777}
   - component: {fileID: 5194730377071287163}
   m_Layer: 0
-  m_Name: Icon
+  m_Name: PowerupBlockIcon-1010-Avalanche
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 4e66478c9cbccf848bb6546adc98c69b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bc67eaade96e6a54c947d9c01d6fb736, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

@@ -588,6 +588,7 @@ GameObject:
   - component: {fileID: 649}
   - component: {fileID: 1141}
   - component: {fileID: 1448}
+  - component: {fileID: 383707198}
   m_Layer: 5
   m_Name: GamePlay
   m_TagString: Untagged
@@ -683,6 +684,10 @@ MonoBehaviour:
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
+  blockOmnicolorPrefab: {fileID: 8486066558008455055, guid: 7280d0e94e8cbd84ab222442be93c18a,
+    type: 3}
+  blockDandelionSeedPrefab: {fileID: 1917412183333977984, guid: 8f3a1939dcad0f746b046111a232ba73,
+    type: 3}
 --- !u!114 &1305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -772,6 +777,22 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &383707198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 89}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd2b0e2bfa5404cb4197a380a1e4548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeObject: {fileID: 752}
+  shakeDuration: 0
+  shakeAmount: 0.7
+  decreaseFactor: 1
 --- !u!1 &110
 GameObject:
   m_ObjectHideFlags: 0

@@ -53,7 +53,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
-    [SerializeField] private int spawnAvalancheBlocks;
+    [SerializeField] public GameObject blockOmnicolorPrefab;
+    [SerializeField] public GameObject blockDandelionSeedPrefab;
 
     #region IBeginDragHandler implementation
 
@@ -169,8 +170,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         //Generate board from GameBoardGenerator Script Component.
         GetComponent<GameBoardGenerator>().GenerateBoard();
         highlightingBlocks = new List<Block>();
-
-        Camera.main.GetComponent<CameraShake>().camTransform = gameObject.transform;
 
         #region time mode
 
@@ -338,12 +337,40 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
 
         #endregion
+
+        #region avalanche block spawn
+
+        var spawnAvalancheBlocks = clearedLineBlocks.Count(b => b.isAvalanchePowerup);
+        if (spawnAvalancheBlocks > 0)
+        {
+            Debug.Log("Spawning avalanche blocks! spawnAvalancheBlocks=" + spawnAvalancheBlocks);
+            for (; spawnAvalancheBlocks > 0; spawnAvalancheBlocks--)
+            {
+                Debug.Log("Avalanching these lines. b.rowID=" + (spawnAvalancheBlocks - 1) + ", " +
+                          "b.columnID=" + (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks) + ", " +
+                          "b.rowID=" + (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks) + ", " +
+                          "b.columnID=" + (spawnAvalancheBlocks - 1));
+                blockGrid.Where(b =>
+                {
+                    // top of the board
+                    return b.rowID == (spawnAvalancheBlocks - 1) ||
+                           // right of the board
+                           b.columnID == (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks) ||
+                           // bottom of the board
+                           b.rowID == (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks) ||
+                           // left of the board
+                           b.columnID == (spawnAvalancheBlocks - 1);
+                }).ToList().ForEach(b => b.ConvertToOmnicolorBlock());
+            }
+        }
+
+        #endregion
     }
 
     private IEnumerator ActivateQuakePowerup(List<Block> activeQuakePowerups)
     {
-        var cameraShake = Camera.main.GetComponent<CameraShake>();
-        cameraShake.shakeDuration += 1.3f; // start the shake
+        var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
+       shakeComponent.shakeDuration += 1.3f; // start the shake
 
         var allTweeners = activeQuakePowerups.SelectMany(nextQuakePowerup =>
         {
@@ -519,7 +546,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             seedBlock.isDandelionSeed = false;
         }
 
-        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive()));
+        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
+
+        #endregion
 
         yield return PrepPowerupsBeforeClearing();
 
@@ -531,26 +560,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
         }
 
-        #endregion
-
-        #region avalanche block spawn
-
-        for (; spawnAvalancheBlocks > 0; spawnAvalancheBlocks--)
-        {
-            blockGrid.Where(b =>
-            {
-                // top of the board
-                return b.rowID == (spawnAvalancheBlocks - 1) ||
-                       // right of the board
-                       b.columnID == (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks - 1) ||
-                       // bottom of the board
-                       b.rowID == (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks - 1) ||
-                       // left of the board
-                       b.columnID == (spawnAvalancheBlocks - 1);
-            }).ToList().ForEach(b => b.convertToOmnicolorBlock());
-        }
-
-        #endregion
+        var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
+        var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
+            .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
+        BlockShapeSpawner.Instance.CheckOnBoardShapeStatus(playableShapes);
     }
 
     private void UpdateRound(int newRound)
@@ -776,24 +789,28 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             if (b.isDandelionPowerup)
             {
+                b.isDandelionPowerup = false;
                 Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + b);
                 yield return HandleDandelionPowerup(b);
             }
 
             if (b.isBandagePowerup)
             {
+                b.isBandagePowerup = false;
                 Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
                 BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
 
             if (b.isBombPowerup)
             {
+                b.isBombPowerup = false;
                 Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
                 b.ConvertToExplosion();
             }
 
             if (b.isSticksGalorePowerup)
             {
+                b.isSticksGalorePowerup = false;
                 Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + b);
                 BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
                 BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
@@ -801,20 +818,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             if (b.isLagPowerup)
             {
+                b.isLagPowerup = false;
                 Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
                 timeSlider.ActivateLagPowerup();
             }
 
             if (b.isStormPowerup)
             {
+                b.isStormPowerup = false;
                 Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
                 StartCoroutine(ActivateStormPowerup());
-            }
-
-            if (b.isAvalanchePowerup)
-            {
-                Debug.Log("Cleared a Avalanche powerup! Spawning omnicolored blocks. " + b);
-                spawnAvalancheBlocks += 1;
             }
 
             b.ClearBlock(true);
@@ -1057,17 +1070,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             seedBlocks.Add(availableBlocks[randomIndex]);
         }
 
-        var seedTweeners = seedBlocks.Aggregate(new List<Tweener>(), (tweeners, b) =>
-        {
-            b.isDandelionSeed = true;
-            var newSeedBlockIcon = Instantiate(BlockShapeSpawner.Instance.powerupBlockIconDandelionPrefab,
-                dandelionPowerup.transform.position, Quaternion.identity,
-                b.blockImage.transform);
-            tweeners.Add(newSeedBlockIcon.transform.DOMove(b.blockImage.transform.position, 0.4f));
-            return tweeners;
-        });
+        var seedTweeners = seedBlocks.Select(b => b.ConvertToDandelionSeed(dandelionPowerup)).ToList();
 
-        yield return new WaitWhile(() => seedTweeners.Any(t => t != null && t.IsPlaying()));
+        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsPlaying()));
     }
 
     #endregion

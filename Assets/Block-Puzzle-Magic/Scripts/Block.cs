@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
@@ -229,6 +230,13 @@ public class Block : MonoBehaviour
         blockImage.sprite = b.blockImage.sprite;
         blockImage.color = b.blockImage.color;
         isAvalanchePowerup = b.isAvalanchePowerup;
+        foreach (Transform child in b.blockImage.transform)
+        {
+            if (child.gameObject.activeInHierarchy)
+            {
+                Instantiate(child, blockImage.transform, false);
+            }
+        }
     }
 
     public void ConvertToBandage()
@@ -374,10 +382,17 @@ public class Block : MonoBehaviour
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
-    public void convertToOmnicolorBlock()
+    public void ConvertToOmnicolorBlock()
     {
+        isFilled = true;
         isOmnicolorBlock = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Avalanche);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+        Instantiate(GamePlay.Instance.blockOmnicolorPrefab, blockImage.transform, false);
+    }
+
+    public Tweener ConvertToDandelionSeed(Block dandelionPowerup)
+    {
+        isDandelionSeed = true;
+        var newSeedBlockIcon = Instantiate(GamePlay.Instance.blockDandelionSeedPrefab, dandelionPowerup.transform.position, Quaternion.identity, blockImage.transform);
+        return newSeedBlockIcon.transform.DOMove(blockImage.transform.position, 0.4f);
     }
 }
