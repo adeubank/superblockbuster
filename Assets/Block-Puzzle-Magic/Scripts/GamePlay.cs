@@ -1067,10 +1067,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         while (seedBlocks.Count < 5)
         {
             var randomIndex = Random.Range(0, availableBlocks.Count());
-            seedBlocks.Add(availableBlocks[randomIndex]);
+            if (!seedBlocks.Contains(availableBlocks[randomIndex]))
+                seedBlocks.Add(availableBlocks[randomIndex]);
         }
 
-        var seedTweeners = seedBlocks.Select(b => b.ConvertToDandelionSeed(dandelionPowerup)).ToList();
+        var seedTweeners = seedBlocks.Select(b =>
+        {
+            Debug.Log("New seed block. " + b);
+            return b.ConvertToDandelionSeed(dandelionPowerup); 
+            
+        }).ToList();
 
         yield return new WaitWhile(() => seedTweeners.Any(t => t.IsPlaying()));
     }
