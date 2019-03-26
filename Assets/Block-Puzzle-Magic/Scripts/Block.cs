@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
@@ -12,7 +10,8 @@ public class Block : MonoBehaviour
     public int blockID = -1;
 
     //Block image instance.
-    /*[HideInInspector] */public Image blockImage;
+    /*[HideInInspector] */
+    public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
     [HideInInspector] public int bombCounter;
@@ -21,6 +20,9 @@ public class Block : MonoBehaviour
 
     //Column Index of block.
     public int columnID;
+
+    // status if block is an avalanche powerup
+    [HideInInspector] public bool isAvalanchePowerup;
 
     //Status whether block is a bandage powerup block.
     [HideInInspector] public bool isBandagePowerup;
@@ -54,28 +56,24 @@ public class Block : MonoBehaviour
 
     // status whether block is a lag powerup
     [HideInInspector] public bool isLagPowerup;
-    
-    // status whether block is a storm powerup
-    [HideInInspector] public bool isStormPowerup;
-    
-    // when cleared starts a sticks galore powerup
-    [HideInInspector] public bool isSticksGalorePowerup;
-    
-    // status if block is a quake powerup
-    [HideInInspector] public bool isQuakePowerup;
-    
-    // status if block is an avalanche powerup
-    [HideInInspector] public bool isAvalanchePowerup;
-    
+
     // status if block is an omnicolor block
     [HideInInspector] public bool isOmnicolorBlock;
-    
+
+    // status if block is a quake powerup
+    [HideInInspector] public bool isQuakePowerup;
+
+    // when cleared starts a sticks galore powerup
+    [HideInInspector] public bool isSticksGalorePowerup;
+
+    // status whether block is a storm powerup
+    [HideInInspector] public bool isStormPowerup;
+
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
-    
 
 
     /// <summary>
@@ -179,7 +177,7 @@ public class Block : MonoBehaviour
             });
 
             transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
-            blockImage.DOFade(0, 0.3F);    
+            blockImage.DOFade(0, 0.3F);
         }
         else
         {
@@ -231,31 +229,27 @@ public class Block : MonoBehaviour
         blockImage.color = b.blockImage.color;
         isAvalanchePowerup = b.isAvalanchePowerup;
         foreach (Transform child in b.blockImage.transform)
-        {
             if (child.gameObject.activeInHierarchy)
-            {
                 Instantiate(child, blockImage.transform, false);
-            }
-        }
     }
 
     public void ConvertToBandage()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Bandage);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Bandage);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isBandagePowerup = true;
     }
 
     public void ConvertToBomb()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Bomb);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Bomb);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isBombPowerup = true;
     }
 
     public void ConvertToDandelion()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Dandelion);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Dandelion);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isDandelionPowerup = true;
     }
@@ -285,23 +279,66 @@ public class Block : MonoBehaviour
 
     public void ConvertToColorCoder()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.ColorCoder);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.ColorCoder);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isColorCoderPowerup = true;
     }
 
     public void ConvertToSticksGalore()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.SticksGalore);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.SticksGalore);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isSticksGalorePowerup = true;
     }
 
     public void ConvertToLagBlock()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Lag);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Lag);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isLagPowerup = true;
+    }
+
+    public void ConvertToDoublerBlock()
+    {
+        isDoublePoints = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Doubler);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void ConvertToStormBlock()
+    {
+        isStormPowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Storm);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void ConvertToQuakeBlock()
+    {
+        isQuakePowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Quake);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void ConvertToAvalancheBlock()
+    {
+        isAvalanchePowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Avalanche);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void ConvertToOmnicolorBlock()
+    {
+        isFilled = true;
+        isOmnicolorBlock = true;
+        Instantiate(GamePlay.Instance.blockOmnicolorPrefab, blockImage.transform, false);
+    }
+
+    public Tweener ConvertToDandelionSeed(Block dandelionPowerup)
+    {
+        isDandelionSeed = true;
+        var newSeedBlockIcon = Instantiate(GamePlay.Instance.blockDandelionSeedPrefab,
+            dandelionPowerup.transform.position, Quaternion.identity, blockImage.transform);
+        return newSeedBlockIcon.transform.DOMove(blockImage.transform.position, 0.4f);
     }
 
     #region bomb mode specific
@@ -353,46 +390,4 @@ public class Block : MonoBehaviour
     }
 
     #endregion
-
-    public void ConvertToDoublerBlock()
-    {
-        isDoublePoints = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Doubler);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-    }
-
-    public void ConvertToStormBlock()
-    {
-        isStormPowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Storm);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-    }
-    
-    public void ConvertToQuakeBlock()
-    {
-        isQuakePowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Quake);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-    }
-
-    public void ConvertToAvalancheBlock()
-    {
-        isAvalanchePowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int)PowerupInfo.Powerups.Avalanche);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-    }
-
-    public void ConvertToOmnicolorBlock()
-    {
-        isFilled = true;
-        isOmnicolorBlock = true;
-        Instantiate(GamePlay.Instance.blockOmnicolorPrefab, blockImage.transform, false);
-    }
-
-    public Tweener ConvertToDandelionSeed(Block dandelionPowerup)
-    {
-        isDandelionSeed = true;
-        var newSeedBlockIcon = Instantiate(GamePlay.Instance.blockDandelionSeedPrefab, dandelionPowerup.transform.position, Quaternion.identity, blockImage.transform);
-        return newSeedBlockIcon.transform.DOMove(blockImage.transform.position, 0.4f);
-    }
 }

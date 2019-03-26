@@ -6,6 +6,21 @@ using UnityEngine;
 
 public class PowerupInfo : ShapeInfo
 {
+    public enum Powerups
+    {
+        Flood = 1000,
+        Doubler = 1001,
+        Dandelion = 1002,
+        Bandage = 1003,
+        Bomb = 1004,
+        ColorCoder = 1005,
+        SticksGalore = 1006,
+        Lag = 1007,
+        Storm = 1008,
+        Quake = 1009,
+        Avalanche = 1010
+    }
+
     public override bool IsPowerup()
     {
         return true;
@@ -63,19 +78,19 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Lag Powerup");
                 foreach (var block in currentBlocks) block.ConvertToLagBlock();
                 break;
-            
+
             case (int) Powerups.Storm:
 
                 Debug.Log("Played Storm Powerup");
                 foreach (var block in currentBlocks) block.ConvertToStormBlock();
                 break;
-            
+
             case (int) Powerups.Quake:
 
                 Debug.Log("Played Quake Powerup");
                 foreach (var block in currentBlocks) block.ConvertToQuakeBlock();
                 break;
-            
+
             case (int) Powerups.Avalanche:
 
                 Debug.Log("Played Avalanche Powerup");
@@ -119,20 +134,5 @@ public class PowerupInfo : ShapeInfo
                 .Where(block => block.isFilled)
                 .ToList()
                 .ForEach(b => b.ConvertToDoublerBlock());
-    }
-
-    public enum Powerups
-    {
-        Flood = 1000,
-        Doubler = 1001,
-        Dandelion = 1002,
-        Bandage = 1003,
-        Bomb = 1004,
-        ColorCoder = 1005,
-        SticksGalore = 1006,
-        Lag = 1007,
-        Storm = 1008,
-        Quake = 1009,
-        Avalanche = 1010
     }
 }

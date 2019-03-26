@@ -25,7 +25,7 @@ public class GameInfo : Singleton<GameInfo>
     private void Start()
     {
 #if UNITY_ANDROID
-		ReviewURL = ReviewURL_Google;
+        ReviewURL = ReviewURL_Google;
 #elif UNITY_IOS
         ReviewURL = ReviewURL_iOS;
 #endif

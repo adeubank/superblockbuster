@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Object = System.Object;
 using Random = UnityEngine.Random;
 #if HBDOTween
 using DG.Tweening;
@@ -16,9 +15,11 @@ using DG.Tweening;
 public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
 {
     private int _sticksGaloreRounds;
+    [SerializeField] public GameObject blockDandelionSeedPrefab;
     [HideInInspector] public List<Block> blockGrid;
 
     public AudioClip blockNotPlacedSound;
+    [SerializeField] public GameObject blockOmnicolorPrefab;
 
     public AudioClip blockPlaceSound;
     public AudioClip blockSelectSound;
@@ -53,8 +54,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
-    [SerializeField] public GameObject blockOmnicolorPrefab;
-    [SerializeField] public GameObject blockDandelionSeedPrefab;
 
     #region IBeginDragHandler implementation
 
@@ -353,13 +352,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 blockGrid.Where(b =>
                 {
                     // top of the board
-                    return b.rowID == (spawnAvalancheBlocks - 1) ||
+                    return b.rowID == spawnAvalancheBlocks - 1 ||
                            // right of the board
-                           b.columnID == (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks) ||
+                           b.columnID == GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks ||
                            // bottom of the board
-                           b.rowID == (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks) ||
+                           b.rowID == GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks ||
                            // left of the board
-                           b.columnID == (spawnAvalancheBlocks - 1);
+                           b.columnID == spawnAvalancheBlocks - 1;
                 }).ToList().ForEach(b => b.ConvertToOmnicolorBlock());
             }
         }
@@ -370,7 +369,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private IEnumerator ActivateQuakePowerup(List<Block> activeQuakePowerups)
     {
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
-       shakeComponent.shakeDuration += 1.3f; // start the shake
+        shakeComponent.shakeDuration += 1.3f; // start the shake
 
         var allTweeners = activeQuakePowerups.SelectMany(nextQuakePowerup =>
         {
@@ -400,7 +399,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     nextBlockToFall.isFilled = false; // mark it empty
 
                     // have it render on top of everything as it falls down
-                    Canvas canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
+                    var canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
                     canvas.overrideSorting = true;
                     canvas.sortingOrder = 999;
 
@@ -556,9 +555,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var breakingColumns = GetFilledColumns();
 
         if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-        {
             yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
-        }
 
         var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
         var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
@@ -769,9 +766,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region time mode
 
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-        {
             timeSlider.ResumeTimer();
-        }
 
         #endregion
     }
@@ -1074,8 +1069,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var seedTweeners = seedBlocks.Select(b =>
         {
             Debug.Log("New seed block. " + b);
-            return b.ConvertToDandelionSeed(dandelionPowerup); 
-            
+            return b.ConvertToDandelionSeed(dandelionPowerup);
         }).ToList();
 
         yield return new WaitWhile(() => seedTweeners.Any(t => t.IsPlaying()));

@@ -4,11 +4,10 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
+    private float _timeRemaining = 120.0F;
     [SerializeField] private Image imageProgress;
 
     [SerializeField] private int MaxTimeCounter = 120;
-
-    private float _timeRemaining = 120.0F;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;
@@ -34,9 +33,10 @@ public class Timer : MonoBehaviour
         {
             var sliderValue = timeRemaining / MaxTimeCounter;
             imageProgress.fillAmount = sliderValue;
-            var minutesRemaining = ((int)_timeRemaining / 60).ToString("F0");
-            var secondsRemaining = ((int)_timeRemaining % 60).ToString("F0");
-            txtTimeRemaining.text = minutesRemaining + ":" + secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
+            var minutesRemaining = ((int) _timeRemaining / 60).ToString("F0");
+            var secondsRemaining = ((int) _timeRemaining % 60).ToString("F0");
+            txtTimeRemaining.text = minutesRemaining + ":" +
+                                    secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
         }
     }
 

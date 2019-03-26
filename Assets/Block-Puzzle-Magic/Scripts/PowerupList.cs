@@ -11,6 +11,6 @@ public class PowerupList : ScriptableObject
 [Serializable]
 public class PowerupBlockSpawn : ShapeBlockSpawn
 {
-    public GameObject powerupBlockIcon;
     public GameObject powerupActivationSprite;
+    public GameObject powerupBlockIcon;
 }
