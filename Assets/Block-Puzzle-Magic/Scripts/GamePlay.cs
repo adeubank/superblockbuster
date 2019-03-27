@@ -371,11 +371,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = activeQuakePowerups.SelectMany(nextQuakePowerup =>
+        var allTweeners = activeQuakePowerups.Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
         {
-            Debug.Log("Activating Quake powerup. nextQuakePowerup=" + nextQuakePowerup);
-            var column = GetEntireColumnForRescue(nextQuakePowerup.columnID);
-            return ShakeColumnDown(column.Where(b => b != nextQuakePowerup).ToList());
+            for (int col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
+            {
+                if (!columnsToShake.Contains(col) && col >= 0 && col < GameBoardGenerator.Instance.TotalColumns)
+                {
+                    columnsToShake.Add(col);
+                }
+            }
+
+            return columnsToShake;
+        }).SelectMany(columnToShake =>
+        {
+            Debug.Log("Activating Quake powerup. columnToShake=" + columnToShake);
+            var column = GetEntireColumnForRescue(columnToShake);
+            return ShakeColumnDown(column.Where(b => !b.isQuakePowerup).ToList());
         }).ToList();
 
         yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive()));
@@ -397,11 +408,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     // track the block so we don't consider it again
                     alreadyFalling.Add(nextBlockToFall);
                     nextBlockToFall.isFilled = false; // mark it empty
-
+                    
+                    // TODO spawn a empty cell to fill the hole as this block falls
+                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate, nextBlockToFall.transform.position, Quaternion.identity);
+                    var emptyCellCanvas = emptyCell.AddComponent(typeof(Canvas)) as Canvas;
+                    emptyCellCanvas.overrideSorting = true;
+                    emptyCellCanvas.sortingOrder = 999;
+                    
                     // have it render on top of everything as it falls down
-                    var canvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
-                    canvas.overrideSorting = true;
-                    canvas.sortingOrder = 999;
+                    var nextBlockToFallCanvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
+                    nextBlockToFallCanvas.overrideSorting = true;
+                    nextBlockToFallCanvas.sortingOrder = 999;
 
                     // track original position as we animate the block down and then move it up after it is cleared
                     var transform1 = nextBlockToFall.transform;
@@ -410,11 +427,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     var tweener = nextBlockToFall.transform.DOLocalMove(nextBlockToFill.transform.localPosition, 0.8f)
                         .OnComplete(() =>
                         {
+                            // set the new blocks place
                             nextBlockToFill.isFilled = true;
                             nextBlockToFill.Copy(nextBlockToFall);
+                            
+                            // clean up the falling block
                             nextBlockToFall.ClearBlock(false);
                             nextBlockToFall.transform.localPosition = origPos;
-                            Destroy(canvas);
+//                            Destroy(emptyCell);
+                            Destroy(nextBlockToFallCanvas);
                         });
 
                     tweeners.Add(tweener);
