@@ -332,6 +332,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     public PowerupBlockSpawn FindPowerupById(int id)
     {
-        return powerupList.powerupBlockSpawns.First(powerup => powerup.BlockID == id);
+        return powerupList.powerupBlockSpawns.FirstOrDefault(powerup => powerup.BlockID == id);
     }
 }

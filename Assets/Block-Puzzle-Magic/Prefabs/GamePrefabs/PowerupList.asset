@@ -16,76 +16,88 @@ MonoBehaviour:
   - BlockID: 1000
     shapeBlock: {fileID: 8723126002886323038, guid: 9ce1de2f31a71334db94965284e11cec,
       type: 3}
-    spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
-    powerupBlockIcon: {fileID: 0}
+    spawnProbability: 10
+    powerupActivationSprite: {fileID: 5050361894119582026, guid: 150049e6dd3623c4c85ebc9d65ddadf8,
+      type: 3}
+    powerupBlockIcon: {fileID: 6399390334416538807, guid: 96b680d35504179478a317f26d65f7aa,
+      type: 3}
   - BlockID: 1001
     shapeBlock: {fileID: 4663193901120328477, guid: 9ddd2f55b5075e24e843951cbb24521a,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 2332791580202525647, guid: fd4fb4de6ed0b994088caaaff538441e,
+      type: 3}
     powerupBlockIcon: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
       type: 3}
   - BlockID: 1002
     shapeBlock: {fileID: 1779432844893486631, guid: 07df661c8ce2ec649af7eeecbf4fa843,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 1700079929933018672, guid: 358621e3687d47a4ab852d5fac9190f0,
+      type: 3}
     powerupBlockIcon: {fileID: 1851252032709409074, guid: 6ba777b361dd18042b2f4f099f77392f,
       type: 3}
   - BlockID: 1003
     shapeBlock: {fileID: 5530475301742331395, guid: c1bb3ad12d4f0bc46a0d41b4b6d3b496,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 804450773120811952, guid: b97b75f68f732bd48915e5d65865e104,
+      type: 3}
     powerupBlockIcon: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
       type: 3}
   - BlockID: 1004
     shapeBlock: {fileID: 8754179494913528949, guid: 515fb4a7f81934ffcba113e1360a41dc,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 8595608401174813825, guid: 368ced72e66cdd046b9c3be700059c4c,
+      type: 3}
     powerupBlockIcon: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,
       type: 3}
   - BlockID: 1005
     shapeBlock: {fileID: 1068036229970413566, guid: f05aa45251c59204bbecc6fbefd081c2,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 3080440972332608395, guid: 49e6ba73f36ddf84590233d4fcba3412,
+      type: 3}
     powerupBlockIcon: {fileID: 774068445903749328, guid: 3576b90a6ec9eb941811a34124209a01,
       type: 3}
   - BlockID: 1006
     shapeBlock: {fileID: 5861542511104615321, guid: 6f132658d3c52c3408551de3bc25eaf7,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 5040092735453038996, guid: 3165a2a2d14135442901692fdf7456a1,
+      type: 3}
     powerupBlockIcon: {fileID: 6684866531750910742, guid: b5a359b9908bf0e42a1d842c3430f2f4,
       type: 3}
   - BlockID: 1007
     shapeBlock: {fileID: 7082705680584380297, guid: e62cf282a98c34359829dc5793c072df,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 5827479345533324391, guid: 39e1063aed4f6cd43a9c522b40331ac9,
+      type: 3}
     powerupBlockIcon: {fileID: 6591912637850637455, guid: ccf124c2f342648cd8fbe8d03a78ed6b,
       type: 3}
   - BlockID: 1008
     shapeBlock: {fileID: 2126430919857311582, guid: e3d941253762c42489ddb38fb65f50ef,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 6345492528971830526, guid: 62ef40967d5534c44ba3afe2bad362f5,
+      type: 3}
     powerupBlockIcon: {fileID: 1974087653856483289, guid: 521457d00b6bcc5428f18e16381f4b0a,
       type: 3}
   - BlockID: 1009
     shapeBlock: {fileID: 5082242764420009170, guid: 65350312e66a5dd4ba25eb289ded9dca,
       type: 3}
-    spawnProbability: 10
-    powerupActivationSprite: {fileID: 0}
+    spawnProbability: 1
+    powerupActivationSprite: {fileID: 8956681940578420537, guid: 55c153d76665a9945b5f9c84af895938,
+      type: 3}
     powerupBlockIcon: {fileID: 3724957255454156055, guid: 6e1804497d4ef3443adc486027c9c6d1,
       type: 3}
   - BlockID: 1010
     shapeBlock: {fileID: 2408640684478227964, guid: 0d9106a3d2831414fab725574dbc869c,
       type: 3}
     spawnProbability: 1
-    powerupActivationSprite: {fileID: 0}
+    powerupActivationSprite: {fileID: 6323581189441554036, guid: ed4343a3bc762da4da7daa543ebada61,
+      type: 3}
     powerupBlockIcon: {fileID: 7825638497991642644, guid: 3dfa46a5bd9d26e4395973e7159e9716,
       type: 3}

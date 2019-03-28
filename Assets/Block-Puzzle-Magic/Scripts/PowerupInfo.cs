@@ -33,8 +33,7 @@ public class PowerupInfo : ShapeInfo
             case (int) Powerups.Flood:
 
                 Debug.Log("Played Flood Powerup");
-                var floodPowerups = HandleFloodBlocks(currentBlocks);
-                yield return new WaitWhile(() => floodPowerups.Any(t => t.IsActive()));
+                yield return HandleFloodBlocks(currentBlocks);
 
                 break;
             case (int) Powerups.Doubler:
@@ -103,28 +102,23 @@ public class PowerupInfo : ShapeInfo
         }
     }
 
-    private List<Tweener> HandleFloodBlocks(IEnumerable<Block> currentBlocks)
+    private IEnumerator HandleFloodBlocks(IEnumerable<Block> currentBlocks)
     {
-        return currentBlocks.Select(powerupBlock =>
+        foreach (var powerupBlock in currentBlocks)
         {
-            Tweener tweener = null;
-            for (var row = powerupBlock.rowID - 2; row <= powerupBlock.rowID + 2; row++)
-            for (var col = powerupBlock.columnID - 2; col <= powerupBlock.columnID + 2; col++)
+            // since flood is activation once played, show sprite here
+            yield return GamePlay.Instance.ShowPowerupActivationSprite(
+                BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock);
+
+            var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true);
+            foreach (var block in surroundingBlocks)
             {
-                //                        Debug.Log("Played Flood Powerup: Filling row=" + row + " col=" + col);
-
-                var block = GamePlay.Instance.blockGrid.Find(b =>
-                    b.rowID == row && b.columnID == col);
-                if (block)
-                {
-                    block.ConvertToFilledBlock(powerupBlock.blockID);
-                    block.colorId = powerupBlock.colorId;
-                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
-                }
+                block.ConvertToFilledBlock(0);
+                block.colorId = powerupBlock.colorId;
+                block.blockImage.sprite = powerupBlock.blockImage.sprite;
+                yield return new WaitForSeconds(0.01f);
             }
-
-            return tweener;
-        }).Where(t => t != null).ToList();
+        }
     }
 
     private void HandleDoublerBlocks(IEnumerable<Block> currentBlocks)

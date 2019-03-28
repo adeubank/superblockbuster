@@ -313,6 +313,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
 
+        var powerupBlockSpawns =
+            clearedLineBlocks.Select(block => new Dictionary<string, object>
+            {
+                {"powerupBlockSpawn", BlockShapeSpawner.Instance.FindPowerupById(block.blockID)},
+                {"currentBlock", block}
+            }).Where(block => block["powerupBlockSpawn"] != null);
+        foreach (var powerupBlock in powerupBlockSpawns)
+        {
+            yield return ShowPowerupActivationSprite((PowerupBlockSpawn) powerupBlock["powerupBlockSpawn"], (Block) powerupBlock["currentBlock"]);
+        }
+
         #region quake powerup activation
 
         // find any quake blocks activated
@@ -361,12 +372,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                            // left of the board
                            b.columnID == spawnAvalancheBlocks - 1;
                 }).ToList();
-                
+
                 blocksToConvertToOmnicolor.AddRange(newBlocksToConvertToOmnicolor);
             }
 
             blocksToConvertToOmnicolor.Sort();
-                
+
             foreach (var b in blocksToConvertToOmnicolor)
             {
                 b.ConvertToOmnicolorBlock();
@@ -375,6 +386,29 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         #endregion
+    }
+
+    public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock)
+    {
+        if (powerupBlockSpawn.powerupActivationSprite == null)
+        {
+            Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn);
+            yield break;
+        }
+
+        GameObject powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite, currentBlock.transform.position, Quaternion.identity,
+            GameBoardGenerator.Instance.BoardContent.transform);
+        var powerupActivationSpriteCanvas = powerupActivationSprite.AddComponent(typeof(Canvas)) as Canvas;
+        powerupActivationSpriteCanvas.overrideSorting = true;
+        powerupActivationSpriteCanvas.sortingOrder = 999;
+
+        Sequence sequence = DOTween.Sequence();
+        powerupActivationSprite.transform.localScale = Vector3.zero;
+        sequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.6f));
+        sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.4f, 1, 0.1f));
+        sequence.Append(powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
+        sequence.AppendCallback(() => { Destroy(powerupActivationSprite); });
+        yield return new WaitUntil(() => !sequence.IsActive() || sequence.IsComplete());
     }
 
     private IEnumerator ActivateQuakePowerup(List<Block> activeQuakePowerups)
@@ -419,13 +453,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     // track the block so we don't consider it again
                     alreadyFalling.Add(nextBlockToFall);
                     nextBlockToFall.isFilled = false; // mark it empty
-                    
+
                     // TODO spawn a empty cell to fill the hole as this block falls
-                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate, nextBlockToFall.transform.position, Quaternion.identity, GameBoardGenerator.Instance.BoardContent.transform);
+                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate,
+                        nextBlockToFall.transform.position, Quaternion.identity,
+                        GameBoardGenerator.Instance.BoardContent.transform);
                     var emptyCellCanvas = emptyCell.AddComponent(typeof(Canvas)) as Canvas;
                     emptyCellCanvas.overrideSorting = true;
                     emptyCellCanvas.sortingOrder = 998;
-                    
+
                     // have it render on top of everything as it falls down
                     var nextBlockToFallCanvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
                     nextBlockToFallCanvas.overrideSorting = true;
@@ -441,7 +477,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                             // set the new blocks place
                             nextBlockToFill.isFilled = true;
                             nextBlockToFill.Copy(nextBlockToFall);
-                            
+
                             // clean up the falling block
                             nextBlockToFall.ClearBlock(false);
                             nextBlockToFall.transform.localPosition = origPos;
@@ -755,7 +791,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                   "totalBreakingRowBlocks=" + totalBreakingRowBlocks +
                   " totalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
                   " newScore=" + newScore +
-                  " multiplier=" + multiplier + 
+                  " multiplier=" + multiplier +
                   " sameColorMultiplier=" + sameColorMultiplier +
                   " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
 
