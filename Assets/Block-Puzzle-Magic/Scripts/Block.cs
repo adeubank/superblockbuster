@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
 
 #endif
 
-public class Block : MonoBehaviour
+public class Block : MonoBehaviour, IComparable
 {
     public int blockID = -1;
 
@@ -273,7 +274,6 @@ public class Block : MonoBehaviour
     {
         ClearExtraChildren();
         ConvertToFilledBlock(0);
-        blockImage.color = Color.green;
         return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
     }
 
@@ -390,4 +390,16 @@ public class Block : MonoBehaviour
     }
 
     #endregion
+
+    public int CompareTo(object obj)
+    {
+        if (obj == null) return 1;
+
+        Block b = obj as Block;
+
+        if (b != null)
+            return (rowID + columnID).CompareTo(b.rowID + b.columnID);
+
+        throw new ArgumentException("Object is not a Block");
+    }
 }

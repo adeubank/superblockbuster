@@ -343,13 +343,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (spawnAvalancheBlocks > 0)
         {
             Debug.Log("Spawning avalanche blocks! spawnAvalancheBlocks=" + spawnAvalancheBlocks);
+            var blocksToConvertToOmnicolor = new List<Block>();
             for (; spawnAvalancheBlocks > 0; spawnAvalancheBlocks--)
             {
                 Debug.Log("Avalanching these lines. b.rowID=" + (spawnAvalancheBlocks - 1) + ", " +
                           "b.columnID=" + (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks) + ", " +
                           "b.rowID=" + (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks) + ", " +
                           "b.columnID=" + (spawnAvalancheBlocks - 1));
-                blockGrid.Where(b =>
+                var newBlocksToConvertToOmnicolor = blockGrid.Where(b =>
                 {
                     // top of the board
                     return b.rowID == spawnAvalancheBlocks - 1 ||
@@ -359,7 +360,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                            b.rowID == GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks ||
                            // left of the board
                            b.columnID == spawnAvalancheBlocks - 1;
-                }).ToList().ForEach(b => b.ConvertToOmnicolorBlock());
+                }).ToList();
+                
+                blocksToConvertToOmnicolor.AddRange(newBlocksToConvertToOmnicolor);
+            }
+
+            blocksToConvertToOmnicolor.Sort();
+                
+            foreach (var b in blocksToConvertToOmnicolor)
+            {
+                b.ConvertToOmnicolorBlock();
+                yield return new WaitForSeconds(0.01f);
             }
         }
 
@@ -410,10 +421,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     nextBlockToFall.isFilled = false; // mark it empty
                     
                     // TODO spawn a empty cell to fill the hole as this block falls
-                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate, nextBlockToFall.transform.position, Quaternion.identity);
+                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate, nextBlockToFall.transform.position, Quaternion.identity, GameBoardGenerator.Instance.BoardContent.transform);
                     var emptyCellCanvas = emptyCell.AddComponent(typeof(Canvas)) as Canvas;
                     emptyCellCanvas.overrideSorting = true;
-                    emptyCellCanvas.sortingOrder = 999;
+                    emptyCellCanvas.sortingOrder = 998;
                     
                     // have it render on top of everything as it falls down
                     var nextBlockToFallCanvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
@@ -434,7 +445,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                             // clean up the falling block
                             nextBlockToFall.ClearBlock(false);
                             nextBlockToFall.transform.localPosition = origPos;
-//                            Destroy(emptyCell);
+                            Destroy(emptyCell);
                             Destroy(nextBlockToFallCanvas);
                         });
 
@@ -727,13 +738,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var rowsWithSameColor = breakingRows.Aggregate(0, (total, row) =>
         {
             var firstColorId = row.First().colorId;
-            if (row.TrueForAll(b => b.colorId == firstColorId)) return total + 1;
+            if (row.TrueForAll(b => b.colorId == firstColorId || b.isOmnicolorBlock)) return total + 1;
             return total;
         });
         var columnsWithSameColor = breakingColumns.Aggregate(0, (total, column) =>
         {
             var firstColorId = column.First().colorId;
-            if (column.TrueForAll(b => b.colorId == firstColorId)) return total + 1;
+            if (column.TrueForAll(b => b.colorId == firstColorId || b.isOmnicolorBlock)) return total + 1;
             return total;
         });
 
@@ -744,6 +755,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                   "totalBreakingRowBlocks=" + totalBreakingRowBlocks +
                   " totalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
                   " newScore=" + newScore +
+                  " multiplier=" + multiplier + 
                   " sameColorMultiplier=" + sameColorMultiplier +
                   " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
 
@@ -872,7 +884,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             allRows.RemoveAt(randomIndex);
         }
 
-        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList().ForEach(b => { b.ConvertToFilledBlock(0); });
+        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList();
+
+        foreach (var row in stormRows)
+        {
+            foreach (var b in row)
+            {
+                b.ConvertToFilledBlock(0);
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
 
         yield return BreakAllCompletedLines(stormRows, new List<List<Block>>(0), 1);
     }
