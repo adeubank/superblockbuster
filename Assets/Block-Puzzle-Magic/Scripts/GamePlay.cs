@@ -289,11 +289,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (touchingSameColor) placingShapeBlockCount *= 2;
 
         highlightingBlocks.Clear();
-        
-        yield return BreakAllCompletedLines(placingShapeBlockCount);        
-        
+
+        yield return BreakAllCompletedLines(placingShapeBlockCount);
+
         yield return AddShapesAndUpdateRound();
-   
+
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
     }
@@ -430,7 +430,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var column = GetEntireColumnForRescue(columnToShake);
             return ShakeColumnDown(column.Where(b => !b.isQuakePowerup).ToList());
         }).ToList();
-        
+
         _activeQuakePowerups.Clear();
 
         yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive()));
@@ -600,7 +600,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     }
 
     private IEnumerator RoundClearPowerups()
-    {       
+    {
         #region sticks galore spawn
 
         // increment sticks galore round before spawning any shapes
@@ -637,7 +637,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
 
         #endregion
-
     }
 
     private void UpdateRound(int newRound)
@@ -753,7 +752,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
             yield break;
         }
-        
+
         yield return PrepPowerupsBeforeClearing();
 
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
@@ -826,7 +825,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
         yield return ActivateQuakePowerup();
- 
+
         yield return ActivateAvalanchePowerup();
 
         Debug.Log("Finished breaking lines.");
