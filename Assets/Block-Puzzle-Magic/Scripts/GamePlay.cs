@@ -291,6 +291,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         highlightingBlocks.Clear();
         
         yield return BreakAllCompletedLines(placingShapeBlockCount);        
+        
+        yield return AddShapesAndUpdateRound();
    
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
@@ -298,6 +300,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator PrepPowerupsBeforeClearing()
     {
+        Debug.Log("Prepping any to be activated powerups");
+
         var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
 
         // find any quake blocks activated
@@ -401,6 +405,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (!_activeQuakePowerups.Any())
         {
+            Debug.Log("No quake powerups to activate");
             yield break;
         }
 
@@ -409,6 +414,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var allTweeners = _activeQuakePowerups.Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
         {
+            Debug.Log("Activating quake powerup. " + nextQuakePowerup);
+
             for (int col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
             {
                 if (!columnsToShake.Contains(col) && col >= 0 && col < GameBoardGenerator.Instance.TotalColumns)
@@ -420,10 +427,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return columnsToShake;
         }).SelectMany(columnToShake =>
         {
-            Debug.Log("Activating Quake powerup. columnToShake=" + columnToShake);
             var column = GetEntireColumnForRescue(columnToShake);
             return ShakeColumnDown(column.Where(b => !b.isQuakePowerup).ToList());
         }).ToList();
+        
+        _activeQuakePowerups.Clear();
 
         yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive()));
     }
@@ -629,10 +637,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
 
         #endregion
-         
-        yield return ActivateQuakePowerup();
- 
-        yield return ActivateAvalanchePowerup();
 
     }
 
@@ -745,8 +749,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (breakingRows.Count == 0 && breakingColumns.Count == 0)
         {
+            Debug.Log("No breaking lines.");
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
-            StartCoroutine(nameof(AddShapesAndUpdateRound));
             yield break;
         }
         
@@ -821,6 +825,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
+        yield return ActivateQuakePowerup();
+ 
+        yield return ActivateAvalanchePowerup();
+
         Debug.Log("Finished breaking lines.");
 
         #region clearing was exploding blocks
@@ -834,8 +842,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         #endregion
-
-        StartCoroutine(nameof(AddShapesAndUpdateRound));
     }
 
     /// <summary>
