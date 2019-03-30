@@ -575,11 +575,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             yield return PrepPowerupsBeforeClearing();
 
-            var breakingRows = GetFilledRows();
-            var breakingColumns = GetFilledColumns();
-
-            if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-                yield return BreakAllCompletedLines(1);
+            yield return BreakAllCompletedLines(1);
 
             var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
             var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
@@ -750,6 +746,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (breakingRows.Count == 0 && breakingColumns.Count == 0)
         {
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
+            StartCoroutine(nameof(AddShapesAndUpdateRound));
             yield break;
         }
         
