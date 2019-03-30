@@ -54,6 +54,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+    private readonly List<Block> _activeQuakePowerups = new List<Block>();
+    private int _spawnAvalancheBlocks;
 
     #region IBeginDragHandler implementation
 
@@ -267,8 +269,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         currentShape = null;
         MoveCount += 1;
 
-        yield return new WaitForEndOfFrame();
-
         var placingShapeBlockCount = highlightingBlocks.Count;
         var firstHighlightedBlock = highlightingBlocks.First();
         var touchingSameColor = blockGrid
@@ -289,22 +289,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (touchingSameColor) placingShapeBlockCount *= 2;
 
         highlightingBlocks.Clear();
-
-        yield return PrepPowerupsBeforeClearing();
-
-        var breakingRows = GetFilledRows();
-        var breakingColumns = GetFilledColumns();
-
-        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-        {
-            yield return BreakAllCompletedLines(breakingRows, breakingColumns, placingShapeBlockCount);
-        }
-        else
-        {
-            StartCoroutine(nameof(AddShapesAndUpdateRound));
-            ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
-        }
-
+        
+        yield return BreakAllCompletedLines(placingShapeBlockCount);        
+   
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
     }
@@ -313,22 +300,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
 
-        var powerupBlockSpawns =
-            clearedLineBlocks.Select(block => new Dictionary<string, object>
-            {
-                {"powerupBlockSpawn", BlockShapeSpawner.Instance.FindPowerupById(block.blockID)},
-                {"currentBlock", block}
-            }).Where(block => block["powerupBlockSpawn"] != null);
-        foreach (var powerupBlock in powerupBlockSpawns)
-        {
-            yield return ShowPowerupActivationSprite((PowerupBlockSpawn) powerupBlock["powerupBlockSpawn"], (Block) powerupBlock["currentBlock"]);
-        }
-
-        #region quake powerup activation
-
         // find any quake blocks activated
-        var activeQuakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).ToList();
-        if (activeQuakePowerups.Any()) yield return ActivateQuakePowerup(activeQuakePowerups);
+        _activeQuakePowerups.AddRange(clearedLineBlocks.Where(b => b.isQuakePowerup).ToList());
+
+        #region powerup activation sprite
+
+        clearedLineBlocks.Where(b => Enum.IsDefined(typeof(PowerupInfo.Powerups), b.blockID))
+            .ToList()
+            .ForEach((powerupBlock) =>
+            {
+                var powerupBlockSpawn = BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID);
+                StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
+            });
 
         #endregion
 
@@ -350,53 +333,55 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #region avalanche block spawn
 
-        var spawnAvalancheBlocks = clearedLineBlocks.Count(b => b.isAvalanchePowerup);
-        if (spawnAvalancheBlocks > 0)
-        {
-            Debug.Log("Spawning avalanche blocks! spawnAvalancheBlocks=" + spawnAvalancheBlocks);
-            var blocksToConvertToOmnicolor = new List<Block>();
-            for (; spawnAvalancheBlocks > 0; spawnAvalancheBlocks--)
-            {
-                Debug.Log("Avalanching these lines. b.rowID=" + (spawnAvalancheBlocks - 1) + ", " +
-                          "b.columnID=" + (GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks) + ", " +
-                          "b.rowID=" + (GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks) + ", " +
-                          "b.columnID=" + (spawnAvalancheBlocks - 1));
-                var newBlocksToConvertToOmnicolor = blockGrid.Where(b =>
-                {
-                    // top of the board
-                    return b.rowID == spawnAvalancheBlocks - 1 ||
-                           // right of the board
-                           b.columnID == GameBoardGenerator.Instance.TotalColumns - spawnAvalancheBlocks ||
-                           // bottom of the board
-                           b.rowID == GameBoardGenerator.Instance.TotalRows - spawnAvalancheBlocks ||
-                           // left of the board
-                           b.columnID == spawnAvalancheBlocks - 1;
-                }).ToList();
-
-                blocksToConvertToOmnicolor.AddRange(newBlocksToConvertToOmnicolor);
-            }
-
-            blocksToConvertToOmnicolor.Sort();
-
-            foreach (var b in blocksToConvertToOmnicolor)
-            {
-                b.ConvertToOmnicolorBlock();
-                yield return new WaitForSeconds(0.01f);
-            }
-        }
+        _spawnAvalancheBlocks += clearedLineBlocks.Count(b => b.isAvalanchePowerup);
 
         #endregion
     }
 
+    private IEnumerator ActivateAvalanchePowerup()
+    {
+        Debug.Log("Spawning avalanche blocks! spawnAvalancheBlocks=" + _spawnAvalancheBlocks);
+        var blocksToConvertToOmnicolor = new List<Block>();
+        for (; _spawnAvalancheBlocks > 0; _spawnAvalancheBlocks--)
+        {
+            Debug.Log("Avalanching these lines. b.rowID=" + (_spawnAvalancheBlocks - 1) + ", " +
+                      "b.columnID=" + (GameBoardGenerator.Instance.TotalColumns - _spawnAvalancheBlocks) + ", " +
+                      "b.rowID=" + (GameBoardGenerator.Instance.TotalRows - _spawnAvalancheBlocks) + ", " +
+                      "b.columnID=" + (_spawnAvalancheBlocks - 1));
+            var newBlocksToConvertToOmnicolor = blockGrid.Where(b =>
+            {
+                // top of the board
+                return b.rowID == _spawnAvalancheBlocks - 1 ||
+                       // right of the board
+                       b.columnID == GameBoardGenerator.Instance.TotalColumns - _spawnAvalancheBlocks ||
+                       // bottom of the board
+                       b.rowID == GameBoardGenerator.Instance.TotalRows - _spawnAvalancheBlocks ||
+                       // left of the board
+                       b.columnID == _spawnAvalancheBlocks - 1;
+            }).ToList();
+
+            blocksToConvertToOmnicolor.AddRange(newBlocksToConvertToOmnicolor);
+        }
+
+        blocksToConvertToOmnicolor.Sort();
+
+        foreach (var b in blocksToConvertToOmnicolor)
+        {
+            b.ConvertToOmnicolorBlock();
+            yield return new WaitForSeconds(0.01f);
+        }
+    }
+
     public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock)
     {
-        if (powerupBlockSpawn.powerupActivationSprite == null)
+        if (!powerupBlockSpawn.powerupActivationSprite)
         {
             Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn);
             yield break;
         }
 
-        GameObject powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite, currentBlock.transform.position, Quaternion.identity,
+        GameObject powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite,
+            currentBlock.transform.position, Quaternion.identity,
             GameBoardGenerator.Instance.BoardContent.transform);
         var powerupActivationSpriteCanvas = powerupActivationSprite.AddComponent(typeof(Canvas)) as Canvas;
         powerupActivationSpriteCanvas.overrideSorting = true;
@@ -404,19 +389,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         Sequence sequence = DOTween.Sequence();
         powerupActivationSprite.transform.localScale = Vector3.zero;
-        sequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.6f));
-        sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.4f, 1, 0.1f));
+        sequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.4f));
+        sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
+        sequence.AppendInterval(0.4f);
         sequence.Append(powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
         sequence.AppendCallback(() => { Destroy(powerupActivationSprite); });
         yield return new WaitUntil(() => !sequence.IsActive() || sequence.IsComplete());
     }
 
-    private IEnumerator ActivateQuakePowerup(List<Block> activeQuakePowerups)
+    private IEnumerator ActivateQuakePowerup()
     {
+        if (!_activeQuakePowerups.Any())
+        {
+            yield break;
+        }
+
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = activeQuakePowerups.Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
+        var allTweeners = _activeQuakePowerups.Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
         {
             for (int col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
             {
@@ -573,14 +564,40 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     public IEnumerator AddShapesAndUpdateRound()
     {
-        // if no blocks added, just return
-        if (!BlockShapeSpawner.Instance.FillShapeContainer()) yield break;
+        // if blocks were filled, means end of round and some powerups are activated
+        if (BlockShapeSpawner.Instance.FillShapeContainer())
+        {
+            var newRound = currentRound + 1;
+            Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
+            UpdateRound(newRound);
 
-        var newRound = currentRound + 1;
-        Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
-        UpdateRound(newRound);
+            yield return RoundClearPowerups();
 
-        # region sticks galore spawn
+            yield return PrepPowerupsBeforeClearing();
+
+            var breakingRows = GetFilledRows();
+            var breakingColumns = GetFilledColumns();
+
+            if (breakingRows.Count > 0 || breakingColumns.Count > 0)
+                yield return BreakAllCompletedLines(1);
+
+            var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
+            var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
+                .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
+            BlockShapeSpawner.Instance.CheckOnBoardShapeStatus(playableShapes);
+        }
+
+        #region re-enable timer
+
+        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
+            timeSlider.ResumeTimer();
+
+        #endregion
+    }
+
+    private IEnumerator RoundClearPowerups()
+    {       
+        #region sticks galore spawn
 
         // increment sticks galore round before spawning any shapes
         if (BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks)
@@ -616,19 +633,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
 
         #endregion
+         
+        yield return ActivateQuakePowerup();
+ 
+        yield return ActivateAvalanchePowerup();
 
-        yield return PrepPowerupsBeforeClearing();
-
-        var breakingRows = GetFilledRows();
-        var breakingColumns = GetFilledColumns();
-
-        if (breakingRows.Count > 0 || breakingColumns.Count > 0)
-            yield return BreakAllCompletedLines(breakingRows, breakingColumns, 1);
-
-        var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
-        var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
-            .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
-        BlockShapeSpawner.Instance.CheckOnBoardShapeStatus(playableShapes);
     }
 
     private void UpdateRound(int newRound)
@@ -732,12 +741,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     ///     Breaks all completed lines.
     /// </summary>
     /// <returns>The all completed lines.</returns>
-    /// <param name="breakingRows">Breaking rows.</param>
-    /// <param name="breakingColumns">Breaking columns.</param>
     /// <param name="placingShapeBlockCount">Placing shape block count.</param>
-    private IEnumerator BreakAllCompletedLines(List<List<Block>> breakingRows, List<List<Block>> breakingColumns,
-        int placingShapeBlockCount)
+    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
+        var breakingRows = GetFilledRows();
+        var breakingColumns = GetFilledColumns();
+
+        if (breakingRows.Count == 0 && breakingColumns.Count == 0)
+        {
+            ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
+            yield break;
+        }
+        
+        yield return PrepPowerupsBeforeClearing();
+
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
         var totalBreakingRowBlocks =
             breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
@@ -797,15 +814,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 
-        yield return new WaitForEndOfFrame();
-
-        #region time mode
-
-        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-            timeSlider.PauseTimer();
-
-        #endregion
-
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
                 StartCoroutine(BreakThisLine(thisLine));
@@ -831,13 +839,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #endregion
 
         StartCoroutine(nameof(AddShapesAndUpdateRound));
-
-        #region time mode
-
-        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-            timeSlider.ResumeTimer();
-
-        #endregion
     }
 
     /// <summary>
@@ -931,7 +932,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
         }
 
-        yield return BreakAllCompletedLines(stormRows, new List<List<Block>>(0), 1);
+        yield return BreakAllCompletedLines(1);
     }
 
     /// <summary>
@@ -1038,7 +1039,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             for (var rowIndex = startingRow; rowIndex <= startingRow + (TotalBreakingRows - 1); rowIndex++)
                 breakingRows.Add(GetEntireRowForRescue(rowIndex));
-            StartCoroutine(BreakAllCompletedLines(breakingRows, breakingColums, 0));
+            StartCoroutine(BreakAllCompletedLines(0));
         }
 
         #region bomb mode

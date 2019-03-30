@@ -107,8 +107,8 @@ public class PowerupInfo : ShapeInfo
         foreach (var powerupBlock in currentBlocks)
         {
             // since flood is activation once played, show sprite here
-            yield return GamePlay.Instance.ShowPowerupActivationSprite(
-                BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock);
+            StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
+                BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
 
             var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true);
             foreach (var block in surroundingBlocks)
