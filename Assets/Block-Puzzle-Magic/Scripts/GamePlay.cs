@@ -673,13 +673,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             var block = blockGrid.Find(o => o.rowID == rowID && o.columnID == columnIndex);
 
-            if (block.isFilled)
+            if (isFilledBlock(block))
                 thisRow.Add(block);
             else
                 return null;
         }
 
         return thisRow;
+    }
+    private bool isFilledBlock(Block block)
+    {
+        if (!block)
+        {
+            return false;
+        }
+
+        return block.isFilled;
     }
 
     /// <summary>
@@ -710,7 +719,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         for (var rowIndex = 0; rowIndex < GameBoardGenerator.Instance.TotalRows; rowIndex++)
         {
             var block = blockGrid.Find(o => o.rowID == rowIndex && o.columnID == columnID);
-            if (block.isFilled)
+            if (isFilledBlock(block))
                 thisColumn.Add(block);
             else
                 return null;
@@ -743,6 +752,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="placingShapeBlockCount">Placing shape block count.</param>
     private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
+        yield return PrepPowerupsBeforeClearing();
+
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
@@ -752,8 +763,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
             yield break;
         }
-
-        yield return PrepPowerupsBeforeClearing();
 
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
         var totalBreakingRowBlocks =
