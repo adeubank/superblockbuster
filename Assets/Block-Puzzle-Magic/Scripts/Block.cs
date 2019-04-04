@@ -69,6 +69,9 @@ public class Block : MonoBehaviour, IComparable
 
     // status whether block is a storm powerup
     [HideInInspector] public bool isStormPowerup;
+    
+    // status whether block is a frenzy powerup
+    [HideInInspector] public bool isFrenzyPowerup;
 
     public Sprite prevBlockImageSprite;
 
@@ -206,6 +209,7 @@ public class Block : MonoBehaviour, IComparable
         isStormPowerup = false;
         isQuakePowerup = false;
         isAvalanchePowerup = false;
+        isFrenzyPowerup = false;
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
     }
@@ -401,5 +405,12 @@ public class Block : MonoBehaviour, IComparable
             return (rowID + columnID).CompareTo(b.rowID + b.columnID);
 
         throw new ArgumentException("Object is not a Block");
+    }
+
+    public void ConvertToFrenzyBlock()
+    {
+        isFrenzyPowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Frenzy);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 }

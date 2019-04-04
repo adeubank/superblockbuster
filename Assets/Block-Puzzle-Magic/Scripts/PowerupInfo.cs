@@ -18,7 +18,8 @@ public class PowerupInfo : ShapeInfo
         Lag = 1007,
         Storm = 1008,
         Quake = 1009,
-        Avalanche = 1010
+        Avalanche = 1010,
+        Frenzy = 1011
     }
 
     public override bool IsPowerup()
@@ -95,6 +96,12 @@ public class PowerupInfo : ShapeInfo
                 Debug.Log("Played Avalanche Powerup");
                 foreach (var block in currentBlocks) block.ConvertToAvalancheBlock();
                 break;
+            
+            case (int) Powerups.Frenzy:
+
+                Debug.Log("Played Frenzy Powerup");
+                foreach (var block in currentBlocks) block.ConvertToFrenzyBlock();
+                break;
 
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
@@ -124,9 +131,15 @@ public class PowerupInfo : ShapeInfo
     private void HandleDoublerBlocks(IEnumerable<Block> currentBlocks)
     {
         foreach (var currentBlock in currentBlocks)
+        {
+            // since doubler is activation once played, show sprite here
+            StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
+                BlockShapeSpawner.Instance.FindPowerupById(currentBlock.blockID), currentBlock));
             GamePlay.Instance.SurroundingBlocksInRadius(currentBlock, 2, true)
                 .Where(block => block.isFilled)
                 .ToList()
                 .ForEach(b => b.ConvertToDoublerBlock());
+        }
+            
     }
 }

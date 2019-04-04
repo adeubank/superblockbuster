@@ -56,6 +56,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     [HideInInspector] public Text txtCurrentRound;
     private readonly List<Block> _activeQuakePowerups = new List<Block>();
     private int _spawnAvalancheBlocks;
+    private bool _isFrenzyPowerupRunning;
+    private bool shouldActivateFrenzy;
 
     #region IBeginDragHandler implementation
 
@@ -576,7 +578,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (BlockShapeSpawner.Instance.FillShapeContainer())
         {
             var newRound = currentRound + 1;
+
             Debug.Log("Updating round from currentRound=" + currentRound + " newRound=" + newRound);
+
             UpdateRound(newRound);
 
             yield return RoundClearPowerups();
@@ -637,6 +641,48 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
 
         #endregion
+    }
+
+    private IEnumerator ActivateFrenzyPowerup()
+    {
+        Debug.Log("Activating Frenzy powerup");
+
+        // check lock
+        if (_isFrenzyPowerupRunning)
+        {
+            yield break;
+        }
+        
+        yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
+
+        // lock
+        _isFrenzyPowerupRunning = true;
+
+        const int frenzyOffscreenOffset = 1000;
+        const float blockTweenDuration = 0.4f;
+        var emptyBottomBlocks =
+            blockGrid.Where(b => !b.isFilled && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
+        var frenzySequence = DOTween.Sequence();
+        
+        emptyBottomBlocks.ForEach(b =>
+        {
+            Debug.Log("New Frenzy block! " + b);
+            var blockImageTransform = b.blockImage.transform;
+            Vector3 startPosition = blockImageTransform.position;
+            blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
+            Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
+            tween.SetDelay(frenzySequence.Duration() - blockTweenDuration / 2);
+            frenzySequence.Insert(0, tween);
+            b.ConvertToFilledBlock(0);
+            b.ConvertToDoublerBlock();
+        });
+        
+        yield return new WaitUntil(() => !frenzySequence.IsActive());
+
+        yield return BreakAllCompletedLines(1);
+
+        // unlock
+        _isFrenzyPowerupRunning = false;
     }
 
     private void UpdateRound(int newRound)
@@ -752,6 +798,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="placingShapeBlockCount">Placing shape block count.</param>
     private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
+        timeSlider.PauseTimer();
+        
         yield return PrepPowerupsBeforeClearing();
 
         var breakingRows = GetFilledRows();
@@ -836,6 +884,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return ActivateQuakePowerup();
 
         yield return ActivateAvalanchePowerup();
+      
+        if (shouldActivateFrenzy)
+        {
+            shouldActivateFrenzy = false;
+            yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
+            yield return ActivateFrenzyPowerup();
+        }
 
         Debug.Log("Finished breaking lines.");
 
@@ -904,6 +959,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 b.isStormPowerup = false;
                 Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
                 StartCoroutine(ActivateStormPowerup());
+            }
+
+            if (b.isFrenzyPowerup)
+            {
+                b.isFrenzyPowerup = false;
+                Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
+                shouldActivateFrenzy = true;
+                StartCoroutine(ActivateFrenzyPowerup());
             }
 
             b.ClearBlock(true);
