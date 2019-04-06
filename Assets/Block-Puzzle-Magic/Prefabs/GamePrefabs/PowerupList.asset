@@ -104,7 +104,7 @@ MonoBehaviour:
   - BlockID: 1011
     shapeBlock: {fileID: 2457418089751939684, guid: c9b86c11d63732846a1f871b2ee819df,
       type: 3}
-    spawnProbability: 10
+    spawnProbability: 1
     powerupActivationSprite: {fileID: 6498246031593615333, guid: 286988d2cdd54d147bb53f3d694d5e11,
       type: 3}
     powerupBlockIcon: {fileID: 8793108114745435912, guid: dbcdc267c9129584e91b1fdfab190b27,

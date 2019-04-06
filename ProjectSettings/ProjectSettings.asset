@@ -156,7 +156,7 @@ PlayerSettings:
     Android: com.hyperbyte.blockpuzzle
     iOS: com.SuperGeekGames.SuperTilePuzzle
   buildNumber:
-    iOS: 10
+    iOS: 11
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
@@ -681,7 +681,7 @@ PlayerSettings:
       daydreamIconBackground: {fileID: 0}
   cloudServicesEnabled:
     Build: 1
-    Collab: 1
+    Collab: 0
     ErrorHub: 0
     Hub: 0
     UNet: 1

@@ -413,4 +413,10 @@ public class Block : MonoBehaviour, IComparable
         var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Frenzy);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
+
+    public void convertToFrenziedBlock()
+    {
+        ConvertToFilledBlock(0);
+        ConvertToDoublerBlock();
+    }
 }

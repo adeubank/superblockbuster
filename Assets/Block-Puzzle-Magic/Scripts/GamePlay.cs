@@ -455,7 +455,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     alreadyFalling.Add(nextBlockToFall);
                     nextBlockToFall.isFilled = false; // mark it empty
 
-                    // TODO spawn a empty cell to fill the hole as this block falls
                     var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate,
                         nextBlockToFall.transform.position, Quaternion.identity,
                         GameBoardGenerator.Instance.BoardContent.transform);
@@ -660,24 +659,52 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         const int frenzyOffscreenOffset = 1000;
         const float blockTweenDuration = 0.4f;
-        var emptyBottomBlocks =
-            blockGrid.Where(b => !b.isFilled && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
+        var emptyBottomBlocks = blockGrid.Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
         var frenzySequence = DOTween.Sequence();
-        
-        emptyBottomBlocks.ForEach(b =>
+        var numberOfSequences = 0;
+        var psuedoBlocks = new List<List<Block>>();
+
+        while (emptyBottomBlocks.Any())
         {
-            Debug.Log("New Frenzy block! " + b);
-            var blockImageTransform = b.blockImage.transform;
-            Vector3 startPosition = blockImageTransform.position;
-            blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
-            Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
-            tween.SetDelay(frenzySequence.Duration() - blockTweenDuration / 2);
-            frenzySequence.Insert(0, tween);
-            b.ConvertToFilledBlock(0);
-            b.ConvertToDoublerBlock();
+            var nextBlock = emptyBottomBlocks.FirstOrDefault();
+            if (!nextBlock) { continue; }
+
+            emptyBottomBlocks.Remove(nextBlock);
+
+            // find the first shape with less than 5 blocks (or if one empty block left) and be touching might the next block
+            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 1).FirstOrDefault(blocks => blocks.Any(b =>
+                Math.Abs(b.rowID - nextBlock.rowID) <= 1 && Math.Abs(b.columnID - nextBlock.columnID) <= 1));
+
+            if (nextBlockShape != null)
+            {
+                nextBlockShape.Add(nextBlock);
+            }
+            else
+            {
+                psuedoBlocks.Add(new List<Block> { nextBlock });
+            }
+        }
+        
+        psuedoBlocks.ForEach((shape) =>
+        {
+            var shapeSequence = DOTween.Sequence();
+            shape.ForEach(b =>
+            {
+                Debug.Log("New Frenzy block! " + b);
+                var blockImageTransform = b.blockImage.transform;
+                Vector3 startPosition = blockImageTransform.position;
+                blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
+                Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
+                tween.SetDelay(numberOfSequences * blockTweenDuration / 4);
+                shapeSequence.Insert(0, tween);
+                b.convertToFrenziedBlock();
+            });
+            frenzySequence.Append(shapeSequence);
+            numberOfSequences += 1;
         });
         
-        yield return new WaitUntil(() => !frenzySequence.IsActive());
+        
+        yield return new WaitUntil(() => !frenzySequence.IsPlaying() && !frenzySequence.IsActive());
 
         yield return BreakAllCompletedLines(1);
 
