@@ -279,10 +279,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     return highlightingBlocks.Any(hb =>
                     {
-                        var touching = o.rowID == hb.rowID &&
-                                       Mathf.Abs(o.columnID - hb.columnID) <= 1 ||
-                                       o.columnID == hb.columnID &&
-                                       Mathf.Abs(o.rowID - hb.rowID) <= 1;
+                        var touching = hb.IsTouching(o);
                         if (touching) Debug.Log("Touching same color block! o=" + o + " hb=" + hb);
                         return touching;
                     });
@@ -657,7 +654,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         // lock
         _isFrenzyPowerupRunning = true;
 
-        const int frenzyOffscreenOffset = 1000;
+        const int frenzyOffscreenOffset = 10;
         const float blockTweenDuration = 0.4f;
         var emptyBottomBlocks = blockGrid.Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
         var frenzySequence = DOTween.Sequence();
@@ -672,8 +669,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             emptyBottomBlocks.Remove(nextBlock);
 
             // find the first shape with less than 5 blocks (or if one empty block left) and be touching might the next block
-            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 1).FirstOrDefault(blocks => blocks.Any(b =>
-                Math.Abs(b.rowID - nextBlock.rowID) <= 1 && Math.Abs(b.columnID - nextBlock.columnID) <= 1));
+            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 2).FirstOrDefault(blocks => blocks.Any(b => b.IsTouching(nextBlock)));
 
             if (nextBlockShape != null)
             {
@@ -693,7 +689,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Debug.Log("New Frenzy block! " + b);
                 var blockImageTransform = b.blockImage.transform;
                 Vector3 startPosition = blockImageTransform.position;
-                blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
+                blockImageTransform.position = new Vector3( startPosition.x + frenzyOffscreenOffset, startPosition.y);
                 Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
                 tween.SetDelay(numberOfSequences * blockTweenDuration / 4);
                 shapeSequence.Insert(0, tween);

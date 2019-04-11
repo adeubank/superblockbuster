@@ -419,4 +419,12 @@ public class Block : MonoBehaviour, IComparable
         ConvertToFilledBlock(0);
         ConvertToDoublerBlock();
     }
+
+    public bool IsTouching(Block nextBlock)
+    {
+        return  rowID == nextBlock.rowID &&
+                Mathf.Abs(columnID - nextBlock.columnID) <= 1 ||
+                columnID == nextBlock.columnID &&
+                Mathf.Abs(rowID - nextBlock.rowID) <= 1;
+    }
 }
