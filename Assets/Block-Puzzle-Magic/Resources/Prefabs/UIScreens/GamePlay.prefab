@@ -652,8 +652,8 @@ MonoBehaviour:
   BoardContent: {fileID: 28}
   emptyBlockTemplate: {fileID: 1993577205933158, guid: d7ed44f13f9512047bc5aec828f9cb44,
     type: 3}
-  TotalColumns: 10
-  TotalRows: 10
+  TotalColumns: 8
+  TotalRows: 8
 --- !u!114 &1409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -666,8 +666,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3007f39214fb693469ccf721053c76f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blockDandelionSeedPrefab: {fileID: 1917412183333977984, guid: 8f3a1939dcad0f746b046111a232ba73,
+    type: 3}
   blockGrid: []
   blockNotPlacedSound: {fileID: 8300000, guid: 30b2b74fad800c74894d4d1cd72af31c, type: 3}
+  blockOmnicolorPrefab: {fileID: 8486066558008455055, guid: 7280d0e94e8cbd84ab222442be93c18a,
+    type: 3}
   blockPlaceSound: {fileID: 8300000, guid: 5f2bd1a3704c6e249a71a649e936e6b2, type: 3}
   blockSelectSound: {fileID: 8300000, guid: c0f1083b827f4db4399cf9ef58a7d767, type: 3}
   BombSprite: {fileID: 21300000, guid: f69f794b3f5ab754da6c57e3de814758, type: 3}
@@ -684,10 +688,6 @@ MonoBehaviour:
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
-  blockOmnicolorPrefab: {fileID: 8486066558008455055, guid: 7280d0e94e8cbd84ab222442be93c18a,
-    type: 3}
-  blockDandelionSeedPrefab: {fileID: 1917412183333977984, guid: 8f3a1939dcad0f746b046111a232ba73,
-    type: 3}
 --- !u!114 &1305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -789,10 +789,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd2b0e2bfa5404cb4197a380a1e4548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shakeObject: {fileID: 752}
-  shakeDuration: 0
-  shakeAmount: 0.7
   decreaseFactor: 1
+  shakeAmount: 0.7
+  shakeDuration: 0
+  shakeObject: {fileID: 752}
 --- !u!1 &110
 GameObject:
   m_ObjectHideFlags: 0
@@ -1419,26 +1419,12 @@ MonoBehaviour:
   isNextRoundBandageBlock: 0
   isNextRoundSticksGaloreBlocks: 0
   keepFilledAlways: 0
-  powerupBlockIconDoublerPrefab: {fileID: 982202568021253729, guid: 1428badfa3dccee449742fcc33be533e,
-    type: 3}
   powerupBlockIconBandagePrefab: {fileID: 6606367094509460494, guid: baac425af097c9b4f9f15243892cb446,
     type: 3}
-  powerupBlockIconBombPrefab: {fileID: 7172850881657738912, guid: 32b94a26ef7d64b96b6e988ba57c05f4,
-    type: 3}
-  powerupBlockIconColorCoderPrefab: {fileID: 774068445903749328, guid: 3576b90a6ec9eb941811a34124209a01,
-    type: 3}
-  powerupBlockIconDandelionPrefab: {fileID: 1851252032709409074, guid: 6ba777b361dd18042b2f4f099f77392f,
-    type: 3}
-  powerupBlockIconLagPrefab: {fileID: 6591912637850637455, guid: ccf124c2f342648cd8fbe8d03a78ed6b,
-    type: 3}
-  powerupBlockIconSticksGalorePrefab: {fileID: 6684866531750910742, guid: b5a359b9908bf0e42a1d842c3430f2f4,
-    type: 3}
-  powerupBlockIconStormPrefab: {fileID: 1974087653856483289, guid: 521457d00b6bcc5428f18e16381f4b0a,
-    type: 3}
+  powerupList: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
   shapeBlockList: {fileID: 11400000, guid: 6bb89acac9e25774aa7cc5c1d2dc193e, type: 2}
   shapeBlockList_Plus: {fileID: 11400000, guid: a1a0cabb8f90a00419258aa22746cdd2,
     type: 2}
-  powerupList: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
   shapeColors:
   - {fileID: 21300000, guid: 9591cdaa499a9154dae4ff87a8473bb9, type: 3}
   - {fileID: 21300000, guid: 1cab8c72cd59d2c48934cf2d2dde3750, type: 3}

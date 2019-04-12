@@ -220,8 +220,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         // need normal blocks only when bandage block
         if (isNextRoundBandageBlock)
         {
-            var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToArray();
-            return normalBlocks[Random.Range(0, normalBlocks.Count())].shapeBlock;
+            return NextNormalBlock();
         }
 
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
@@ -230,7 +229,20 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var RandomShape = shapeBlockProbabilityPool[0];
         shapeBlockProbabilityPool.RemoveAt(0);
 
-        return ActiveShapeBlocks.Find(o => o.BlockID == RandomShape).shapeBlock;
+        var powerupShape = FindPowerupById(RandomShape);
+        if (powerupShape)
+        {
+            var nextShapeBlock = NextNormalBlock();
+            nextShapeBlock.GetComponent<>()
+        }
+        
+        return ;
+    }
+
+    private GameObject NextNormalBlock()
+    {
+        var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToArray();
+        return normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
     }
 
     /// <summary>

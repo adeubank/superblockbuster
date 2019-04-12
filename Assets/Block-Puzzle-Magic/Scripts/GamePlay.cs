@@ -251,7 +251,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (highlightingBlocks != null && highlightingBlocks.Count > 0)
             foreach (var c in highlightingBlocks)
-                c.SetBlockImage(currentShape.blockImage, currentShape.ShapeID);
+                c.SetBlockImage(currentShape.blockImage, currentShape.ShapeID, MoveCount);
     }
 
     /// <summary>
@@ -713,20 +713,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var strCurrentRound = currentRound.ToString();
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
 
-        // speed up game as rounds progress
-//        if (currentRound < 10)
-//        {
-//            timeSlider.UpdateTimerSpeed(0.1f);
-//        }
-//        else if (currentRound > 10)
-//        {
-//            BlockShapeSpawner.Instance.SetBlockShapeToSix();
-//            timeSlider.UpdateTimerSpeed(0.11f);
-//        }
-//        else if (currentRound > 20)
-//        {
-//            timeSlider.UpdateTimerSpeed(0.125f);
-//        }
+        // activate 6 spaces
+        if (currentRound > 10)
+        {
+            BlockShapeSpawner.Instance.SetBlockShapeToSix();
+        }
     }
 
     /// <summary>

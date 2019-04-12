@@ -72,6 +72,7 @@ public class GameBoardGenerator : Singleton<GameBoardGenerator>
                 newPosX += blockWidth + blockSpace;
                 var thisCellInfo = newCell.GetComponent<Block>();
                 thisCellInfo.blockImage = newCell.transform.GetChild(0).GetComponent<Image>();
+                thisCellInfo.blockImage.rectTransform.sizeDelta = new Vector2(blockWidth, blockHeight);
                 thisCellInfo.rowID = row;
                 thisCellInfo.columnID = column;
 

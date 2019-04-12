@@ -78,7 +78,8 @@ public class Block : MonoBehaviour, IComparable
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
-
+    
+    [HideInInspector] public int moveID;
 
     /// <summary>
     ///     Raises the enable event.
@@ -125,12 +126,14 @@ public class Block : MonoBehaviour, IComparable
     /// </summary>
     /// <param name="sprite">Sprite.</param>
     /// <param name="_blockID">Block I.</param>
-    public void SetBlockImage(Sprite sprite, int _blockID)
+    /// <param name="moveCount"></param>
+    public void SetBlockImage(Sprite sprite, int _blockID, int moveCount)
     {
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;
         colorId = sprite.name.TryParseInt();
+        moveID = moveCount;
         isFilled = true;
     }
 
