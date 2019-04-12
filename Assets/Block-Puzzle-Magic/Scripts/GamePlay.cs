@@ -686,7 +686,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var shapeSequence = DOTween.Sequence();
             shape.ForEach(b =>
             {
-                Debug.Log("New Frenzy block! " + b);
                 var blockImageTransform = b.blockImage.transform;
                 Vector3 startPosition = blockImageTransform.position;
                 blockImageTransform.position = new Vector3( startPosition.x + frenzyOffscreenOffset, startPosition.y);
@@ -715,19 +714,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
 
         // speed up game as rounds progress
-        if (currentRound < 10)
-        {
-            timeSlider.UpdateTimerSpeed(0.1f);
-        }
-        else if (currentRound > 10)
-        {
-            BlockShapeSpawner.Instance.SetBlockShapeToSix();
-            timeSlider.UpdateTimerSpeed(0.11f);
-        }
-        else if (currentRound > 20)
-        {
-            timeSlider.UpdateTimerSpeed(0.125f);
-        }
+//        if (currentRound < 10)
+//        {
+//            timeSlider.UpdateTimerSpeed(0.1f);
+//        }
+//        else if (currentRound > 10)
+//        {
+//            BlockShapeSpawner.Instance.SetBlockShapeToSix();
+//            timeSlider.UpdateTimerSpeed(0.11f);
+//        }
+//        else if (currentRound > 20)
+//        {
+//            timeSlider.UpdateTimerSpeed(0.125f);
+//        }
     }
 
     /// <summary>
