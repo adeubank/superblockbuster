@@ -142,4 +142,15 @@ public class PowerupInfo : ShapeInfo
         }
             
     }
+
+    public void ConvertToShape(ShapeInfo shapeInfo)
+    {
+        var powerupBlocks = new List<ShapeBlock>();
+        // TODO use the normal shape info to replace this powerups blocks
+        if (shapeInfo.ShapeBlocks.Count == 0) shapeInfo.CreateBlockList();
+        shapeInfo.ShapeBlocks.ForEach(b =>
+        {
+//            transform.re
+        });
+    }
 }

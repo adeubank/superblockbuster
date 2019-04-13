@@ -180,6 +180,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             var currentColorId = blockImage.sprite.name.TryParseInt(-1);
             if (currentColorId > 0)
                 blockImage.sprite = colorSprite;
+            
+            // TODO may have to resize here as well
         }
 
 #if HBDOTween
@@ -187,25 +189,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 #endif
 
         return newShapeBlock.GetComponent<ShapeInfo>();
-    }
-
-    public Sprite NextColorSprite()
-    {
-        if (isNextRoundSticksGaloreBlocks && sticksGaloreColorId > 0)
-            return shapeColors.First(sprite => sprite.name.TryParseInt(-1) == sticksGaloreColorId);
-
-        // just return a random color
-        return shapeColors[Random.Range(0, shapeColors.Length)];
-    }
-
-    public IEnumerable<ShapeBlockSpawn> NormalBlocks()
-    {
-        return ActiveShapeBlocks.Where(s => s.BlockID < 100);
-    }
-
-    public IEnumerable<ShapeBlockSpawn> SticksGaloreBlocks()
-    {
-        return ActiveShapeBlocks.Where(s => s.BlockID == 10 || s.BlockID == 11);
     }
 
     public GameObject NextShapeBlock()
@@ -220,7 +203,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         // need normal blocks only when bandage block
         if (isNextRoundBandageBlock)
         {
-            return NextNormalBlock();
+            return NextNormalShape();
         }
 
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
@@ -229,19 +212,43 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var RandomShape = shapeBlockProbabilityPool[0];
         shapeBlockProbabilityPool.RemoveAt(0);
 
+        // pull out a normal block if next shape is a powerup
         var powerupShape = FindPowerupById(RandomShape);
-        if (powerupShape)
+        if (powerupShape == null)
         {
-            var nextShapeBlock = NextNormalBlock();
-            nextShapeBlock.GetComponent<>()
+            // or just return the normal block
+            return ActiveShapeBlocks.First(b => b.BlockID == RandomShape).shapeBlock;
         }
-        
-        return ;
+
+        // convert this powerup to the next normal block
+        var nextShape = NextNormalShape();        
+        powerupShape.shapeBlock.GetComponent<PowerupInfo>().ConvertToShape(nextShape.GetComponent<ShapeInfo>());
+
+        return powerupShape.shapeBlock;
     }
 
-    private GameObject NextNormalBlock()
+    public Sprite NextColorSprite()
     {
-        var normalBlocks = NormalBlocks().Where(s => s.BlockID > 1).ToArray();
+        if (isNextRoundSticksGaloreBlocks && sticksGaloreColorId > 0)
+            return shapeColors.First(sprite => sprite.name.TryParseInt(-1) == sticksGaloreColorId);
+
+        // just return a random color
+        return shapeColors[Random.Range(0, shapeColors.Length)];
+    }
+
+    public IEnumerable<ShapeBlockSpawn> NormalShapes()
+    {
+        return ActiveShapeBlocks.Where(s => s.BlockID < 100);
+    }
+
+    public IEnumerable<ShapeBlockSpawn> SticksGaloreBlocks()
+    {
+        return ActiveShapeBlocks.Where(s => s.BlockID == 10 || s.BlockID == 11);
+    }
+
+    private GameObject NextNormalShape()
+    {
+        var normalBlocks = NormalShapes().Where(s => s.BlockID > 1).ToArray();
         return normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
     }
 
