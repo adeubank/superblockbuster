@@ -17,7 +17,6 @@ public class ShapeInfo : MonoBehaviour
 
     [HideInInspector] public int startOffsetX;
     [HideInInspector] public int startOffsetY;
-    [HideInInspector] public PowerupBlockSpawn powerupInfo;
 
     private void Start()
     {
@@ -28,7 +27,6 @@ public class ShapeInfo : MonoBehaviour
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
         startOffsetX = firstBlock.rowID;
         startOffsetY = firstBlock.columnID;
-        powerupInfo = BlockShapeSpawner.Instance.FindPowerupById(ShapeID);
 
         Debug.Log("Started a new shape! " + this);
     }
@@ -70,7 +68,7 @@ public class ShapeInfo : MonoBehaviour
 
     public virtual bool IsPowerup()
     {
-        return powerupInfo != null && powerupInfo.powerupBlockIcon != null;
+        return false;
     }
 }
 

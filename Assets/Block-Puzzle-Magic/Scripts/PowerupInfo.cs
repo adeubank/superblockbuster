@@ -145,12 +145,22 @@ public class PowerupInfo : ShapeInfo
 
     public void ConvertToShape(ShapeInfo shapeInfo)
     {
-        var powerupBlocks = new List<ShapeBlock>();
-        // TODO use the normal shape info to replace this powerups blocks
-        if (shapeInfo.ShapeBlocks.Count == 0) shapeInfo.CreateBlockList();
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById(ShapeID);
+        var powerupBlocks = new List<Transform>();
+        foreach (Transform powerupBlock in transform) powerupBlocks.Add(powerupBlock);
+
+        if (shapeInfo.ShapeBlocks == null || shapeInfo.ShapeBlocks.Count == 0) shapeInfo.CreateBlockList();
         shapeInfo.ShapeBlocks.ForEach(b =>
         {
-//            transform.re
+            Debug.Log("Moving normal block=" + b.block);
+            var newBlock = Instantiate(b.block, transform, true);
+            Instantiate(powerupInfo.powerupBlockIcon, newBlock, true);
+        });
+
+        powerupBlocks.ForEach(b =>
+        {
+            Debug.Log("Destroying b=" + b);
+            Destroy(b);
         });
     }
 }

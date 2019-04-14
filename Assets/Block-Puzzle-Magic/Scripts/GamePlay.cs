@@ -265,7 +265,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         AudioManager.Instance.PlaySound(blockPlaceSound);
 
         if (currentShape.IsPowerup())
-            yield return currentShape.powerupInfo.PerformPowerup(highlightingBlocks);
+            yield return currentShape.GetComponent<PowerupInfo>().PerformPowerup(highlightingBlocks);
 
         Destroy(currentShape.gameObject);
         currentShape = null;
