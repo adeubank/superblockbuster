@@ -58,6 +58,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int _spawnAvalancheBlocks;
     private bool _isFrenzyPowerupRunning;
     private bool shouldActivateFrenzy;
+    private List<PowerupActivation> _powerupsToActivate;
 
     #region IBeginDragHandler implementation
 
@@ -173,6 +174,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         //Generate board from GameBoardGenerator Script Component.
         GetComponent<GameBoardGenerator>().GenerateBoard();
         highlightingBlocks = new List<Block>();
+        _powerupsToActivate = new List<PowerupActivation>();
 
         #region time mode
 
@@ -265,7 +267,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         AudioManager.Instance.PlaySound(blockPlaceSound);
 
         if (currentShape.IsPowerup())
-            yield return currentShape.GetComponent<PowerupInfo>().PerformPowerup(highlightingBlocks);
+            yield return currentShape.GetComponent<ShapeInfo>().PerformPowerup(highlightingBlocks);
 
         Destroy(currentShape.gameObject);
         currentShape = null;
@@ -648,7 +650,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             yield break;
         }
-        
+
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
         // lock
@@ -656,7 +658,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         const int frenzyOffscreenOffset = 10;
         const float blockTweenDuration = 0.4f;
-        var emptyBottomBlocks = blockGrid.Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
+        var emptyBottomBlocks = blockGrid
+            .Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
         var frenzySequence = DOTween.Sequence();
         var numberOfSequences = 0;
         var psuedoBlocks = new List<List<Block>>();
@@ -664,12 +667,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         while (emptyBottomBlocks.Any())
         {
             var nextBlock = emptyBottomBlocks.FirstOrDefault();
-            if (!nextBlock) { continue; }
+            if (!nextBlock)
+            {
+                continue;
+            }
 
             emptyBottomBlocks.Remove(nextBlock);
 
             // find the first shape with less than 5 blocks (or if one empty block left) and be touching might the next block
-            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 2).FirstOrDefault(blocks => blocks.Any(b => b.IsTouching(nextBlock)));
+            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 2)
+                .FirstOrDefault(blocks => blocks.Any(b => b.IsTouching(nextBlock)));
 
             if (nextBlockShape != null)
             {
@@ -677,10 +684,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
             else
             {
-                psuedoBlocks.Add(new List<Block> { nextBlock });
+                psuedoBlocks.Add(new List<Block> {nextBlock});
             }
         }
-        
+
         psuedoBlocks.ForEach((shape) =>
         {
             var shapeSequence = DOTween.Sequence();
@@ -688,7 +695,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 var blockImageTransform = b.blockImage.transform;
                 Vector3 startPosition = blockImageTransform.position;
-                blockImageTransform.position = new Vector3( startPosition.x + frenzyOffscreenOffset, startPosition.y);
+                blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
                 Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
                 tween.SetDelay(numberOfSequences * blockTweenDuration / 4);
                 shapeSequence.Insert(0, tween);
@@ -697,8 +704,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             frenzySequence.Append(shapeSequence);
             numberOfSequences += 1;
         });
-        
-        
+
+
         yield return new WaitUntil(() => !frenzySequence.IsPlaying() && !frenzySequence.IsActive());
 
         yield return BreakAllCompletedLines(1);
@@ -740,6 +747,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         return thisRow;
     }
+
     private bool isFilledBlock(Block block)
     {
         if (!block)
@@ -812,7 +820,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
         timeSlider.PauseTimer();
-        
+
         yield return PrepPowerupsBeforeClearing();
 
         var breakingRows = GetFilledRows();
@@ -897,7 +905,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return ActivateQuakePowerup();
 
         yield return ActivateAvalanchePowerup();
-      
+
         if (shouldActivateFrenzy)
         {
             shouldActivateFrenzy = false;
@@ -931,18 +939,21 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         foreach (var b in breakingLine)
         {
+            var maybeNewPowerup = new PowerupActivation(b.blockID, MoveCount);
             if (b.isDandelionPowerup)
             {
                 b.isDandelionPowerup = false;
                 Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + b);
-                yield return HandleDandelionPowerup(b);
+                if (ShouldActivatePowerup(maybeNewPowerup))
+                    yield return HandleDandelionPowerup(b);
             }
 
             if (b.isBandagePowerup)
             {
                 b.isBandagePowerup = false;
                 Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
-                BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
+                if (ShouldActivatePowerup(maybeNewPowerup))
+                    BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
 
             if (b.isBombPowerup)
@@ -964,22 +975,27 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 b.isLagPowerup = false;
                 Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
-                timeSlider.ActivateLagPowerup();
+                if (ShouldActivatePowerup(maybeNewPowerup))
+                    timeSlider.ActivateLagPowerup();
             }
 
             if (b.isStormPowerup)
             {
                 b.isStormPowerup = false;
                 Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
-                StartCoroutine(ActivateStormPowerup());
+                if (ShouldActivatePowerup(maybeNewPowerup))
+                    StartCoroutine(ActivateStormPowerup());
             }
 
             if (b.isFrenzyPowerup)
             {
                 b.isFrenzyPowerup = false;
                 Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
-                shouldActivateFrenzy = true;
-                StartCoroutine(ActivateFrenzyPowerup());
+                if (ShouldActivatePowerup(maybeNewPowerup))
+                {
+                    shouldActivateFrenzy = true;
+                    StartCoroutine(ActivateFrenzyPowerup());
+                }
             }
 
             b.ClearBlock(true);
@@ -988,6 +1004,26 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
+    }
+
+    private bool ShouldActivatePowerup(PowerupActivation powerupActivation)
+    {
+        if (_powerupsToActivate.Any(p =>
+            p.moveId == powerupActivation.moveId && p.powerupId == powerupActivation.powerupId)) return false;
+        _powerupsToActivate.Add(powerupActivation);
+        return true;
+    }
+
+    private class PowerupActivation
+    {
+        public readonly int powerupId;
+        public readonly int moveId;
+
+        public PowerupActivation(int powerupId, int moveId)
+        {
+            this.powerupId = powerupId;
+            this.moveId = moveId;
+        }
     }
 
     private IEnumerator ActivateStormPowerup()

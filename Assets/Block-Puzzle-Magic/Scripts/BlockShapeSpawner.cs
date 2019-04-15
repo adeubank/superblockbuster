@@ -164,14 +164,16 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var newShapeBlock = NextShapeBlock();
         var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
         var spawningShapeInfo = spawningShapeBlock.GetComponent<ShapeInfo>();
-        var spawningPowerupInfo = spawningShapeBlock.GetComponent<PowerupInfo>();
+        var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
         
         spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
         spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningShapeBlock.GetComponent<ShapeInfo>().CreateBlockList();
-        
-        if (spawningPowerupInfo != null)
-            spawningPowerupInfo.ConvertToShape(NextNormalShape().GetComponent<ShapeInfo>());
+
+        if (spawningShapeInfo.IsPowerup() && spawningPowerupInfo != null)
+        {
+            spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);            
+        }
         
         if (isNextRoundBandageBlock)
             spawningShapeInfo.ConvertToBandageShape();
@@ -217,7 +219,18 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         var randomShape = shapeBlockProbabilityPool[0];
         shapeBlockProbabilityPool.RemoveAt(0);
-        return Instantiate(ActiveShapeBlocks.First(b => b.BlockID == randomShape).shapeBlock);      
+        var nextShapeBlock = ActiveShapeBlocks.First(b => b.BlockID == randomShape).shapeBlock;
+        var nextShapeInfo = nextShapeBlock.GetComponent<ShapeInfo>();
+
+        // return a normal shape with a powerup ID
+        if (nextShapeBlock.GetComponent<ShapeInfo>().IsPowerup())
+        {
+            var nextNormalShape = NextNormalShape();
+            nextNormalShape.GetComponent<ShapeInfo>().ShapeID = nextShapeInfo.ShapeID;
+            return nextNormalShape;
+        }
+
+        return nextShapeBlock;
     }
 
     public Sprite NextColorSprite()
