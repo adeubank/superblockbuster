@@ -160,7 +160,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
 #if HBDOTween
                 currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
-                currentShape.transform.DOScale(Vector3.one * 0.6F, 0.5F);
+                currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeLocalScale(), 0.5F);
 #endif
                 currentShape = null;
                 AudioManager.Instance.PlaySound(blockNotPlacedSound);
@@ -293,7 +293,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         highlightingBlocks.Clear();
 
         yield return BreakAllCompletedLines(placingShapeBlockCount);
-        
+
         // handle any powerups that needs to be cleared up again
         yield return BreakAllCompletedLines(placingShapeBlockCount);
 
@@ -310,13 +310,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
 
         // find any quake blocks activated
-        var quakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
+        var quakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).GroupBy(b => b.moveID)
+            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         _activeQuakePowerups.AddRange(quakePowerups);
 
         #region bomb powerup preperation
 
         // find any bomb blocks about to be detonated
-        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
+        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).GroupBy(b => b.moveID)
+            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         if (activeBombPowerups.Any()) PrepDetonatingBombBlockPowerups(activeBombPowerups);
 
         #endregion
@@ -324,22 +326,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region color coder preparation
 
         // find any bomb blocks about to be detonated
-        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
+        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).GroupBy(b => b.moveID)
+            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
 
         #endregion
 
         #region avalanche block spawn
 
-        _spawnAvalancheBlocks += clearedLineBlocks.Where(b => b.isAvalanchePowerup).Aggregate(new List<int>(), (ints, block) =>
-        {
-            if (ints.Contains(block.moveID))
+        _spawnAvalancheBlocks += clearedLineBlocks.Where(b => b.isAvalanchePowerup).Aggregate(new List<int>(),
+            (ints, block) =>
             {
+                if (ints.Contains(block.moveID))
+                {
+                    return ints;
+                }
+
+                ints.Add(block.moveID);
                 return ints;
-            }
-            ints.Add(block.moveID);
-            return ints;
-        }).Count;
+            }).Count;
 
         #endregion
     }
@@ -380,7 +385,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock)
     {
-        if (!powerupBlockSpawn.powerupActivationSprite)
+        if (powerupBlockSpawn == null || powerupBlockSpawn.powerupActivationSprite == null)
         {
             Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn);
             yield break;
@@ -941,21 +946,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         foreach (var b in breakingLine)
         {
             var maybeNewPowerup = new PowerupActivation(b);
-            if (b.isDandelionPowerup)
+            var shouldActivatePowerup = ShouldActivatePowerup(maybeNewPowerup, b);
+
+            if (b.isDandelionPowerup && shouldActivatePowerup)
             {
                 b.isDandelionPowerup = false;
-                if (ShouldActivatePowerup(maybeNewPowerup, b))
-                    yield return HandleDandelionPowerup(b);
+                yield return HandleDandelionPowerup(b);
             }
 
-            if (b.isBandagePowerup)
+            if (b.isBandagePowerup && shouldActivatePowerup)
             {
                 b.isBandagePowerup = false;
-                if (ShouldActivatePowerup(maybeNewPowerup, b))
-                {
-                    Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
-                    BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
-                }
+                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
+                BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
             }
 
             if (b.isBombPowerup)
@@ -965,7 +968,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 b.ConvertToExplosion();
             }
 
-            if (b.isSticksGalorePowerup)
+            if (b.isSticksGalorePowerup && shouldActivatePowerup)
             {
                 b.isSticksGalorePowerup = false;
                 Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + b);
@@ -973,52 +976,47 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
             }
 
-            if (b.isLagPowerup)
+            if (b.isLagPowerup && shouldActivatePowerup)
             {
                 b.isLagPowerup = false;
-                if (ShouldActivatePowerup(maybeNewPowerup, b))
-                {
-                    Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
-                    timeSlider.ActivateLagPowerup();
-                }
+                Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
+                timeSlider.ActivateLagPowerup();
             }
 
-            if (b.isStormPowerup)
+            if (b.isStormPowerup && shouldActivatePowerup)
             {
                 b.isStormPowerup = false;
-                if (ShouldActivatePowerup(maybeNewPowerup, b))
-                {
-                    Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
-                    StartCoroutine(ActivateStormPowerup());
-                }
+                Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
+                StartCoroutine(ActivateStormPowerup());
             }
 
-            if (b.isFrenzyPowerup)
+            if (b.isFrenzyPowerup && shouldActivatePowerup)
             {
                 b.isFrenzyPowerup = false;
-                if (ShouldActivatePowerup(maybeNewPowerup, b))
-                {
-                    Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
-                    shouldActivateFrenzy = true;
-                    StartCoroutine(ActivateFrenzyPowerup());
-                }
+                Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
+                shouldActivateFrenzy = true;
+                StartCoroutine(ActivateFrenzyPowerup());
             }
 
             b.ClearBlock(true);
-
-            yield return new WaitForEndOfFrame();
         }
-
-        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
     {
         if (_powerupsToActivate.Any(p =>
-            (p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID) || powerupActivation.PowerupID == 0)) return false;
+            (p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID) ||
+            powerupActivation.PowerupID == 0)) return false;
         _powerupsToActivate.Add(powerupActivation);
         var powerupBlockSpawn = BlockShapeSpawner.Instance.FindPowerupById(powerupActivation.PowerupID);
-        StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
+
+        // do not show for on-place activation powerups
+        if ((int) ShapeInfo.Powerups.Doubler != powerupActivation.PowerupID &&
+            (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID)
+        {
+            StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
+        }
+
         return true;
     }
 

@@ -165,10 +165,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
         var spawningShapeInfo = spawningShapeBlock.GetComponent<ShapeInfo>();
         var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
-        
-        spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
-        spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
-        spawningShapeBlock.GetComponent<ShapeInfo>().CreateBlockList();
+        var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
+
+        spawningShapeBlock.transform.localScale = ShapeLocalScale();
+        spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
+        spawningRectTransform.sizeDelta = ShapeSizeDelta();
+        spawningShapeInfo.CreateBlockList();
 
         if (spawningShapeInfo.IsPowerup() && spawningPowerupInfo != null)
         {
@@ -267,12 +269,24 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         var newShapeBlock = ActiveShapeBlocks.Find(o => o.BlockID == shapeID).shapeBlock;
         var spawningShapeBlock = Instantiate(newShapeBlock);
+        var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
         spawningShapeBlock.transform.SetParent(shapeContainer);
-        spawningShapeBlock.transform.localScale = Vector3.one * 0.6F;
-        spawningShapeBlock.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(800F, 0, 0);
+        spawningShapeBlock.transform.localScale = ShapeLocalScale();
+        spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
+        spawningRectTransform.sizeDelta = ShapeSizeDelta();
 #if HBDOTween
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
+    }
+
+    private Vector2 ShapeSizeDelta()
+    {
+        return new Vector2(200f, 200f);
+    }
+
+    public Vector3 ShapeLocalScale()
+    {
+        return Vector3.one * 0.6F;
     }
 
     /// <summary>
