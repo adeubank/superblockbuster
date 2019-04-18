@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -292,6 +293,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         highlightingBlocks.Clear();
 
         yield return BreakAllCompletedLines(placingShapeBlockCount);
+        
+        // handle any powerups that needs to be cleared up again
+        yield return BreakAllCompletedLines(placingShapeBlockCount);
 
         yield return AddShapesAndUpdateRound();
 
@@ -306,24 +310,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
 
         // find any quake blocks activated
-        _activeQuakePowerups.AddRange(clearedLineBlocks.Where(b => b.isQuakePowerup).ToList());
-
-        #region powerup activation sprite
-
-        clearedLineBlocks.Where(b => Enum.IsDefined(typeof(PowerupInfo.Powerups), b.blockID))
-            .ToList()
-            .ForEach((powerupBlock) =>
-            {
-                var powerupBlockSpawn = BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID);
-                StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
-            });
-
-        #endregion
+        var quakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
+        _activeQuakePowerups.AddRange(quakePowerups);
 
         #region bomb powerup preperation
 
         // find any bomb blocks about to be detonated
-        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).ToList();
+        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         if (activeBombPowerups.Any()) PrepDetonatingBombBlockPowerups(activeBombPowerups);
 
         #endregion
@@ -331,14 +324,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region color coder preparation
 
         // find any bomb blocks about to be detonated
-        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).ToList();
+        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).GroupBy(b => b.moveID).Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
 
         #endregion
 
         #region avalanche block spawn
 
-        _spawnAvalancheBlocks += clearedLineBlocks.Count(b => b.isAvalanchePowerup);
+        _spawnAvalancheBlocks += clearedLineBlocks.Where(b => b.isAvalanchePowerup).Aggregate(new List<int>(), (ints, block) =>
+        {
+            if (ints.Contains(block.moveID))
+            {
+                return ints;
+            }
+            ints.Add(block.moveID);
+            return ints;
+        }).Count;
 
         #endregion
     }
@@ -939,21 +940,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         foreach (var b in breakingLine)
         {
-            var maybeNewPowerup = new PowerupActivation(b.blockID, MoveCount);
+            var maybeNewPowerup = new PowerupActivation(b);
             if (b.isDandelionPowerup)
             {
                 b.isDandelionPowerup = false;
-                Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + b);
-                if (ShouldActivatePowerup(maybeNewPowerup))
+                if (ShouldActivatePowerup(maybeNewPowerup, b))
                     yield return HandleDandelionPowerup(b);
             }
 
             if (b.isBandagePowerup)
             {
                 b.isBandagePowerup = false;
-                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
-                if (ShouldActivatePowerup(maybeNewPowerup))
+                if (ShouldActivatePowerup(maybeNewPowerup, b))
+                {
+                    Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
                     BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
+                }
             }
 
             if (b.isBombPowerup)
@@ -974,25 +976,29 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (b.isLagPowerup)
             {
                 b.isLagPowerup = false;
-                Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
-                if (ShouldActivatePowerup(maybeNewPowerup))
+                if (ShouldActivatePowerup(maybeNewPowerup, b))
+                {
+                    Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
                     timeSlider.ActivateLagPowerup();
+                }
             }
 
             if (b.isStormPowerup)
             {
                 b.isStormPowerup = false;
-                Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
-                if (ShouldActivatePowerup(maybeNewPowerup))
+                if (ShouldActivatePowerup(maybeNewPowerup, b))
+                {
+                    Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
                     StartCoroutine(ActivateStormPowerup());
+                }
             }
 
             if (b.isFrenzyPowerup)
             {
                 b.isFrenzyPowerup = false;
-                Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
-                if (ShouldActivatePowerup(maybeNewPowerup))
+                if (ShouldActivatePowerup(maybeNewPowerup, b))
                 {
+                    Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
                     shouldActivateFrenzy = true;
                     StartCoroutine(ActivateFrenzyPowerup());
                 }
@@ -1006,23 +1012,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
     }
 
-    private bool ShouldActivatePowerup(PowerupActivation powerupActivation)
+    private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
     {
         if (_powerupsToActivate.Any(p =>
-            p.moveId == powerupActivation.moveId && p.powerupId == powerupActivation.powerupId)) return false;
+            (p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID) || powerupActivation.PowerupID == 0)) return false;
         _powerupsToActivate.Add(powerupActivation);
+        var powerupBlockSpawn = BlockShapeSpawner.Instance.FindPowerupById(powerupActivation.PowerupID);
+        StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
         return true;
     }
 
     private class PowerupActivation
     {
-        public readonly int powerupId;
-        public readonly int moveId;
+        public readonly int MoveID;
+        public readonly int PowerupID;
 
-        public PowerupActivation(int powerupId, int moveId)
+        public PowerupActivation(Block block)
         {
-            this.powerupId = powerupId;
-            this.moveId = moveId;
+            MoveID = block.moveID;
+            PowerupID = block.blockID;
         }
     }
 
@@ -1255,6 +1263,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator HandleDandelionPowerup(Block dandelionPowerup)
     {
+        Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + dandelionPowerup);
+
         var seedBlocks = new List<Block>();
 
         // give open blocks more priority over empty

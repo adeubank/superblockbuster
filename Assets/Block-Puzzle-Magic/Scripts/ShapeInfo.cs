@@ -181,37 +181,36 @@ public class ShapeInfo : MonoBehaviour
         }
     }
 
-    private IEnumerator HandleFloodBlocks(IEnumerable<Block> currentBlocks)
+    private IEnumerator HandleFloodBlocks(List<Block> currentBlocks)
     {
-        foreach (var powerupBlock in currentBlocks)
-        {
-            // since flood is activation once played, show sprite here
-            StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-                BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
+        var powerupBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
 
-            var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true);
-            foreach (var block in surroundingBlocks)
-            {
-                block.ConvertToFilledBlock(0);
-                block.colorId = powerupBlock.colorId;
-                block.blockImage.sprite = powerupBlock.blockImage.sprite;
-                yield return new WaitForSeconds(0.01f);
-            }
+        // since flood is activation once played, show sprite here
+        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
+            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
+
+        var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true);
+        foreach (var block in surroundingBlocks)
+        {
+            block.ConvertToFilledBlock(0);
+            block.colorId = powerupBlock.colorId;
+            block.blockImage.sprite = powerupBlock.blockImage.sprite;
+            yield return new WaitForSeconds(0.01f);
         }
+    
     }
 
-    private void HandleDoublerBlocks(IEnumerable<Block> currentBlocks)
+    private void HandleDoublerBlocks(List<Block> currentBlocks)
     {
-        foreach (var currentBlock in currentBlocks)
-        {
-            // since doubler is activation once played, show sprite here
-            StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-                BlockShapeSpawner.Instance.FindPowerupById(currentBlock.blockID), currentBlock));
-            GamePlay.Instance.SurroundingBlocksInRadius(currentBlock, 2, true)
-                .Where(block => block.isFilled)
-                .ToList()
-                .ForEach(b => b.ConvertToDoublerBlock());
-        }
+        var powerupBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
+
+        // since doubler is activation once played, show sprite here
+        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
+            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
+        GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true)
+            .Where(block => block.isFilled)
+            .ToList()
+            .ForEach(b => b.ConvertToDoublerBlock());
     }
 }
 
