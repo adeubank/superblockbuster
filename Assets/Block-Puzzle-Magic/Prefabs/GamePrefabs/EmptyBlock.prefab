@@ -131,7 +131,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 56, y: 56}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222080598333285332
 CanvasRenderer:
@@ -208,7 +208,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 75, y: 75}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222538179173539900
 CanvasRenderer:
@@ -264,10 +264,26 @@ MonoBehaviour:
   bombCounter: 0
   colorId: -1
   columnID: 0
+  isAvalanchePowerup: 0
+  isBandagePowerup: 0
   isBomb: 0
+  isBombPowerup: 0
+  isColorCoderPowerup: 0
+  isDandelionPowerup: 0
+  isDandelionSeed: 0
+  isDoublePoints: 0
   isEdge: 0
+  isExploding: 0
   isFilled: 0
+  isLagPowerup: 0
+  isOmnicolorBlock: 0
+  isQuakePowerup: 0
+  isSticksGalorePowerup: 0
+  isStormPowerup: 0
+  isFrenzyPowerup: 0
+  prevBlockImageSprite: {fileID: 0}
   rowID: 0
+  moveID: 0
 --- !u!61 &61475109600377552
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -292,5 +308,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 58, y: 58}
+  m_Size: {x: 70, y: 70}
   m_EdgeRadius: 0

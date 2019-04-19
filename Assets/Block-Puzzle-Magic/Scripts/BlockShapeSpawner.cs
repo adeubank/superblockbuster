@@ -167,7 +167,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
         var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
 
-        spawningShapeBlock.transform.localScale = ShapeLocalScale();
+        spawningShapeBlock.transform.localScale = ShapeContainerLocalScale();
         spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningRectTransform.sizeDelta = ShapeSizeDelta();
         spawningShapeInfo.CreateBlockList();
@@ -271,7 +271,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var spawningShapeBlock = Instantiate(newShapeBlock);
         var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
         spawningShapeBlock.transform.SetParent(shapeContainer);
-        spawningShapeBlock.transform.localScale = ShapeLocalScale();
+        spawningShapeBlock.transform.localScale = ShapeContainerLocalScale();
         spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningRectTransform.sizeDelta = ShapeSizeDelta();
 #if HBDOTween
@@ -284,9 +284,14 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return new Vector2(200f, 200f);
     }
 
-    public Vector3 ShapeLocalScale()
+    public Vector3 ShapeContainerLocalScale()
     {
-        return Vector3.one * 0.6F;
+        return Vector3.one * 0.6f;
+    }
+    
+    public Vector3 ShapePickupLocalScale()
+    {
+        return Vector3.one * 1.33f;
     }
 
     /// <summary>

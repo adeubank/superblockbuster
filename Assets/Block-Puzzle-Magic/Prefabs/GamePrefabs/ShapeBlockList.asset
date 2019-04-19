@@ -13,10 +13,6 @@ MonoBehaviour:
   m_Name: ShapeBlockList
   m_EditorClassIdentifier: 
   ShapeBlocks:
-  - BlockID: 0
-    shapeBlock: {fileID: 1561065657387102, guid: e2d9c2e9fba12034f9c7bede37d14715,
-      type: 3}
-    spawnProbability: 1
   - BlockID: 1
     shapeBlock: {fileID: 1010243961825246, guid: 2509dd877d97b98449247aa502ef2ce0,
       type: 3}

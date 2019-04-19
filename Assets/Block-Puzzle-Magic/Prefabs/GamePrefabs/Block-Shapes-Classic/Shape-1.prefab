@@ -92,8 +92,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ff4a0cb622cb5a4da89f9d2724dee34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShapeID: 1
   blockImage: {fileID: 0}
+  isBandageShape: 0
+  ShapeID: 1
   startOffsetX: 0
   startOffsetY: 0
 --- !u!225 &225554659522458950

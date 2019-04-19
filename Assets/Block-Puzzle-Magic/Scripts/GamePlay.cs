@@ -131,7 +131,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     currentShape = clickedObject.GetComponent<ShapeInfo>();
                     var pos = Camera.main.ScreenToWorldPoint(eventData.position);
-                    currentShape.transform.localScale = Vector3.one;
+                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
                     currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
                     AudioManager.Instance.PlaySound(blockSelectSound);
 
@@ -160,7 +160,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
 #if HBDOTween
                 currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
-                currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeLocalScale(), 0.5F);
+                currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
 #endif
                 currentShape = null;
                 AudioManager.Instance.PlaySound(blockNotPlacedSound);
@@ -1016,6 +1016,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
         }
+
+        // remove the power up icon
+        blockGrid.Where(b => b.moveID == powerupActivation.MoveID).ToList().ForEach(b =>
+        {
+            foreach (Transform t in b.blockImage.transform)
+            {
+                if (t != b.blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
+                    Destroy(t.gameObject);
+            }
+        });
 
         return true;
     }
