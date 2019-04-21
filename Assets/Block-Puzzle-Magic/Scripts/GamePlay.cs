@@ -888,13 +888,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
 
-        Debug.Log("Breaking lines! " +
-                  "totalBreakingRowBlocks=" + totalBreakingRowBlocks +
-                  " totalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
-                  " newScore=" + newScore +
-                  " multiplier=" + multiplier +
-                  " sameColorMultiplier=" + sameColorMultiplier +
-                  " rowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
+        Debug.Log("Breaking lines!\n" +
+                  "\n\tplacingShapeBlockCount=" + placingShapeBlockCount +
+                  "\n\ttotalBreakingRowBlocks=" + totalBreakingRowBlocks +
+                  "\n\ttotalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
+                  "\n\tnewScore=" + newScore +
+                  "\n\tmultiplier=" + multiplier +
+                  "\n\tsameColorMultiplier=" + sameColorMultiplier +
+                  "\n\trowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 

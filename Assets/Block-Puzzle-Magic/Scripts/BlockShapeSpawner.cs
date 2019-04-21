@@ -89,6 +89,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void createShapeBlockProbabilityList()
     {
+        Debug.Log("Creating shape block probability list");
         shapeBlockProbabilityPool = new List<int>();
         foreach (var shapeBlock in ActiveShapeBlocks)
             AddShapeInProbabilityPool(shapeBlock.BlockID, shapeBlock.spawnProbability);
@@ -161,8 +162,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// <param name="shapeContainer">Shape container.</param>
     public ShapeInfo AddRandomShapeToContainer(Transform shapeContainer)
     {
-        var newShapeBlock = NextShapeBlock();
-        var spawningShapeBlock = Instantiate(newShapeBlock, shapeContainer, true);
+        var spawningShapeBlock = NextShapeBlock(shapeContainer);
         var spawningShapeInfo = spawningShapeBlock.GetComponent<ShapeInfo>();
         var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
         var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
@@ -174,9 +174,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         if (spawningShapeInfo.IsPowerup() && spawningPowerupInfo != null)
         {
-            spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);            
+            spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);
         }
-        
+
         if (isNextRoundBandageBlock)
             spawningShapeInfo.ConvertToBandageShape();
         else
@@ -190,7 +190,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             var currentColorId = blockImage.sprite.name.TryParseInt(-1);
             if (currentColorId > 0)
                 blockImage.sprite = colorSprite;
-            
+
             // TODO may have to resize here as well
         }
 
@@ -198,22 +198,23 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
 
-        return newShapeBlock.GetComponent<ShapeInfo>();
+        return spawningShapeBlock.GetComponent<ShapeInfo>();
     }
 
-    public GameObject NextShapeBlock()
+    public GameObject NextShapeBlock(Transform shapeContainer)
     {
         // only sticks on sticks galore
         if (isNextRoundSticksGaloreBlocks)
         {
             var normalBlocks = SticksGaloreBlocks().ToArray();
-            return normalBlocks[Random.Range(0, normalBlocks.Count())].shapeBlock;
+            var normalBlock = normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
+            return Instantiate(normalBlock, shapeContainer, true);
         }
 
         // need normal blocks only when bandage block
         if (isNextRoundBandageBlock)
         {
-            return NextNormalShape();
+            return Instantiate(NextNormalShape(), shapeContainer, true);
         }
 
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
@@ -225,14 +226,15 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var nextShapeInfo = nextShapeBlock.GetComponent<ShapeInfo>();
 
         // return a normal shape with a powerup ID
-        if (nextShapeBlock.GetComponent<ShapeInfo>().IsPowerup())
+        if (System.Enum.IsDefined(typeof(ShapeInfo.Powerups), randomShape))
         {
-            var nextNormalShape = NextNormalShape();
+            var nextNormalShape = Instantiate(NextNormalShape(), shapeContainer, true);
             nextNormalShape.GetComponent<ShapeInfo>().ShapeID = nextShapeInfo.ShapeID;
             return nextNormalShape;
         }
 
-        return nextShapeBlock;
+        return Instantiate(nextShapeBlock, shapeContainer, true);
+        ;
     }
 
     public Sprite NextColorSprite()
@@ -281,17 +283,17 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     private Vector2 ShapeSizeDelta()
     {
-        return new Vector2(200f, 200f);
+        return new Vector2(333f, 333f);
     }
 
     public Vector3 ShapeContainerLocalScale()
     {
         return Vector3.one * 0.6f;
     }
-    
+
     public Vector3 ShapePickupLocalScale()
     {
-        return Vector3.one * 1.33f;
+        return Vector3.one * 1.2f;
     }
 
     /// <summary>

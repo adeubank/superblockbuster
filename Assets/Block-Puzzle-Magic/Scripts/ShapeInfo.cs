@@ -59,7 +59,7 @@ public class ShapeInfo : MonoBehaviour
     {
         Debug.Log("Converting shape to bandage. " + this);
         isBandageShape = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Bandage);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) Powerups.Bandage);
 
         foreach (var block in ShapeBlocks)
         {
