@@ -419,7 +419,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = _activeQuakePowerups.Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
+        var allTweeners = _activeQuakePowerups.Where(b => ShouldActivatePowerup(new PowerupActivation(b), b)).Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
         {
             Debug.Log("Activating quake powerup. " + nextQuakePowerup);
 
@@ -435,7 +435,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }).SelectMany(columnToShake =>
         {
             var column = GetEntireColumnForRescue(columnToShake);
-            return ShakeColumnDown(column.Where(b => !b.isQuakePowerup).ToList());
+            return ShakeColumnDown(column.ToList());
         }).ToList();
 
         _activeQuakePowerups.Clear();
@@ -1008,6 +1008,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (_powerupsToActivate.Any(p =>
             (p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID) ||
             powerupActivation.PowerupID == 0)) return false;
+
         _powerupsToActivate.Add(powerupActivation);
         var powerupBlockSpawn = BlockShapeSpawner.Instance.FindPowerupById(powerupActivation.PowerupID);
 
