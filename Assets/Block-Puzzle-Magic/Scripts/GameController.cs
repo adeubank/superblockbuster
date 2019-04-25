@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameController : Singleton<GameController>
 {
-    public static GameMode gameMode = GameMode.CLASSIC;
+    public static GameMode gameMode = GameMode.TIMED;
     public Canvas UICanvas;
 
     private void Start()

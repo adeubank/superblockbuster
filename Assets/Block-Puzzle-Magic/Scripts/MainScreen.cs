@@ -10,7 +10,13 @@ public class MainScreen : MonoBehaviour
         if (InputManager.Instance.canInput())
         {
             AudioManager.Instance.PlayButtonClickSound();
-            StackManager.Instance.selectModeScreen.Activate();
+            
+            // just go straight to timed mode
+            // StackManager.Instance.selectModeScreen.Activate();
+            AudioManager.Instance.PlayButtonClickSound();
+            GameController.gameMode = GameMode.TIMED;
+            StackManager.Instance.ActivateGamePlay();
+            StackManager.Instance.mainMenu.Deactivate();
         }
     }
 }
