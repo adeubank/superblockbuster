@@ -25,9 +25,6 @@ public class Block : MonoBehaviour, IComparable
     // status if block is an avalanche powerup
     [HideInInspector] public bool isAvalanchePowerup;
 
-    //Status whether block is a bandage powerup block.
-    [HideInInspector] public bool isBandagePowerup;
-
     //Determines whether this block is normal or bomb.
     [HideInInspector] public bool isBomb;
 
@@ -198,7 +195,6 @@ public class Block : MonoBehaviour, IComparable
         // reset all fields
         blockID = -1;
         isFilled = false;
-        isBandagePowerup = false;
         isBombPowerup = false;
         isBomb = false;
         isDandelionSeed = false;
@@ -221,7 +217,6 @@ public class Block : MonoBehaviour, IComparable
     {
         // copy most fields
         blockID = b.blockID;
-        isBandagePowerup = b.isBandagePowerup;
         isBombPowerup = b.isBombPowerup;
         isBomb = b.isBomb;
         isDandelionSeed = b.isDandelionSeed;
@@ -239,13 +234,6 @@ public class Block : MonoBehaviour, IComparable
         foreach (Transform child in b.blockImage.transform)
             if (child.gameObject.activeInHierarchy)
                 Instantiate(child, blockImage.transform, false);
-    }
-
-    public void ConvertToBandage()
-    {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Bandage);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-        isBandagePowerup = true;
     }
 
     public void ConvertToBomb()

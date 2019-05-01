@@ -14,15 +14,11 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
-    [HideInInspector] public bool isNextRoundBandageBlock;
     [HideInInspector] public bool isNextRoundSticksGaloreBlocks;
 
     [Tooltip(
         "Setting this true means placing a block will add new block instantly, false means new shape blocks will be added only once all three are placed on the board.")]
     public bool keepFilledAlways;
-
-    public GameObject powerupBlockIconBandagePrefab;
-
 
     [SerializeField] private PowerupList powerupList;
 
@@ -145,12 +141,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 }
         }
 
-        # region bandage block spawn
-
-        if (isNextRoundBandageBlock && shapesFilled) isNextRoundBandageBlock = false;
-
-        # endregion
-
         CheckOnBoardShapeStatus(playableShapes);
 
         return shapesFilled;
@@ -176,11 +166,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         {
             spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);
         }
-
-        if (isNextRoundBandageBlock)
-            spawningShapeInfo.ConvertToBandageShape();
-        else
-            spawningShapeInfo.isBandageShape = false;
 
         var colorSprite = NextColorSprite();
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
@@ -209,12 +194,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             var normalBlocks = SticksGaloreBlocks().ToArray();
             var normalBlock = normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
             return Instantiate(normalBlock, shapeContainer, true);
-        }
-
-        // need normal blocks only when bandage block
-        if (isNextRoundBandageBlock)
-        {
-            return Instantiate(NextNormalShape(), shapeContainer, true);
         }
 
         if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)

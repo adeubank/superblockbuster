@@ -212,7 +212,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 o.rowID == currentRowID + c.rowID + currentShape.startOffsetX &&
                 o.columnID == currentColumnID + (c.columnID - currentShape.startOffsetY));
 
-            if (checkingCell == null || checkingCell != null && !currentShape.isBandageShape && checkingCell.isFilled)
+            if (checkingCell == null || checkingCell != null && !currentShape.IsBandageShape() && checkingCell.isFilled)
             {
                 canPlaceShape = false;
                 highlightingBlocks.Clear();
@@ -955,13 +955,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 yield return HandleDandelionPowerup(b);
             }
 
-            if (b.isBandagePowerup && shouldActivatePowerup)
-            {
-                b.isBandagePowerup = false;
-                Debug.Log("Cleared a bandage powerup! Next round is bandage shapes. " + b);
-                BlockShapeSpawner.Instance.isNextRoundBandageBlock = true;
-            }
-
             if (b.isBombPowerup)
             {
                 b.isBombPowerup = false;
@@ -1014,7 +1007,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // do not show for on-place activation powerups
         if ((int) ShapeInfo.Powerups.Doubler != powerupActivation.PowerupID &&
-            (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID)
+            (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID && 
+            (int) ShapeInfo.Powerups.Bandage != powerupActivation.PowerupID)
         {
             StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
         }
@@ -1109,7 +1103,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var currentRowID = placingBlock.rowID;
         var currentColumnID = placingBlock.columnID;
 
-        if (placingBlockShape != null && placingBlockShape.ShapeBlocks != null && !placingBlockShape.isBandageShape)
+        if (placingBlockShape != null && placingBlockShape.ShapeBlocks != null && !placingBlockShape.IsBandageShape())
             foreach (var c in placingBlockShape.ShapeBlocks)
             {
                 var checkingCell = blockGrid.Find(o =>

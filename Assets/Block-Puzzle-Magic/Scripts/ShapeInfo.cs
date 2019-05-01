@@ -10,9 +10,6 @@ public class ShapeInfo : MonoBehaviour
 
     [HideInInspector] public ShapeBlock firstBlock;
 
-    //Status whether block is a bandage block capable of being played over other blocks.
-    [HideInInspector] public bool isBandageShape;
-
     public List<ShapeBlock> ShapeBlocks;
     public int ShapeID;
 
@@ -55,16 +52,9 @@ public class ShapeInfo : MonoBehaviour
         }
     }
 
-    public void ConvertToBandageShape()
+    public bool IsBandageShape()
     {
-        Debug.Log("Converting shape to bandage. " + this);
-        isBandageShape = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) Powerups.Bandage);
-
-        foreach (var block in ShapeBlocks)
-        {
-            Instantiate(powerupInfo.powerupBlockIcon, block.block, false);
-        }
+        return ShapeID == (int) ShapeInfo.Powerups.Bandage;
     }
 
     public void ConvertToPowerup(PowerupBlockSpawn powerupInfo)
@@ -124,7 +114,10 @@ public class ShapeInfo : MonoBehaviour
             case (int) Powerups.Bandage:
 
                 Debug.Log("Played Bandage Powerup");
-                foreach (var block in currentBlocks) block.ConvertToBandage();
+                var randomBandageBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
+                StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
+                    BlockShapeSpawner.Instance.FindPowerupById(randomBandageBlock.blockID), randomBandageBlock));
+
                 break;
 
             case (int) Powerups.Bomb:
