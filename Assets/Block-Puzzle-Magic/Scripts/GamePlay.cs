@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +14,11 @@ using DG.Tweening;
 // This script has main logic to run entire gameplay.
 public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
 {
+    private readonly List<Block> _activeQuakePowerups = new List<Block>();
+    private bool _holdingNewBlocks;
+    private bool _isFrenzyPowerupRunning;
+    private List<PowerupActivation> _powerupsToActivate;
+    private int _spawnAvalancheBlocks;
     private int _sticksGaloreRounds;
     [SerializeField] public GameObject blockDandelionSeedPrefab;
     [HideInInspector] public List<Block> blockGrid;
@@ -33,6 +37,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private List<Block> highlightingBlocks;
     private Transform hittingBlock;
 
+    [SerializeField] private Image holdNewBlocksImage;
+
     public bool isHelpOnScreen;
 
     // Line break sounds.
@@ -48,6 +54,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int MaxAllowedVideoWatchRescue;
 
     [HideInInspector] public int MoveCount;
+    private bool shouldActivateFrenzy;
 
     public Timer timeSlider;
 
@@ -55,11 +62,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
-    private readonly List<Block> _activeQuakePowerups = new List<Block>();
-    private int _spawnAvalancheBlocks;
-    private bool _isFrenzyPowerupRunning;
-    private bool shouldActivateFrenzy;
-    private List<PowerupActivation> _powerupsToActivate;
 
     #region IBeginDragHandler implementation
 
@@ -69,6 +71,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (HoldingNewBlocks()) return;
+
         if (currentShape != null)
         {
             var pos = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -87,6 +91,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnDrag(PointerEventData eventData)
     {
+        if (HoldingNewBlocks()) return;
+
         if (currentShape != null)
         {
             var pos = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -109,34 +115,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 StopHighlighting();
             }
-        }
-    }
-
-    #endregion
-
-    #region IPointerDownHandler implementation
-
-    /// <summary>
-    ///     Raises the pointer down event.
-    /// </summary>
-    /// <param name="eventData">Event data.</param>
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (eventData.pointerCurrentRaycast.gameObject != null)
-        {
-            var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
-
-            if (clickedObject.GetComponent<ShapeInfo>() != null)
-                if (clickedObject.transform.childCount > 0)
-                {
-                    currentShape = clickedObject.GetComponent<ShapeInfo>();
-                    var pos = Camera.main.ScreenToWorldPoint(eventData.position);
-                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
-                    currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
-                    AudioManager.Instance.PlaySound(blockSelectSound);
-
-                    if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
-                }
         }
     }
 
@@ -198,13 +176,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool CanPlaceShape(Transform currentHittingBlock)
     {
         var currentCell = currentHittingBlock.GetComponent<Block>();
-
         var currentRowID = currentCell.rowID;
         var currentColumnID = currentCell.columnID;
+        var canPlaceShape = true;
 
         StopHighlighting();
-
-        var canPlaceShape = true;
 
         foreach (var c in currentShape.ShapeBlocks)
         {
@@ -225,6 +201,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (canPlaceShape) SetHighLightImage();
 
         return canPlaceShape;
+    }
+
+    private void HoldNewBlocks(bool b)
+    {
+        holdNewBlocksImage.gameObject.SetActive(b);
+        _holdingNewBlocks = b;
     }
 
     /// <summary>
@@ -337,10 +319,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         _spawnAvalancheBlocks += clearedLineBlocks.Where(b => b.isAvalanchePowerup).Aggregate(new List<int>(),
             (ints, block) =>
             {
-                if (ints.Contains(block.moveID))
-                {
-                    return ints;
-                }
+                if (ints.Contains(block.moveID)) return ints;
 
                 ints.Add(block.moveID);
                 return ints;
@@ -391,14 +370,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield break;
         }
 
-        GameObject powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite,
+        var powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite,
             currentBlock.transform.position, Quaternion.identity,
             GameBoardGenerator.Instance.BoardContent.transform);
         var powerupActivationSpriteCanvas = powerupActivationSprite.AddComponent(typeof(Canvas)) as Canvas;
         powerupActivationSpriteCanvas.overrideSorting = true;
         powerupActivationSpriteCanvas.sortingOrder = 999;
 
-        Sequence sequence = DOTween.Sequence();
+        var sequence = DOTween.Sequence();
         powerupActivationSprite.transform.localScale = Vector3.zero;
         sequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.4f));
         sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
@@ -419,20 +398,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = _activeQuakePowerups.Where(b => ShouldActivatePowerup(new PowerupActivation(b), b)).Aggregate(new List<int>(), (columnsToShake, nextQuakePowerup) =>
-        {
-            Debug.Log("Activating quake powerup. " + nextQuakePowerup);
-
-            for (int col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
+        var allTweeners = _activeQuakePowerups.Where(b => ShouldActivatePowerup(new PowerupActivation(b), b)).Aggregate(
+            new List<int>(), (columnsToShake, nextQuakePowerup) =>
             {
-                if (!columnsToShake.Contains(col) && col >= 0 && col < GameBoardGenerator.Instance.TotalColumns)
-                {
-                    columnsToShake.Add(col);
-                }
-            }
+                Debug.Log("Activating quake powerup. " + nextQuakePowerup);
 
-            return columnsToShake;
-        }).SelectMany(columnToShake =>
+                for (var col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
+                    if (!columnsToShake.Contains(col) && col >= 0 && col < GameBoardGenerator.Instance.TotalColumns)
+                        columnsToShake.Add(col);
+
+                return columnsToShake;
+            }).SelectMany(columnToShake =>
         {
             var column = GetEntireColumnForRescue(columnToShake);
             return ShakeColumnDown(column.ToList());
@@ -652,10 +628,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Activating Frenzy powerup");
 
         // check lock
-        if (_isFrenzyPowerupRunning)
-        {
-            yield break;
-        }
+        if (_isFrenzyPowerupRunning) yield break;
 
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
@@ -673,10 +646,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         while (emptyBottomBlocks.Any())
         {
             var nextBlock = emptyBottomBlocks.FirstOrDefault();
-            if (!nextBlock)
-            {
-                continue;
-            }
+            if (!nextBlock) continue;
 
             emptyBottomBlocks.Remove(nextBlock);
 
@@ -685,22 +655,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 .FirstOrDefault(blocks => blocks.Any(b => b.IsTouching(nextBlock)));
 
             if (nextBlockShape != null)
-            {
                 nextBlockShape.Add(nextBlock);
-            }
             else
-            {
                 psuedoBlocks.Add(new List<Block> {nextBlock});
-            }
         }
 
-        psuedoBlocks.ForEach((shape) =>
+        psuedoBlocks.ForEach(shape =>
         {
             var shapeSequence = DOTween.Sequence();
             shape.ForEach(b =>
             {
                 var blockImageTransform = b.blockImage.transform;
-                Vector3 startPosition = blockImageTransform.position;
+                var startPosition = blockImageTransform.position;
                 blockImageTransform.position = new Vector3(startPosition.x + frenzyOffscreenOffset, startPosition.y);
                 Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
                 tween.SetDelay(numberOfSequences * blockTweenDuration / 4);
@@ -727,10 +693,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
 
         // activate 6 spaces
-        if (currentRound > 10)
-        {
-            BlockShapeSpawner.Instance.SetBlockShapeToSix();
-        }
+        if (currentRound > 10) BlockShapeSpawner.Instance.SetBlockShapeToSix();
     }
 
     /// <summary>
@@ -756,10 +719,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private bool isFilledBlock(Block block)
     {
-        if (!block)
-        {
-            return false;
-        }
+        if (!block) return false;
 
         return block.isFilled;
     }
@@ -826,8 +786,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
         timeSlider.PauseTimer();
-
-        yield return PrepPowerupsBeforeClearing();
 
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
@@ -899,13 +857,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 
+        HoldNewBlocks(true); // stop any new blocks from being grabbed
+
+        yield return PrepPowerupsBeforeClearing();
+
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
-                StartCoroutine(BreakThisLine(thisLine));
+                yield return BreakThisLine(thisLine);
 
         if (breakingColumns.Count > 0)
             foreach (var thisLine in breakingColumns)
-                StartCoroutine(BreakThisLine(thisLine));
+                yield return BreakThisLine(thisLine);
 
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
@@ -933,6 +895,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         #endregion
+
+        HoldNewBlocks(false); // allow new blocks again
     }
 
     /// <summary>
@@ -999,7 +963,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
     {
         if (_powerupsToActivate.Any(p =>
-            (p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID) ||
+            p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID ||
             powerupActivation.PowerupID == 0)) return false;
 
         _powerupsToActivate.Add(powerupActivation);
@@ -1007,35 +971,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // do not show for on-place activation powerups
         if ((int) ShapeInfo.Powerups.Doubler != powerupActivation.PowerupID &&
-            (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID && 
+            (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID &&
             (int) ShapeInfo.Powerups.Bandage != powerupActivation.PowerupID)
-        {
             StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
-        }
 
         // remove the power up icon
         blockGrid.Where(b => b.moveID == powerupActivation.MoveID).ToList().ForEach(b =>
         {
             foreach (Transform t in b.blockImage.transform)
-            {
                 if (t != b.blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
                     Destroy(t.gameObject);
-            }
         });
 
         return true;
-    }
-
-    private class PowerupActivation
-    {
-        public readonly int MoveID;
-        public readonly int PowerupID;
-
-        public PowerupActivation(Block block)
-        {
-            MoveID = block.moveID;
-            PowerupID = block.blockID;
-        }
     }
 
     private IEnumerator ActivateStormPowerup()
@@ -1059,12 +1007,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList();
 
         foreach (var row in stormRows)
+        foreach (var b in row)
         {
-            foreach (var b in row)
-            {
-                b.ConvertToFilledBlock(0);
-                yield return new WaitForSeconds(0.01f);
-            }
+            b.ConvertToFilledBlock(0);
+            yield return new WaitForSeconds(0.01f);
         }
 
         yield return BreakAllCompletedLines(1);
@@ -1348,6 +1294,53 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     yield return block;
         }
     }
+
+    private class PowerupActivation
+    {
+        public readonly int MoveID;
+        public readonly int PowerupID;
+
+        public PowerupActivation(Block block)
+        {
+            MoveID = block.moveID;
+            PowerupID = block.blockID;
+        }
+    }
+
+    #region IPointerDownHandler implementation
+
+    /// <summary>
+    ///     Raises the pointer down event.
+    /// </summary>
+    /// <param name="eventData">Event data.</param>
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (HoldingNewBlocks()) return;
+
+        if (eventData.pointerCurrentRaycast.gameObject != null)
+        {
+            var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
+
+            if (clickedObject.GetComponent<ShapeInfo>() != null)
+                if (clickedObject.transform.childCount > 0)
+                {
+                    currentShape = clickedObject.GetComponent<ShapeInfo>();
+                    var pos = Camera.main.ScreenToWorldPoint(eventData.position);
+                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
+                    currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
+                    AudioManager.Instance.PlaySound(blockSelectSound);
+
+                    if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
+                }
+        }
+    }
+
+    private bool HoldingNewBlocks()
+    {
+        return _holdingNewBlocks;
+    }
+
+    #endregion
 
     #region Bomb Mode Specific
 
