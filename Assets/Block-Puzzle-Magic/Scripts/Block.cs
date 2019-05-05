@@ -52,6 +52,9 @@ public class Block : MonoBehaviour, IComparable
     //Status whether block is empty or filled.
     public bool isFilled;
 
+    // status whether block is a frenzy powerup
+    [HideInInspector] public bool isFrenzyPowerup;
+
     // status whether block is a lag powerup
     [HideInInspector] public bool isLagPowerup;
 
@@ -66,17 +69,26 @@ public class Block : MonoBehaviour, IComparable
 
     // status whether block is a storm powerup
     [HideInInspector] public bool isStormPowerup;
-    
-    // status whether block is a frenzy powerup
-    [HideInInspector] public bool isFrenzyPowerup;
+
+    [HideInInspector] public int moveID;
 
     public Sprite prevBlockImageSprite;
 
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
-    
-    [HideInInspector] public int moveID;
+
+    public int CompareTo(object obj)
+    {
+        if (obj == null) return 1;
+
+        var b = obj as Block;
+
+        if (b != null)
+            return (rowID + columnID).CompareTo(b.rowID + b.columnID);
+
+        throw new ArgumentException("Object is not a Block");
+    }
 
     /// <summary>
     ///     Raises the enable event.
@@ -165,52 +177,57 @@ public class Block : MonoBehaviour, IComparable
     ///     Clears the block.
     /// </summary>
     /// <param name="animate"></param>
-    public void ClearBlock(bool animate)
+    public Sequence ClearBlock(bool animate)
     {
-        ClearExtraChildren();
+        var clearSequence = DOTween.Sequence();
+        var emptyBlockImage = transform.GetComponent<Image>();
 
-#if HBDOTween
         if (animate)
         {
-            transform.GetComponent<Image>().color = new Color(1, 1, 1, 0);
-
-            blockImage.transform.DOScale(Vector3.zero, 0.35F).OnComplete(() =>
-            {
-                blockImage.transform.localScale = Vector3.one;
-                blockImage.sprite = null;
-            });
-
-            transform.GetComponent<Image>().DOFade(0.65f, 0.35F).SetDelay(0.3F);
-            blockImage.DOFade(0, 0.3F);
+            clearSequence.InsertCallback(0, () => emptyBlockImage.color = new Color(1, 1, 1, 0));
+            clearSequence.Insert(1, blockImage.transform.DOScale(Vector3.zero, 0.35F));
+            clearSequence.Insert(1, blockImage.DOFade(0, 0.3F));
+            clearSequence.Append(emptyBlockImage.DOFade(0.65f, 0.35F));
         }
-        else
+
+        clearSequence.AppendCallback(() =>
         {
-            transform.GetComponent<Image>().color = new Color(1, 1, 1, 0.65f);
+            blockImage.color = new Color(1, 1, 1, 0);
+            blockImage.transform.localScale = Vector3.one;
+            blockImage.sprite = null;
+            ClearExtraChildren();
+
+            // reset all fields
+            blockID = -1;
+            isFilled = false;
+            isBombPowerup = false;
+            isBomb = false;
+            isDandelionSeed = false;
+            isDandelionPowerup = false;
+            isDoublePoints = false;
+            isExploding = false;
+            isSticksGalorePowerup = false;
+            isColorCoderPowerup = false;
+            prevBlockImageSprite = null;
+            isLagPowerup = false;
+            isStormPowerup = false;
+            isQuakePowerup = false;
+            isAvalanchePowerup = false;
+            isFrenzyPowerup = false;
+
+            if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
+                RemoveCounter();
+        });
+
+        if (!animate)
+        {
+            emptyBlockImage.color = new Color(1, 1, 1, 0.65f);
             blockImage.color = new Color(1, 1, 1, 0);
             blockImage.transform.localScale = Vector3.one;
             blockImage.sprite = null;
         }
-#endif
 
-        // reset all fields
-        blockID = -1;
-        isFilled = false;
-        isBombPowerup = false;
-        isBomb = false;
-        isDandelionSeed = false;
-        isDandelionPowerup = false;
-        isDoublePoints = false;
-        isExploding = false;
-        isSticksGalorePowerup = false;
-        isColorCoderPowerup = false;
-        prevBlockImageSprite = null;
-        isLagPowerup = false;
-        isStormPowerup = false;
-        isQuakePowerup = false;
-        isAvalanchePowerup = false;
-        isFrenzyPowerup = false;
-
-        if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) RemoveCounter();
+        return clearSequence;
     }
 
     public void Copy(Block b)
@@ -238,14 +255,14 @@ public class Block : MonoBehaviour, IComparable
 
     public void ConvertToBomb()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Bomb);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Bomb);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isBombPowerup = true;
     }
 
     public void ConvertToDandelion()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Dandelion);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Dandelion);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isDandelionPowerup = true;
     }
@@ -274,21 +291,21 @@ public class Block : MonoBehaviour, IComparable
 
     public void ConvertToColorCoder()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.ColorCoder);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.ColorCoder);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isColorCoderPowerup = true;
     }
 
     public void ConvertToSticksGalore()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.SticksGalore);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.SticksGalore);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isSticksGalorePowerup = true;
     }
 
     public void ConvertToLagBlock()
     {
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Lag);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Lag);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isLagPowerup = true;
     }
@@ -296,28 +313,28 @@ public class Block : MonoBehaviour, IComparable
     public void ConvertToDoublerBlock()
     {
         isDoublePoints = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Doubler);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Doubler);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
     public void ConvertToStormBlock()
     {
         isStormPowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Storm);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Storm);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
     public void ConvertToQuakeBlock()
     {
         isQuakePowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Quake);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Quake);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
     public void ConvertToAvalancheBlock()
     {
         isAvalanchePowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Avalanche);
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Avalanche);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
@@ -334,6 +351,27 @@ public class Block : MonoBehaviour, IComparable
         var newSeedBlockIcon = Instantiate(GamePlay.Instance.blockDandelionSeedPrefab,
             dandelionPowerup.transform.position, Quaternion.identity, blockImage.transform);
         return newSeedBlockIcon.transform.DOMove(blockImage.transform.position, 0.4f);
+    }
+
+    public void ConvertToFrenzyBlock()
+    {
+        isFrenzyPowerup = true;
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.Frenzy);
+        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+    }
+
+    public void convertToFrenziedBlock()
+    {
+        ConvertToFilledBlock(0);
+        ConvertToDoublerBlock();
+    }
+
+    public bool IsTouching(Block nextBlock)
+    {
+        return rowID == nextBlock.rowID &&
+               Mathf.Abs(columnID - nextBlock.columnID) <= 1 ||
+               columnID == nextBlock.columnID &&
+               Mathf.Abs(rowID - nextBlock.rowID) <= 1;
     }
 
     #region bomb mode specific
@@ -385,37 +423,4 @@ public class Block : MonoBehaviour, IComparable
     }
 
     #endregion
-
-    public int CompareTo(object obj)
-    {
-        if (obj == null) return 1;
-
-        Block b = obj as Block;
-
-        if (b != null)
-            return (rowID + columnID).CompareTo(b.rowID + b.columnID);
-
-        throw new ArgumentException("Object is not a Block");
-    }
-
-    public void ConvertToFrenzyBlock()
-    {
-        isFrenzyPowerup = true;
-        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) PowerupInfo.Powerups.Frenzy);
-        Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-    }
-
-    public void convertToFrenziedBlock()
-    {
-        ConvertToFilledBlock(0);
-        ConvertToDoublerBlock();
-    }
-
-    public bool IsTouching(Block nextBlock)
-    {
-        return  rowID == nextBlock.rowID &&
-                Mathf.Abs(columnID - nextBlock.columnID) <= 1 ||
-                columnID == nextBlock.columnID &&
-                Mathf.Abs(rowID - nextBlock.rowID) <= 1;
-    }
 }

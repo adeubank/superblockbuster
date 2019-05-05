@@ -908,6 +908,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         Debug.Log("Breaking a line starting with block. " + breakingLine.First());
 
+        var lineBreak = DOTween.Sequence();
+
         foreach (var b in breakingLine)
         {
             var maybeNewPowerup = new PowerupActivation(b);
@@ -956,7 +958,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 StartCoroutine(ActivateFrenzyPowerup());
             }
 
-            b.ClearBlock(true);
+            lineBreak.Insert(0, b.ClearBlock(true));
         }
     }
 
