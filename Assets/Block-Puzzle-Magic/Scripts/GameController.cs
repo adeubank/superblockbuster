@@ -9,7 +9,7 @@ public class GameController : Singleton<GameController>
 
     private void Start()
     {
-        DOTween.SetTweensCapacity(1000, 20);
+        DOTween.SetTweensCapacity(1000, 100);
     }
 
     // Checks if interner is available or not.

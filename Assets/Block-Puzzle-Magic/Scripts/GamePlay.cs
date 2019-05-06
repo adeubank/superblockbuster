@@ -120,6 +120,36 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #endregion
 
+    #region IPointerDownHandler implementation
+
+    /// <summary>
+    ///     Raises the pointer down event.
+    /// </summary>
+    /// <param name="eventData">Event data.</param>
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (HoldingNewBlocks()) return;
+
+        if (eventData.pointerCurrentRaycast.gameObject != null)
+        {
+            var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
+
+            if (clickedObject.GetComponent<ShapeInfo>() != null)
+                if (clickedObject.transform.childCount > 0)
+                {
+                    currentShape = clickedObject.GetComponent<ShapeInfo>();
+                    var pos = Camera.main.ScreenToWorldPoint(eventData.position);
+                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
+                    currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
+                    AudioManager.Instance.PlaySound(blockSelectSound);
+
+                    if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
+                }
+        }
+    }
+
+    #endregion
+
     #region IPointerUpHandler implementation
 
     /// <summary>
@@ -678,7 +708,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         });
 
 
-        yield return new WaitUntil(() => !frenzySequence.IsPlaying() && !frenzySequence.IsActive());
+        yield return new WaitUntil(() => !frenzySequence.IsActive() || !frenzySequence.IsPlaying());
 
         yield return BreakAllCompletedLines(1);
 
@@ -863,11 +893,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
-                yield return BreakThisLine(thisLine);
+                StartCoroutine(BreakThisLine(thisLine));
 
         if (breakingColumns.Count > 0)
             foreach (var thisLine in breakingColumns)
-                yield return BreakThisLine(thisLine);
+                StartCoroutine(BreakThisLine(thisLine));
 
         yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
 
@@ -958,8 +988,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 StartCoroutine(ActivateFrenzyPowerup());
             }
 
-            lineBreak.Insert(0, b.ClearBlock(true));
+            lineBreak.Join(b.ClearBlock(true));
         }
+
+        yield return new WaitWhile(() => lineBreak.IsActive() && lineBreak.IsPlaying());
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
@@ -1236,7 +1268,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return b.ConvertToDandelionSeed(dandelionPowerup);
         }).ToList();
 
-        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsPlaying()));
+        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsActive() && t.IsPlaying()));
     }
 
     #endregion
@@ -1297,6 +1329,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
     }
 
+    private bool HoldingNewBlocks()
+    {
+        return _holdingNewBlocks;
+    }
+
     private class PowerupActivation
     {
         public readonly int MoveID;
@@ -1308,41 +1345,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             PowerupID = block.blockID;
         }
     }
-
-    #region IPointerDownHandler implementation
-
-    /// <summary>
-    ///     Raises the pointer down event.
-    /// </summary>
-    /// <param name="eventData">Event data.</param>
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (HoldingNewBlocks()) return;
-
-        if (eventData.pointerCurrentRaycast.gameObject != null)
-        {
-            var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
-
-            if (clickedObject.GetComponent<ShapeInfo>() != null)
-                if (clickedObject.transform.childCount > 0)
-                {
-                    currentShape = clickedObject.GetComponent<ShapeInfo>();
-                    var pos = Camera.main.ScreenToWorldPoint(eventData.position);
-                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
-                    currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
-                    AudioManager.Instance.PlaySound(blockSelectSound);
-
-                    if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
-                }
-        }
-    }
-
-    private bool HoldingNewBlocks()
-    {
-        return _holdingNewBlocks;
-    }
-
-    #endregion
 
     #region Bomb Mode Specific
 
