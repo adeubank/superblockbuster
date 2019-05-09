@@ -185,9 +185,9 @@ public class Block : MonoBehaviour, IComparable
         if (animate)
         {
             emptyBlockImage.color = new Color(1, 1, 1, 0);
-            clearSequence.Join(blockImage.transform.DOScale(Vector3.zero, 0.35F));
-            clearSequence.Join(blockImage.DOFade(0, 0.3F));
-            clearSequence.Append(emptyBlockImage.DOFade(0.65f, 0.35F));
+            clearSequence.Join(blockImage.transform.DOScale(Vector3.zero, 0.6F));
+            clearSequence.Join(blockImage.DOFade(0, 0.6F));
+            clearSequence.Append(emptyBlockImage.DOFade(0.65f, 0.6F));
         }
 
         clearSequence.AppendCallback(() =>

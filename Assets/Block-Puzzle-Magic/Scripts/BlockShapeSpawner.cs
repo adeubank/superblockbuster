@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 #if HBDOTween
 using DG.Tweening;
 
@@ -124,12 +126,16 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 if (shapeContainer.childCount > 0)
                     emptyEnough = false;
 
+            if (activeShapeContainers.Count > 3 && activeShapeContainers.Count(shape => shape.childCount > 0) < 3)
+                emptyEnough = true;
+
             if (emptyEnough)
-            {
-                shapesFilled = true;
                 foreach (var shapeContainer in activeShapeContainers)
-                    playableShapes.Add(AddRandomShapeToContainer(shapeContainer));
-            }
+                    if (shapeContainer.childCount <= 0)
+                    {
+                        shapesFilled = true;
+                        playableShapes.Add(AddRandomShapeToContainer(shapeContainer));
+                    }
         }
         else
         {
@@ -163,9 +169,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         spawningShapeInfo.CreateBlockList();
 
         if (spawningShapeInfo.IsPowerup() && spawningPowerupInfo != null)
-        {
             spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);
-        }
 
         var colorSprite = NextColorSprite();
         var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
@@ -205,7 +209,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var nextShapeInfo = nextShapeBlock.GetComponent<ShapeInfo>();
 
         // return a normal shape with a powerup ID
-        if (System.Enum.IsDefined(typeof(ShapeInfo.Powerups), randomShape))
+        if (Enum.IsDefined(typeof(ShapeInfo.Powerups), randomShape))
         {
             var nextNormalShape = Instantiate(NextNormalShape(), shapeContainer, true);
             nextNormalShape.GetComponent<ShapeInfo>().ShapeID = nextShapeInfo.ShapeID;

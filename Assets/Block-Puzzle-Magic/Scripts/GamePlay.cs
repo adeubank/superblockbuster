@@ -309,7 +309,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         // handle any powerups that needs to be cleared up again
         yield return BreakAllCompletedLines(placingShapeBlockCount);
 
-        yield return AddShapesAndUpdateRound();
+        yield return AddShapesAndUpdateRound(placingShapeBlockCount);
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
@@ -396,7 +396,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (powerupBlockSpawn == null || powerupBlockSpawn.powerupActivationSprite == null)
         {
-            Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn);
+            Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn + " " + currentBlock);
             yield break;
         }
 
@@ -582,7 +582,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         return breakinColumns;
     }
 
-    public IEnumerator AddShapesAndUpdateRound()
+    public IEnumerator AddShapesAndUpdateRound(int placingShapeBlockCount)
     {
         // if blocks were filled, means end of round and some powerups are activated
         if (BlockShapeSpawner.Instance.FillShapeContainer())
@@ -597,7 +597,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             yield return PrepPowerupsBeforeClearing();
 
-            yield return BreakAllCompletedLines(1);
+            yield return BreakAllCompletedLines(placingShapeBlockCount);
 
             var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
             var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
@@ -899,7 +899,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             foreach (var thisLine in breakingColumns)
                 StartCoroutine(BreakThisLine(thisLine));
 
-        yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
+        yield return new WaitWhile(() =>
+            DOTween.TotalPlayingTweens() > 0 &&
+            breakingRows.Concat(breakingColumns).SelectMany(line => line).Any(b => b.isFilled));
 
         yield return ActivateQuakePowerup();
 
@@ -991,7 +993,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             lineBreak.Join(b.ClearBlock(true));
         }
 
-        yield return new WaitWhile(() => lineBreak.IsActive() && lineBreak.IsPlaying());
+        yield return new WaitWhile(() => lineBreak.IsActive() && !lineBreak.IsComplete());
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
