@@ -304,10 +304,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        yield return BreakAllCompletedLines(placingShapeBlockCount);
-
-        // handle any powerups that needs to be cleared up again
-        yield return BreakAllCompletedLines(placingShapeBlockCount);
+        yield return StartLineBreaks(placingShapeBlockCount);
 
         yield return AddShapesAndUpdateRound(placingShapeBlockCount);
 
@@ -341,19 +338,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).GroupBy(b => b.moveID)
             .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
         if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
-
-        #endregion
-
-        #region avalanche block spawn
-
-        _spawnAvalancheBlocks += clearedLineBlocks.Where(b => b.isAvalanchePowerup).Aggregate(new List<int>(),
-            (ints, block) =>
-            {
-                if (ints.Contains(block.moveID)) return ints;
-
-                ints.Add(block.moveID);
-                return ints;
-            }).Count;
 
         #endregion
     }
@@ -595,14 +579,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             yield return RoundClearPowerups();
 
-            yield return PrepPowerupsBeforeClearing();
+            yield return StartLineBreaks(placingShapeBlockCount);
 
-            yield return BreakAllCompletedLines(placingShapeBlockCount);
-
-            var activeShapeContainers = BlockShapeSpawner.Instance.GetActiveShapeContainers();
-            var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
-                .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
-            BlockShapeSpawner.Instance.CheckOnBoardShapeStatus(playableShapes);
+            CheckIfOutOfMoves();
         }
 
         #region re-enable timer
@@ -612,6 +591,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #endregion
     }
+
 
     private IEnumerator RoundClearPowerups()
     {
@@ -660,8 +640,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         // check lock
         if (_isFrenzyPowerupRunning) yield break;
 
-        yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
-
         // lock
         _isFrenzyPowerupRunning = true;
 
@@ -671,7 +649,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             .Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
         var frenzySequence = DOTween.Sequence();
         var numberOfSequences = 0;
-        var psuedoBlocks = new List<List<Block>>();
+        var pseudoBlocks = new List<List<Block>>();
 
         while (emptyBottomBlocks.Any())
         {
@@ -681,16 +659,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             emptyBottomBlocks.Remove(nextBlock);
 
             // find the first shape with less than 5 blocks (or if one empty block left) and be touching might the next block
-            var nextBlockShape = psuedoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 2)
+            var nextBlockShape = pseudoBlocks.Where(blocks => blocks.Count <= 5 || emptyBottomBlocks.Count < 2)
                 .FirstOrDefault(blocks => blocks.Any(b => b.IsTouching(nextBlock)));
 
             if (nextBlockShape != null)
                 nextBlockShape.Add(nextBlock);
             else
-                psuedoBlocks.Add(new List<Block> {nextBlock});
+                pseudoBlocks.Add(new List<Block> {nextBlock});
         }
 
-        psuedoBlocks.ForEach(shape =>
+        pseudoBlocks.ForEach(shape =>
         {
             var shapeSequence = DOTween.Sequence();
             shape.ForEach(b =>
@@ -701,7 +679,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Tween tween = b.blockImage.transform.DOMove(startPosition, blockTweenDuration);
                 tween.SetDelay(numberOfSequences * blockTweenDuration / 4);
                 shapeSequence.Insert(0, tween);
-                b.convertToFrenziedBlock();
+                b.ConvertToFrenziedBlock();
             });
             frenzySequence.Append(shapeSequence);
             numberOfSequences += 1;
@@ -709,8 +687,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
 
         yield return new WaitUntil(() => !frenzySequence.IsActive() || !frenzySequence.IsPlaying());
-
-        yield return BreakAllCompletedLines(1);
 
         // unlock
         _isFrenzyPowerupRunning = false;
@@ -808,18 +784,32 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         return thisColumn;
     }
 
-    /// <summary>
-    ///     Breaks all completed lines.
-    /// </summary>
-    /// <returns>The all completed lines.</returns>
-    /// <param name="placingShapeBlockCount">Placing shape block count.</param>
-    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
+    private IEnumerator StartLineBreaks(int placingShapeBlockCount)
     {
-        timeSlider.PauseTimer();
-
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
+        if (breakingColumns.Count > 0 || breakingRows.Count > 0)
+        {
+            timeSlider.PauseTimer();
+            HoldNewBlocks(true);
+        }
+
+        do
+        {
+            yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
+
+            breakingRows = GetFilledRows();
+            breakingColumns = GetFilledColumns();
+        } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
+
+        timeSlider.ResumeTimer();
+        HoldNewBlocks(false);
+    }
+
+    private IEnumerator BreakLines(
+        int placingShapeBlockCount, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
+    {
         if (breakingRows.Count == 0 && breakingColumns.Count == 0)
         {
             Debug.Log("No breaking lines.");
@@ -834,6 +824,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             breakingColumns.SelectMany(col => col.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
         var totalBreakingBlocks = totalBreakingRowBlocks + totalBreakingColumnBlocks;
         var newScore = 0;
+
 
         if (totalBreakingLines == 1)
         {
@@ -887,8 +878,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 
-        HoldNewBlocks(true); // stop any new blocks from being grabbed
-
         yield return PrepPowerupsBeforeClearing();
 
         if (breakingRows.Count > 0)
@@ -910,11 +899,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (shouldActivateFrenzy)
         {
             shouldActivateFrenzy = false;
-            yield return new WaitWhile(() => DOTween.TotalPlayingTweens() > 0);
             yield return ActivateFrenzyPowerup();
         }
-
-        Debug.Log("Finished breaking lines.");
 
         #region clearing was exploding blocks
 
@@ -928,7 +914,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #endregion
 
-        HoldNewBlocks(false); // allow new blocks again
+        Debug.Log("Finished breaking lines.");
+    }
+
+    /// <summary>
+    ///     Breaks all completed lines.
+    /// </summary>
+    /// <returns>The all completed lines.</returns>
+    /// <param name="placingShapeBlockCount">Placing shape block count.</param>
+    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
+    {
+        var breakingRows = GetFilledRows();
+        var breakingColumns = GetFilledColumns();
+
+        yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
     }
 
     /// <summary>
@@ -987,7 +986,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 b.isFrenzyPowerup = false;
                 Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
                 shouldActivateFrenzy = true;
-                StartCoroutine(ActivateFrenzyPowerup());
+            }
+
+            if (b.isAvalanchePowerup && shouldActivatePowerup)
+            {
+                Debug.Log("Cleared an Avalanche powerup! Filling bottom rows once all clear!  " + b);
+                _spawnAvalancheBlocks += 1;
             }
 
             lineBreak.Join(b.ClearBlock(true));
@@ -1048,9 +1052,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             b.ConvertToFilledBlock(0);
             yield return new WaitForSeconds(0.01f);
         }
-
-        yield return BreakAllCompletedLines(1);
     }
+
+    public void CheckIfOutOfMoves()
+    {
+        Debug.Log("Checking if out of moves");
+        if (CanExistingBlocksPlaced(BlockShapeSpawner.Instance.GetPlayableShapes())) return;
+        OnUnableToPlaceShape();
+    }
+
 
     /// <summary>
     ///     Determines whether this instance can existing blocks placed the specified OnBoardBlockShapes.
@@ -1103,6 +1113,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnUnableToPlaceShape()
     {
+        HoldNewBlocks(true);
         if (TotalRescueDone < MaxAllowedRescuePerGame || MaxAllowedRescuePerGame < 0)
         {
             GamePlayUI.Instance.ShowRescue(GameOverReason.OUT_OF_MOVES);
@@ -1135,6 +1146,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     private void ExecuteRescue()
     {
+        HoldNewBlocks(true);
+
         if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.OUT_OF_MOVES)
         {
             var TotalBreakingColumns = 3;

@@ -116,8 +116,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         ReorderShapes();
 
         var activeShapeContainers = GetActiveShapeContainers();
-        var playableShapes = activeShapeContainers.FindAll(t => t.childCount > 0)
-            .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
+        var playableShapes = GetPlayableShapes();
 
         if (!keepFilledAlways)
         {
@@ -147,9 +146,16 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 }
         }
 
-        CheckOnBoardShapeStatus(playableShapes);
+        GamePlay.Instance.CheckIfOutOfMoves();
 
         return shapesFilled;
+    }
+
+    public List<ShapeInfo> GetPlayableShapes()
+    {
+        var activeShapeContainers = GetActiveShapeContainers();
+        return activeShapeContainers.FindAll(t => t.childCount > 0)
+            .Select(t => t.GetChild(0).GetComponent<ShapeInfo>()).ToList();
     }
 
     /// <summary>
@@ -277,14 +283,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public Vector3 ShapePickupLocalScale()
     {
         return Vector3.one * 1.2f;
-    }
-
-    /// <summary>
-    ///     Checks the on board shape status.
-    /// </summary>
-    public void CheckOnBoardShapeStatus(List<ShapeInfo> playableShapes)
-    {
-        if (!GamePlay.Instance.CanExistingBlocksPlaced(playableShapes)) GamePlay.Instance.OnUnableToPlaceShape();
     }
 
     /// <summary>

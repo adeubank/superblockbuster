@@ -360,7 +360,7 @@ public class Block : MonoBehaviour, IComparable
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
-    public void convertToFrenziedBlock()
+    public void ConvertToFrenziedBlock()
     {
         ConvertToFilledBlock(0);
         ConvertToDoublerBlock();
