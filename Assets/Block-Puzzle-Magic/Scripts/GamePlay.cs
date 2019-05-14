@@ -18,7 +18,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private bool _holdingNewBlocks;
     private bool _isFrenzyPowerupRunning;
     private List<PowerupActivation> _powerupsToActivate;
+    private bool _shouldActivateFrenzy;
     private int _spawnAvalancheBlocks;
+    private int _spawnStormBlocks;
     private int _sticksGaloreRounds;
     [SerializeField] public GameObject blockDandelionSeedPrefab;
     [HideInInspector] public List<Block> blockGrid;
@@ -54,7 +56,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int MaxAllowedVideoWatchRescue;
 
     [HideInInspector] public int MoveCount;
-    private bool shouldActivateFrenzy;
 
     public Timer timeSlider;
 
@@ -62,6 +63,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+
 
     #region IBeginDragHandler implementation
 
@@ -304,7 +306,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         highlightingBlocks.Clear();
 
-        yield return StartLineBreaks(placingShapeBlockCount);
+        yield return StartScoring(placingShapeBlockCount);
 
         yield return AddShapesAndUpdateRound(placingShapeBlockCount);
 
@@ -430,7 +432,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         _activeQuakePowerups.Clear();
 
-        yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive()));
+        yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive() && !t.IsComplete()));
     }
 
     private List<Tweener> ShakeColumnDown(List<Block> column)
@@ -579,7 +581,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             yield return RoundClearPowerups();
 
-            yield return StartLineBreaks(placingShapeBlockCount);
+            yield return StartScoring(placingShapeBlockCount);
 
             CheckIfOutOfMoves();
         }
@@ -635,6 +637,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateFrenzyPowerup()
     {
+        if (_shouldActivateFrenzy)
+            _shouldActivateFrenzy = false;
+        else
+            yield break;
+
         Debug.Log("Activating Frenzy powerup");
 
         // check lock
@@ -784,16 +791,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         return thisColumn;
     }
 
-    private IEnumerator StartLineBreaks(int placingShapeBlockCount)
+    private IEnumerator StartScoring(int placingShapeBlockCount)
     {
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
-        if (breakingColumns.Count > 0 || breakingRows.Count > 0)
+        if (breakingRows.Count == 0 && breakingColumns.Count == 0)
         {
-            timeSlider.PauseTimer();
-            HoldNewBlocks(true);
+            Debug.Log("No breaking lines.");
+            ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
+            yield break;
         }
+
+        timeSlider.PauseTimer();
+        HoldNewBlocks(true);
 
         do
         {
@@ -810,13 +821,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private IEnumerator BreakLines(
         int placingShapeBlockCount, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
     {
-        if (breakingRows.Count == 0 && breakingColumns.Count == 0)
-        {
-            Debug.Log("No breaking lines.");
-            ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
-            yield break;
-        }
-
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
         var totalBreakingRowBlocks =
             breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
@@ -894,13 +898,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return ActivateQuakePowerup();
 
-        yield return ActivateAvalanchePowerup();
+        yield return ActivateStormPowerup();
 
-        if (shouldActivateFrenzy)
-        {
-            shouldActivateFrenzy = false;
-            yield return ActivateFrenzyPowerup();
-        }
+        yield return ActivateFrenzyPowerup();
+
+        yield return ActivateAvalanchePowerup();
 
         #region clearing was exploding blocks
 
@@ -977,15 +979,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (b.isStormPowerup && shouldActivatePowerup)
             {
                 b.isStormPowerup = false;
-                Debug.Log("Cleared a Storm powerup! Randomly clearing 3 rows!  " + b);
-                StartCoroutine(ActivateStormPowerup());
+                Debug.Log("Cleared a Storm powerup! Randomly clearing rows!  " + b);
+                _spawnStormBlocks += 1;
             }
 
             if (b.isFrenzyPowerup && shouldActivatePowerup)
             {
                 b.isFrenzyPowerup = false;
                 Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
-                shouldActivateFrenzy = true;
+                _shouldActivateFrenzy = true;
             }
 
             if (b.isAvalanchePowerup && shouldActivatePowerup)
@@ -1028,20 +1030,29 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateStormPowerup()
     {
+        if (_spawnStormBlocks == 0) yield break;
+
+        Debug.Log("Activating storm! _spawnStormBlocks=" + _spawnStormBlocks);
+
         var allRows = new List<List<Block>>();
+        var stormRows = new List<List<Block>>();
+
         for (var index = 0; index < GameBoardGenerator.Instance.TotalRows; index++)
         {
             var row = GetEntireRowForRescue(index);
             allRows.Add(row);
         }
 
-        var stormRows = new List<List<Block>>();
-        while (stormRows.Count < 3)
+        // so we always spawn at least 3
+        var stormRowCount = 2 + _spawnStormBlocks;
+
+        while (stormRowCount > 0)
         {
             var randomIndex = Random.Range(0, allRows.Count);
             var stormRow = allRows[randomIndex];
             stormRows.Add(stormRow);
             allRows.RemoveAt(randomIndex);
+            stormRowCount--;
         }
 
         stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList();
@@ -1052,6 +1063,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             b.ConvertToFilledBlock(0);
             yield return new WaitForSeconds(0.01f);
         }
+
+        // no more storm blocks
+        _spawnStormBlocks = 0;
     }
 
     public void CheckIfOutOfMoves()
@@ -1283,7 +1297,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return b.ConvertToDandelionSeed(dandelionPowerup);
         }).ToList();
 
-        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsActive() && t.IsPlaying()));
+        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsActive() && !t.IsComplete()));
     }
 
     #endregion

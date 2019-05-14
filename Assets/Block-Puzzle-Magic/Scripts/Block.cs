@@ -179,18 +179,8 @@ public class Block : MonoBehaviour, IComparable
     /// <param name="animate"></param>
     public Sequence ClearBlock(bool animate)
     {
-        var clearSequence = DOTween.Sequence();
         var emptyBlockImage = transform.GetComponent<Image>();
-
-        if (animate)
-        {
-            emptyBlockImage.color = new Color(1, 1, 1, 0);
-            clearSequence.Join(blockImage.transform.DOScale(Vector3.zero, 0.6F));
-            clearSequence.Join(blockImage.DOFade(0, 0.6F));
-            clearSequence.Append(emptyBlockImage.DOFade(0.65f, 0.6F));
-        }
-
-        clearSequence.AppendCallback(() =>
+        var clearActionCallback = new TweenCallback(() =>
         {
             blockImage.color = new Color(1, 1, 1, 0);
             blockImage.transform.localScale = Vector3.one;
@@ -225,7 +215,18 @@ public class Block : MonoBehaviour, IComparable
             blockImage.color = new Color(1, 1, 1, 0);
             blockImage.transform.localScale = Vector3.one;
             blockImage.sprite = null;
+            clearActionCallback.Invoke();
+            return null;
         }
+
+        var clearSequence = DOTween.Sequence();
+
+        emptyBlockImage.color = new Color(1, 1, 1, 0);
+        clearSequence.Join(blockImage.transform.DOScale(Vector3.zero, 0.6F));
+        clearSequence.Join(blockImage.DOFade(0, 0.6F));
+        clearSequence.Append(emptyBlockImage.DOFade(0.65f, 0.6F));
+
+        clearSequence.AppendCallback(clearActionCallback);
 
         return clearSequence;
     }
@@ -245,9 +246,11 @@ public class Block : MonoBehaviour, IComparable
         isLagPowerup = b.isLagPowerup;
         isStormPowerup = b.isStormPowerup;
         isQuakePowerup = b.isQuakePowerup;
+        isAvalanchePowerup = b.isAvalanchePowerup;
+        isFrenzyPowerup = b.isFrenzyPowerup;
+
         blockImage.sprite = b.blockImage.sprite;
         blockImage.color = b.blockImage.color;
-        isAvalanchePowerup = b.isAvalanchePowerup;
         foreach (Transform child in b.blockImage.transform)
             if (child.gameObject.activeInHierarchy)
                 Instantiate(child, blockImage.transform, false);

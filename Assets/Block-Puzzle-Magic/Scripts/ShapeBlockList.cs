@@ -14,5 +14,5 @@ public class ShapeBlockSpawn
     public int BlockID;
     public GameObject shapeBlock;
 
-    [Range(1, 10)] public int spawnProbability = 1;
+    [Range(0, 10)] public int spawnProbability = 1;
 }
