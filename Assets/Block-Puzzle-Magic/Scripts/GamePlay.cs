@@ -314,34 +314,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             UpdateBlockCount();
     }
 
-    private IEnumerator PrepPowerupsBeforeClearing()
+    private IEnumerator PrepPowerupsBeforeClearing(List<Block> clearedLineBlocks)
     {
         Debug.Log("Prepping any to be activated powerups");
 
-        var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
-
         // find any quake blocks activated
-        var quakePowerups = clearedLineBlocks.Where(b => b.isQuakePowerup).GroupBy(b => b.moveID)
-            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
+        var quakePowerupMoveIds = clearedLineBlocks.Where(b => b.isQuakePowerup).Select(b => b.moveID).Distinct();
+        var quakePowerups = blockGrid.FindAll(b => quakePowerupMoveIds.Contains(b.moveID));
         _activeQuakePowerups.AddRange(quakePowerups);
 
-        #region bomb powerup preperation
+        // find any bomb blocks about to be detonated
+        var bombPowerupMoveIds = clearedLineBlocks.Where(b => b.isBombPowerup).Select(b => b.moveID).Distinct();
+        var bombPowerups = blockGrid.FindAll(b => bombPowerupMoveIds.Contains(b.moveID));
+        if (bombPowerups.Any()) PrepDetonatingBombBlockPowerups(bombPowerups);
 
         // find any bomb blocks about to be detonated
-        var activeBombPowerups = clearedLineBlocks.Where(b => b.isBombPowerup).GroupBy(b => b.moveID)
-            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
-        if (activeBombPowerups.Any()) PrepDetonatingBombBlockPowerups(activeBombPowerups);
-
-        #endregion
-
-        #region color coder preparation
-
-        // find any bomb blocks about to be detonated
-        var clearedColorCoderBlocks = clearedLineBlocks.Where(b => b.isColorCoderPowerup).GroupBy(b => b.moveID)
-            .Select(shape => shape.ToList()[Random.Range(0, shape.Count())]).ToList();
-        if (clearedColorCoderBlocks.Any()) yield return ActivateClearedColorCoderBlocks(clearedColorCoderBlocks);
-
-        #endregion
+        var colorCoderPowerupMoveIds =
+            clearedLineBlocks.Where(b => b.isColorCoderPowerup).Select(b => b.moveID).Distinct();
+        var colorCoderPowerups = blockGrid.FindAll(b => colorCoderPowerupMoveIds.Contains(b.moveID));
+        if (colorCoderPowerups.Any()) yield return ActivateClearedColorCoderBlocks(colorCoderPowerups);
     }
 
     private IEnumerator ActivateAvalanchePowerup()
@@ -399,7 +390,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
         sequence.AppendInterval(0.4f);
         sequence.Append(powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
-        sequence.AppendCallback(() => { Destroy(powerupActivationSprite); });
+        sequence.AppendCallback(() =>
+        {
+            blockGrid.Where(b => b.moveID == currentBlock.moveID).ToList().ForEach(b => b.RemovePowerup());
+            Destroy(powerupActivationSprite);
+        });
         yield return new WaitUntil(() => !sequence.IsActive() || sequence.IsComplete());
     }
 
@@ -414,10 +409,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = _activeQuakePowerups.Where(b => ShouldActivatePowerup(new PowerupActivation(b), b)).Aggregate(
+        var allTweeners = _activeQuakePowerups.Aggregate(
             new List<int>(), (columnsToShake, nextQuakePowerup) =>
             {
                 Debug.Log("Activating quake powerup. " + nextQuakePowerup);
+
+                // show the activation sprite
+                ShouldActivatePowerup(new PowerupActivation(nextQuakePowerup), nextQuakePowerup);
 
                 for (var col = nextQuakePowerup.columnID - 1; col <= nextQuakePowerup.columnID + 1; col++)
                     if (!columnsToShake.Contains(col) && col >= 0 && col < GameBoardGenerator.Instance.TotalColumns)
@@ -704,9 +702,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         currentRound = newRound;
         var strCurrentRound = currentRound.ToString();
         txtCurrentRound.SetText(strCurrentRound.PadLeft(Math.Min(strCurrentRound.Length + 1, 2), '0'));
-
-        // activate 6 spaces
-        if (currentRound > 10) BlockShapeSpawner.Instance.SetBlockShapeToSix();
     }
 
     /// <summary>
@@ -808,6 +803,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         do
         {
+            var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
+            yield return PrepPowerupsBeforeClearing(clearedLineBlocks);
+
+            // pick up any changes from prep powerups
+            breakingRows = GetFilledRows();
+            breakingColumns = GetFilledColumns();
+
             yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
 
             breakingRows = GetFilledRows();
@@ -882,8 +884,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         ScoreManager.Instance.AddScore(newScore * multiplier);
 
-        yield return PrepPowerupsBeforeClearing();
-
         if (breakingRows.Count > 0)
             foreach (var thisLine in breakingRows)
                 StartCoroutine(BreakThisLine(thisLine));
@@ -895,6 +895,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return new WaitWhile(() =>
             DOTween.TotalPlayingTweens() > 0 &&
             breakingRows.Concat(breakingColumns).SelectMany(line => line).Any(b => b.isFilled));
+
+        // cleanup any powerups that were cleared
+        var clearedMoveIds = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line.Select(b => b.moveID))
+            .Distinct().ToList();
+        blockGrid.Where(b => clearedMoveIds.Contains(b.moveID)).ToList().ForEach(b => { b.RemovePowerup(); });
 
         yield return ActivateQuakePowerup();
 
@@ -955,11 +960,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
 
             if (b.isBombPowerup)
-            {
-                b.isBombPowerup = false;
-                Debug.Log("Cleared a bomb powerup! Detonating this block! " + b);
-                b.ConvertToExplosion();
-            }
+                blockGrid.Where(other => other.moveID == b.moveID).ToList().ForEach(other =>
+                {
+                    other.isBombPowerup = false;
+                    Debug.Log("Cleared a bomb powerup! Detonating this block! " + other);
+                    other.ConvertToExplosion();
+                });
 
             if (b.isSticksGalorePowerup && shouldActivatePowerup)
             {
@@ -1017,13 +1023,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             (int) ShapeInfo.Powerups.Bandage != powerupActivation.PowerupID)
             StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
 
-        // remove the power up icon
-        blockGrid.Where(b => b.moveID == powerupActivation.MoveID).ToList().ForEach(b =>
-        {
-            foreach (Transform t in b.blockImage.transform)
-                if (t != b.blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
-                    Destroy(t.gameObject);
-        });
+        // use the activation animation as a time to cleanup the icons
+        blockGrid.Where(b => b.moveID == powerupBlock.moveID).ToList().ForEach(b => b.RemovePowerupIcon());
 
         return true;
     }
@@ -1304,10 +1305,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #region powerup bomb prepping for detonation
 
-    private void PrepDetonatingBombBlockPowerups(IEnumerable<Block> clearingBlocks)
+    private void PrepDetonatingBombBlockPowerups(IEnumerable<Block> bombBlocks)
     {
         var analyzedBlocks = new List<Block>();
-        var bombPowerups = new Stack<Block>(clearingBlocks.Where(block => block.isBombPowerup));
+        var bombPowerups = new Stack<Block>(bombBlocks);
 
         while (bombPowerups.Any())
         {

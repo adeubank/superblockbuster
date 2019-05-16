@@ -15,62 +15,62 @@ public class Block : MonoBehaviour, IComparable
     public Image blockImage;
 
     //Bomb blast counter, will keep reducing with each move.
-    [HideInInspector] public int bombCounter;
+    public int bombCounter;
 
-    [HideInInspector] public int colorId = -1;
+    public int colorId = -1;
 
     //Column Index of block.
     public int columnID;
 
     // status if block is an avalanche powerup
-    [HideInInspector] public bool isAvalanchePowerup;
+    public bool isAvalanchePowerup;
 
     //Determines whether this block is normal or bomb.
-    [HideInInspector] public bool isBomb;
+    public bool isBomb;
 
     //Status whether block is a bomb powerup block.
-    [HideInInspector] public bool isBombPowerup;
+    public bool isBombPowerup;
 
     // status of whether a block is a color coder powerup    
-    [HideInInspector] public bool isColorCoderPowerup;
+    public bool isColorCoderPowerup;
 
     //Status whether block is marked to produce seed blocks when cleared
-    [HideInInspector] public bool isDandelionPowerup;
+    public bool isDandelionPowerup;
 
     // Status whether this block will sprout blocks at end of round
-    [HideInInspector] public bool isDandelionSeed;
+    public bool isDandelionSeed;
 
     //Status whether block is marked for double points
-    [HideInInspector] public bool isDoublePoints;
+    public bool isDoublePoints;
 
     //Status whether block is on the edge of the board
-    [HideInInspector] public bool isEdge;
+    public bool isEdge;
 
     // Status of whether this block was in the blast radius of a bomb powerup
-    [HideInInspector] public bool isExploding;
+    public bool isExploding;
 
     //Status whether block is empty or filled.
     public bool isFilled;
 
     // status whether block is a frenzy powerup
-    [HideInInspector] public bool isFrenzyPowerup;
+    public bool isFrenzyPowerup;
 
     // status whether block is a lag powerup
-    [HideInInspector] public bool isLagPowerup;
+    public bool isLagPowerup;
 
     // status if block is an omnicolor block
-    [HideInInspector] public bool isOmnicolorBlock;
+    public bool isOmnicolorBlock;
 
     // status if block is a quake powerup
-    [HideInInspector] public bool isQuakePowerup;
+    public bool isQuakePowerup;
 
     // when cleared starts a sticks galore powerup
-    [HideInInspector] public bool isSticksGalorePowerup;
+    public bool isSticksGalorePowerup;
 
     // status whether block is a storm powerup
-    [HideInInspector] public bool isStormPowerup;
+    public bool isStormPowerup;
 
-    [HideInInspector] public int moveID;
+    public int moveID;
 
     public Sprite prevBlockImageSprite;
 
@@ -190,20 +190,10 @@ public class Block : MonoBehaviour, IComparable
             // reset all fields
             blockID = -1;
             isFilled = false;
-            isBombPowerup = false;
             isBomb = false;
-            isDandelionSeed = false;
-            isDandelionPowerup = false;
-            isDoublePoints = false;
-            isExploding = false;
-            isSticksGalorePowerup = false;
-            isColorCoderPowerup = false;
             prevBlockImageSprite = null;
-            isLagPowerup = false;
-            isStormPowerup = false;
-            isQuakePowerup = false;
-            isAvalanchePowerup = false;
-            isFrenzyPowerup = false;
+
+            RemovePowerup();
 
             if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
                 RemoveCounter();
@@ -375,6 +365,32 @@ public class Block : MonoBehaviour, IComparable
                Mathf.Abs(columnID - nextBlock.columnID) <= 1 ||
                columnID == nextBlock.columnID &&
                Mathf.Abs(rowID - nextBlock.rowID) <= 1;
+    }
+
+    public void RemovePowerup()
+    {
+        RemovePowerupIcon();
+
+        blockID = 0;
+        isBombPowerup = false;
+        isDandelionSeed = false;
+        isDandelionPowerup = false;
+        isDoublePoints = false;
+        isExploding = false;
+        isSticksGalorePowerup = false;
+        isColorCoderPowerup = false;
+        isLagPowerup = false;
+        isStormPowerup = false;
+        isQuakePowerup = false;
+        isAvalanchePowerup = false;
+        isFrenzyPowerup = false;
+    }
+
+    public void RemovePowerupIcon()
+    {
+        foreach (Transform t in blockImage.transform)
+            if (t != blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
+                Destroy(t.gameObject);
     }
 
     #region bomb mode specific

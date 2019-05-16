@@ -58,6 +58,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         #endregion
 
+        SetBlockShapeToSix();
         Invoke("SetupPreviousSessionShapes", 0.2F);
         Invoke("createShapeBlockProbabilityList", 0.5F);
         Invoke("FillShapeContainer", 0.5F);
