@@ -1,11 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ShapeInfo : MonoBehaviour
 {
+    public enum Powerups
+    {
+        Flood = 1000,
+        Doubler = 1001,
+        Dandelion = 1002,
+        Bandage = 1003,
+        Bomb = 1004,
+        ColorCoder = 1005,
+        SticksGalore = 1006,
+        Lag = 1007,
+        Storm = 1008,
+        Quake = 1009,
+        Avalanche = 1010,
+        Frenzy = 1011
+    }
+
     [HideInInspector] public Sprite blockImage;
 
     [HideInInspector] public ShapeBlock firstBlock;
@@ -54,7 +71,7 @@ public class ShapeInfo : MonoBehaviour
 
     public bool IsBandageShape()
     {
-        return ShapeID == (int) ShapeInfo.Powerups.Bandage;
+        return ShapeID == (int) Powerups.Bandage;
     }
 
     public void ConvertToPowerup(PowerupBlockSpawn powerupInfo)
@@ -71,22 +88,6 @@ public class ShapeInfo : MonoBehaviour
     public bool IsPowerup()
     {
         return ShapeID >= 1000;
-    }
-
-    public enum Powerups
-    {
-        Flood = 1000,
-        Doubler = 1001,
-        Dandelion = 1002,
-        Bandage = 1003,
-        Bomb = 1004,
-        ColorCoder = 1005,
-        SticksGalore = 1006,
-        Lag = 1007,
-        Storm = 1008,
-        Quake = 1009,
-        Avalanche = 1010,
-        Frenzy = 1011
     }
 
     public IEnumerator PerformPowerup(List<Block> currentBlocks)
@@ -116,7 +117,7 @@ public class ShapeInfo : MonoBehaviour
                 Debug.Log("Played Bandage Powerup");
                 var randomBandageBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
                 StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-                    BlockShapeSpawner.Instance.FindPowerupById(randomBandageBlock.blockID), randomBandageBlock));
+                    BlockShapeSpawner.Instance.FindPowerupById(randomBandageBlock.blockID), randomBandageBlock, true));
 
                 break;
 
@@ -180,17 +181,25 @@ public class ShapeInfo : MonoBehaviour
 
         // since flood is activation once played, show sprite here
         StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
+            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock, true));
 
-        var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true);
-        foreach (var block in surroundingBlocks)
+        var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true).ToList();
+        if (surroundingBlocks.Any())
         {
-            block.ConvertToFilledBlock(0);
-            block.colorId = powerupBlock.colorId;
-            block.blockImage.sprite = powerupBlock.blockImage.sprite;
-            yield return new WaitForSeconds(0.01f);
+            var floodSequence = DOTween.Sequence();
+            foreach (var block in surroundingBlocks)
+            {
+                floodSequence.AppendCallback(() =>
+                {
+                    block.ConvertToFilledBlock(0);
+                    block.colorId = powerupBlock.colorId;
+                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
+                });
+                floodSequence.AppendInterval(0.04f);
+            }
+
+            yield return floodSequence.WaitForCompletion();
         }
-    
     }
 
     private void HandleDoublerBlocks(List<Block> currentBlocks)
@@ -199,7 +208,7 @@ public class ShapeInfo : MonoBehaviour
 
         // since doubler is activation once played, show sprite here
         StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock));
+            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock, false));
         GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true)
             .Where(block => block.isFilled)
             .ToList()

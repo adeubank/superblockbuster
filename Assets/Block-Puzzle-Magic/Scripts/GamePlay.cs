@@ -17,6 +17,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private readonly List<Block> _activeQuakePowerups = new List<Block>();
     private bool _holdingNewBlocks;
     private bool _isFrenzyPowerupRunning;
+
+    private bool _powerupActivationAlreadyRunning;
     private List<PowerupActivation> _powerupsToActivate;
     private bool _shouldActivateFrenzy;
     private int _spawnAvalancheBlocks;
@@ -276,6 +278,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         Debug.Log("Placing Block and Checking Board Status");
 
+        MoveCount += 1;
         SetImageToPlacingBlocks();
         AudioManager.Instance.PlaySound(blockPlaceSound);
 
@@ -284,7 +287,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         Destroy(currentShape.gameObject);
         currentShape = null;
-        MoveCount += 1;
 
         var placingShapeBlockCount = highlightingBlocks.Count;
         var firstHighlightedBlock = highlightingBlocks.First();
@@ -363,19 +365,24 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         foreach (var b in blocksToConvertToOmnicolor)
         {
             avalancheSequence.AppendCallback(() => b.ConvertToOmnicolorBlock());
-            avalancheSequence.AppendInterval(0.1f);
+            avalancheSequence.AppendInterval(0.04f);
         }
 
         yield return avalancheSequence.WaitForCompletion();
     }
 
-    public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock)
+    public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock,
+        bool removePowerup)
     {
         if (powerupBlockSpawn == null || powerupBlockSpawn.powerupActivationSprite == null)
         {
             Debug.Log("No powerup activation sprite found. " + powerupBlockSpawn + " " + currentBlock);
             yield break;
         }
+
+        yield return new WaitWhile(() => _powerupActivationAlreadyRunning);
+
+        _powerupActivationAlreadyRunning = true;
 
         var powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite,
             currentBlock.transform.position, Quaternion.identity,
@@ -390,13 +397,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         powerupActivationSequence.Append(
             powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
         powerupActivationSequence.AppendInterval(0.4f);
+        powerupActivationSequence.AppendCallback(() =>
+            _powerupActivationAlreadyRunning = false); // release the lock before the jump
         powerupActivationSequence.Append(
             powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
         powerupActivationSequence.AppendCallback(() =>
         {
             Debug.Log("Finished powerup activation sprite for moveId=" + currentBlock.moveID + " currentBlock=" +
                       currentBlock);
-            blockGrid.Where(b => b.moveID == currentBlock.moveID).ToList().ForEach(b => b.RemovePowerup());
+            if (removePowerup)
+                blockGrid.Where(b => b.moveID == currentBlock.moveID).ToList().ForEach(b => b.RemovePowerup());
             Destroy(powerupActivationSprite);
         });
 
@@ -867,7 +877,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
         var newScore = 10 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 10;
 
-        Debug.Log("Breaking lines!\n" +
+        Debug.Log("Breaking lines! " +
                   "\n\tplacingShapeBlockCount=" + placingShapeBlockCount +
                   "\n\ttotalBreakingRowBlocks=" + totalBreakingRowBlocks +
                   "\n\ttotalBreakingColumnBlocks=" + totalBreakingColumnBlocks +
@@ -884,15 +894,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var allLineBreaksSequence = DOTween.Sequence();
         foreach (var line in breakingLines)
         {
-            allLineBreaksSequence.AppendCallback(() => { AudioManager.Instance.PlaySound(soundsToPlay.Dequeue()); });
+            allLineBreaksSequence.AppendCallback(() =>
+            {
+                var soundToPlay = soundsToPlay.Dequeue();
+                AudioManager.Instance.PlaySound(soundToPlay ? soundToPlay : lineClearSounds.Last());
+            });
             allLineBreaksSequence.Join(BreakThisLine(line));
             ScoreManager.Instance.AddScore(newScore * multiplier);
         }
 
         yield return allLineBreaksSequence.WaitForCompletion();
 
-        // cleanup any powerups that were cleared
-        var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Distinct().ToList();
+        // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
+        var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Where(moveId => moveId > 0)
+            .Distinct().ToList();
         blockGrid.Where(b => clearedMoveIds.Contains(b.moveID)).ToList().ForEach(b => { b.RemovePowerup(); });
 
         Debug.Log("Cleared these move IDs " + string.Join(", ", clearedMoveIds));
@@ -1017,7 +1032,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if ((int) ShapeInfo.Powerups.Doubler != powerupActivation.PowerupID &&
             (int) ShapeInfo.Powerups.Flood != powerupActivation.PowerupID &&
             (int) ShapeInfo.Powerups.Bandage != powerupActivation.PowerupID)
-            StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock));
+            StartCoroutine(ShowPowerupActivationSprite(powerupBlockSpawn, powerupBlock, true));
 
         // use the activation animation as a time to cleanup the icons
         blockGrid.Where(b => b.moveID == powerupBlock.moveID).ToList().ForEach(b => b.RemovePowerupIcon());
@@ -1292,7 +1307,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         seedBlocks.ForEach(b =>
         {
             Debug.Log("New seed block. " + b);
-            seedSequence.Append(b.ConvertToDandelionSeed(dandelionPowerup));
+            seedSequence.Join(b.ConvertToDandelionSeed(dandelionPowerup));
         });
 
         return seedSequence;

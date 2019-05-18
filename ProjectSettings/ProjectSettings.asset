@@ -156,7 +156,7 @@ PlayerSettings:
     Android: com.hyperbyte.blockpuzzle
     iOS: com.SuperGeekGames.SuperTilePuzzle
   buildNumber:
-    iOS: 15
+    iOS: 16
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
