@@ -380,7 +380,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield break;
         }
 
-        yield return new WaitWhile(() => _powerupActivationAlreadyRunning);
+        if (!_powerupActivationAlreadyRunning)
+            _powerupActivationAlreadyRunning = true;
+        else
+            // wait your turn
+            yield return new WaitWhile(() => _powerupActivationAlreadyRunning);
+
+        Debug.Log("Starting powerup activation sprite for moveId=" + currentBlock.moveID + " currentBlock=" +
+                  currentBlock);
 
         _powerupActivationAlreadyRunning = true;
 
@@ -396,9 +403,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         powerupActivationSequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.4f));
         powerupActivationSequence.Append(
             powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
+        powerupActivationSequence.AppendCallback(() => _powerupActivationAlreadyRunning = false); // unlock before jump
         powerupActivationSequence.AppendInterval(0.4f);
-        powerupActivationSequence.AppendCallback(() =>
-            _powerupActivationAlreadyRunning = false); // release the lock before the jump
         powerupActivationSequence.Append(
             powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
         powerupActivationSequence.AppendCallback(() =>
@@ -507,51 +513,62 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateClearedColorCoderBlocks(List<Block> clearedColorCoderBlocks)
     {
-        var colorCoderTweeners = clearedColorCoderBlocks.SelectMany(powerupBlock =>
+        var analyzedBlocks = new List<Block>();
+        var colorCoderTweeners = clearedColorCoderBlocks.SelectMany(colorCoderBlock =>
         {
-            Debug.Log("Activating Cleared Color Coder Block. " + powerupBlock);
+            Debug.Log("Activating Cleared Color Coder Block. " + colorCoderBlock);
+
+            // show the activation sprite
+            ShouldActivatePowerup(new PowerupActivation(colorCoderBlock), colorCoderBlock);
 
             var tweeners = new List<Block>();
-            var rowId = powerupBlock.rowID;
-            var colId = powerupBlock.columnID;
+            var rowId = colorCoderBlock.rowID;
+            var colId = colorCoderBlock.columnID;
             for (var index = 1;
                 index < GameBoardGenerator.Instance.TotalRows ||
                 index < GameBoardGenerator.Instance.TotalColumns;
                 index++)
             {
+                var thisTweeners = new List<Block>();
                 var leftBlock = Instance.blockGrid.Find(b => b.rowID == rowId && b.columnID == colId - index);
                 var rightBlock = Instance.blockGrid.Find(b => b.rowID == rowId && b.columnID == colId + index);
                 var upBlock = Instance.blockGrid.Find(b => b.rowID == rowId + index && b.columnID == colId);
                 var downBlock = Instance.blockGrid.Find(b => b.rowID == rowId - index && b.columnID == colId);
-                if (leftBlock) tweeners.Add(leftBlock);
+                if (leftBlock) thisTweeners.Add(leftBlock);
 
-                if (rightBlock) tweeners.Add(rightBlock);
+                if (rightBlock) thisTweeners.Add(rightBlock);
 
-                if (upBlock) tweeners.Add(upBlock);
+                if (upBlock) thisTweeners.Add(upBlock);
 
-                if (downBlock) tweeners.Add(downBlock);
+                if (downBlock) thisTweeners.Add(downBlock);
+
+                thisTweeners.RemoveAll(t => analyzedBlocks.Contains(t));
+                analyzedBlocks.AddRange(thisTweeners);
+                tweeners.AddRange(thisTweeners);
             }
 
             return tweeners.Select(block =>
                 {
                     var prevColor = block.blockImage.color;
                     var prevImageSprite = block.blockImage.sprite;
-                    block.blockImage.sprite = powerupBlock.blockImage.sprite;
+
                     // transition block to the next color
-                    return block.blockImage.DOFade(0.1f, 0.4f).OnComplete(() =>
-                    {
-                        if (block.isFilled)
+                    return block.blockImage.DOFade(0.1f, 0.4f)
+                        .OnStart(() => block.blockImage.sprite = colorCoderBlock.blockImage.sprite)
+                        .OnComplete(() =>
                         {
-                            block.colorId = powerupBlock.colorId;
-                            block.blockImage.color = prevColor;
-                            block.blockImage.sprite = powerupBlock.blockImage.sprite;
-                        }
-                        else
-                        {
-                            block.blockImage.color = prevColor;
-                            block.blockImage.sprite = prevImageSprite;
-                        }
-                    });
+                            if (block.isFilled)
+                            {
+                                block.colorId = colorCoderBlock.colorId;
+                                block.blockImage.color = prevColor;
+                                block.blockImage.sprite = colorCoderBlock.blockImage.sprite;
+                            }
+                            else
+                            {
+                                block.blockImage.color = prevColor;
+                                block.blockImage.sprite = prevImageSprite;
+                            }
+                        });
                 }
             ).ToList();
         }).ToList();
@@ -896,8 +913,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             allLineBreaksSequence.AppendCallback(() =>
             {
-                var soundToPlay = soundsToPlay.Dequeue();
-                AudioManager.Instance.PlaySound(soundToPlay ? soundToPlay : lineClearSounds.Last());
+                if (soundsToPlay.Any())
+                {
+                    var soundToPlay = soundsToPlay.Dequeue();
+                    AudioManager.Instance.PlaySound(soundToPlay);
+                }
+                else
+                {
+                    AudioManager.Instance.PlaySound(lineClearSounds.Last());
+                }
             });
             allLineBreaksSequence.Join(BreakThisLine(line));
             ScoreManager.Instance.AddScore(newScore * multiplier);
