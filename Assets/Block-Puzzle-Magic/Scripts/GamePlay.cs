@@ -895,7 +895,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Distinct().ToList();
         blockGrid.Where(b => clearedMoveIds.Contains(b.moveID)).ToList().ForEach(b => { b.RemovePowerup(); });
 
-        Debug.Log("Cleared these move IDs " + clearedMoveIds);
+        Debug.Log("Cleared these move IDs " + string.Join(", ", clearedMoveIds));
 
         yield return ActivateQuakePowerup();
 

@@ -373,7 +373,6 @@ public class Block : MonoBehaviour, IComparable
 
         blockID = 0;
         isBombPowerup = false;
-        isDandelionSeed = false;
         isDandelionPowerup = false;
         isDoublePoints = false;
         isExploding = false;
