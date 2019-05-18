@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +32,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public AudioClip blockSelectSound;
 
     public Sprite BombSprite;
+    [SerializeField] private AudioClip comboSound;
     [HideInInspector] public int currentRound = 1;
 
     private ShapeInfo currentShape;
@@ -44,10 +45,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool isHelpOnScreen;
 
     // Line break sounds.
-    [SerializeField] private AudioClip lineClear1;
-    [SerializeField] private AudioClip lineClear2;
-    [SerializeField] private AudioClip lineClear3;
-    [SerializeField] private AudioClip lineClear4;
+    [SerializeField] private List<AudioClip> lineClearSounds;
 
     [Tooltip("Max no. of times rescue can be used in 1 game. -1 is infinite")] [SerializeField]
     private int MaxAllowedRescuePerGame;
@@ -361,12 +359,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         blocksToConvertToOmnicolor.Sort();
-
+        var avalancheSequence = DOTween.Sequence();
         foreach (var b in blocksToConvertToOmnicolor)
         {
-            b.ConvertToOmnicolorBlock();
-            yield return new WaitForSeconds(0.01f);
+            avalancheSequence.AppendCallback(() => b.ConvertToOmnicolorBlock());
+            avalancheSequence.AppendInterval(0.1f);
         }
+
+        yield return avalancheSequence.WaitForCompletion();
     }
 
     public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock)
@@ -384,18 +384,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         powerupActivationSpriteCanvas.overrideSorting = true;
         powerupActivationSpriteCanvas.sortingOrder = 999;
 
-        var sequence = DOTween.Sequence();
+        var powerupActivationSequence = DOTween.Sequence();
         powerupActivationSprite.transform.localScale = Vector3.zero;
-        sequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.4f));
-        sequence.Append(powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
-        sequence.AppendInterval(0.4f);
-        sequence.Append(powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
-        sequence.AppendCallback(() =>
+        powerupActivationSequence.Append(powerupActivationSprite.transform.DOScale(Vector3.one, 0.4f));
+        powerupActivationSequence.Append(
+            powerupActivationSprite.transform.DOPunchScale(Vector3.one * 0.05f, 0.2f, 1, 0.1f));
+        powerupActivationSequence.AppendInterval(0.4f);
+        powerupActivationSequence.Append(
+            powerupActivationSprite.transform.DOLocalJump(Vector3.up * 1000f, 100f, 1, 0.8f));
+        powerupActivationSequence.AppendCallback(() =>
         {
+            Debug.Log("Finished powerup activation sprite for moveId=" + currentBlock.moveID + " currentBlock=" +
+                      currentBlock);
             blockGrid.Where(b => b.moveID == currentBlock.moveID).ToList().ForEach(b => b.RemovePowerup());
             Destroy(powerupActivationSprite);
         });
-        yield return new WaitUntil(() => !sequence.IsActive() || sequence.IsComplete());
+
+        yield return powerupActivationSequence.WaitForCompletion();
     }
 
     private IEnumerator ActivateQuakePowerup()
@@ -409,7 +414,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1.3f; // start the shake
 
-        var allTweeners = _activeQuakePowerups.Aggregate(
+        var quakeTweeners = _activeQuakePowerups.Aggregate(
             new List<int>(), (columnsToShake, nextQuakePowerup) =>
             {
                 Debug.Log("Activating quake powerup. " + nextQuakePowerup);
@@ -430,7 +435,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         _activeQuakePowerups.Clear();
 
-        yield return new WaitWhile(() => allTweeners.Any(t => t.IsActive() && !t.IsComplete()));
+        var quakeSequence = DOTween.Sequence();
+        quakeTweeners.ForEach(t => quakeSequence.Join(t));
+        yield return quakeSequence.WaitForCompletion();
     }
 
     private List<Tweener> ShakeColumnDown(List<Block> column)
@@ -538,8 +545,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 }
             ).ToList();
         }).ToList();
-
-        yield return new WaitWhile(() => colorCoderTweeners.Any(t => t.IsActive()));
+        var colorCoderSequence = DOTween.Sequence();
+        colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
+        yield return colorCoderSequence.WaitForCompletion();
     }
 
     public List<List<Block>> GetFilledRows()
@@ -615,20 +623,25 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #region dandelion seed sprout
 
-        var possibleTweens = new List<Tweener>();
-        foreach (var seedBlock in blockGrid.Where(b => b.isDandelionSeed))
+        var dandelionSeeds = blockGrid.Where(b => b.isDandelionSeed).ToList();
+
+        if (dandelionSeeds.Any())
         {
-            Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
+            var seedSproutSequence = DOTween.Sequence();
+            foreach (var seedBlock in dandelionSeeds)
+            {
+                Debug.Log("Found dandelion seed block rowId=" + seedBlock.rowID + " columnId=" + seedBlock.columnID);
 
-            foreach (var surroundingBlock in SurroundingBlocksInRadius(seedBlock, 1, true))
-                if (!surroundingBlock.isFilled)
-                    possibleTweens.Add(surroundingBlock.ConvertToSeedSproutBlock());
+                foreach (var surroundingBlock in SurroundingBlocksInRadius(seedBlock, 1, true))
+                    if (!surroundingBlock.isFilled)
+                        seedSproutSequence.Join(surroundingBlock.ConvertToSeedSproutBlock());
 
-            seedBlock.ClearExtraChildren();
-            seedBlock.isDandelionSeed = false;
+                seedBlock.ClearExtraChildren();
+                seedBlock.isDandelionSeed = false;
+            }
+
+            yield return seedSproutSequence.WaitForCompletion();
         }
-
-        yield return new WaitWhile(() => possibleTweens.Any(t => t.IsActive() && t.IsPlaying()));
 
         #endregion
     }
@@ -690,8 +703,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             numberOfSequences += 1;
         });
 
-
-        yield return new WaitUntil(() => !frenzySequence.IsActive() || !frenzySequence.IsPlaying());
+        yield return frenzySequence.WaitForCompletion();
 
         // unlock
         _isFrenzyPowerupRunning = false;
@@ -800,6 +812,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         timeSlider.PauseTimer();
         HoldNewBlocks(true);
+        var comboMultiplier = 0;
 
         do
         {
@@ -810,8 +823,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
 
-            yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
+            yield return BreakLines(placingShapeBlockCount, comboMultiplier, breakingRows, breakingColumns);
 
+            comboMultiplier += 1;
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
@@ -820,38 +834,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         HoldNewBlocks(false);
     }
 
-    private IEnumerator BreakLines(
-        int placingShapeBlockCount, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
+    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows,
+        List<List<Block>> breakingColumns)
     {
-        var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
+        if (comboMultiplier > 0) AudioManager.Instance.PlaySound(comboSound);
+
+        var totalBreakingLines = breakingRows.Count + breakingColumns.Count + comboMultiplier;
         var totalBreakingRowBlocks =
             breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
         var totalBreakingColumnBlocks =
             breakingColumns.SelectMany(col => col.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
         var totalBreakingBlocks = totalBreakingRowBlocks + totalBreakingColumnBlocks;
-        var newScore = 0;
-
-
-        if (totalBreakingLines == 1)
-        {
-            AudioManager.Instance.PlaySound(lineClear1);
-            newScore = totalBreakingBlocks * 10 + placingShapeBlockCount * 10;
-        }
-        else if (totalBreakingLines == 2)
-        {
-            AudioManager.Instance.PlaySound(lineClear2);
-            newScore = totalBreakingBlocks * 10 + placingShapeBlockCount * 10;
-        }
-        else if (totalBreakingLines == 3)
-        {
-            AudioManager.Instance.PlaySound(lineClear3);
-            newScore = totalBreakingBlocks * 20 + placingShapeBlockCount * 10;
-        }
-        else if (totalBreakingLines >= 4)
-        {
-            AudioManager.Instance.PlaySound(lineClear4);
-            newScore = totalBreakingBlocks * 30 + placingShapeBlockCount * 10;
-        }
 
         // clearing row and column at same time multiplier
         var rowAndColumnBreakMultiplier = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
@@ -872,6 +865,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
+        var newScore = 10 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 10;
 
         Debug.Log("Breaking lines!\n" +
                   "\n\tplacingShapeBlockCount=" + placingShapeBlockCount +
@@ -880,26 +874,28 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                   "\n\tnewScore=" + newScore +
                   "\n\tmultiplier=" + multiplier +
                   "\n\tsameColorMultiplier=" + sameColorMultiplier +
-                  "\n\trowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier);
+                  "\n\trowAndColumnBreakMultiplier=" + rowAndColumnBreakMultiplier +
+                  "\n\tcomboMultiplier=" + comboMultiplier);
 
-        ScoreManager.Instance.AddScore(newScore * multiplier);
+        // break the lines one at a time
+        var soundsToPlay = new Queue<AudioClip>(lineClearSounds);
+        var breakingLines = breakingRows.Concat(breakingColumns).ToList();
+        breakingLines.Shuffle();
+        var allLineBreaksSequence = DOTween.Sequence();
+        foreach (var line in breakingLines)
+        {
+            allLineBreaksSequence.AppendCallback(() => { AudioManager.Instance.PlaySound(soundsToPlay.Dequeue()); });
+            allLineBreaksSequence.Join(BreakThisLine(line));
+            ScoreManager.Instance.AddScore(newScore * multiplier);
+        }
 
-        if (breakingRows.Count > 0)
-            foreach (var thisLine in breakingRows)
-                StartCoroutine(BreakThisLine(thisLine));
-
-        if (breakingColumns.Count > 0)
-            foreach (var thisLine in breakingColumns)
-                StartCoroutine(BreakThisLine(thisLine));
-
-        yield return new WaitWhile(() =>
-            DOTween.TotalPlayingTweens() > 0 &&
-            breakingRows.Concat(breakingColumns).SelectMany(line => line).Any(b => b.isFilled));
+        yield return allLineBreaksSequence.WaitForCompletion();
 
         // cleanup any powerups that were cleared
-        var clearedMoveIds = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line.Select(b => b.moveID))
-            .Distinct().ToList();
+        var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Distinct().ToList();
         blockGrid.Where(b => clearedMoveIds.Contains(b.moveID)).ToList().ForEach(b => { b.RemovePowerup(); });
+
+        Debug.Log("Cleared these move IDs " + clearedMoveIds);
 
         yield return ActivateQuakePowerup();
 
@@ -934,7 +930,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
-        yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
+        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns);
     }
 
     /// <summary>
@@ -942,11 +938,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     /// <returns>The this line.</returns>
     /// <param name="breakingLine">Breaking line.</param>
-    private IEnumerator BreakThisLine(List<Block> breakingLine)
+    private Sequence BreakThisLine(List<Block> breakingLine)
     {
         Debug.Log("Breaking a line starting with block. " + breakingLine.First());
 
-        var lineBreak = DOTween.Sequence();
+        var lineBreakSequence = DOTween.Sequence();
 
         foreach (var b in breakingLine)
         {
@@ -956,7 +952,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (b.isDandelionPowerup && shouldActivatePowerup)
             {
                 b.isDandelionPowerup = false;
-                yield return HandleDandelionPowerup(b);
+                lineBreakSequence.Join(HandleDandelionPowerup(b));
             }
 
             if (b.isBombPowerup)
@@ -1002,10 +998,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 _spawnAvalancheBlocks += 1;
             }
 
-            lineBreak.Join(b.ClearBlock(true));
+            lineBreakSequence.Join(b.ClearBlock(true));
         }
 
-        yield return new WaitWhile(() => lineBreak.IsActive() && !lineBreak.IsComplete());
+        return lineBreakSequence;
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
@@ -1275,7 +1271,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #region powerup dandelion activation
 
-    private IEnumerator HandleDandelionPowerup(Block dandelionPowerup)
+    private Sequence HandleDandelionPowerup(Block dandelionPowerup)
     {
         Debug.Log("Cleared a dandelion powerup! Scattering seeds. " + dandelionPowerup);
 
@@ -1287,18 +1283,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         while (seedBlocks.Count < 5)
         {
-            var randomIndex = Random.Range(0, availableBlocks.Count());
+            var randomIndex = Random.Range(0, availableBlocks.Count);
             if (!seedBlocks.Contains(availableBlocks[randomIndex]))
                 seedBlocks.Add(availableBlocks[randomIndex]);
         }
 
-        var seedTweeners = seedBlocks.Select(b =>
+        var seedSequence = DOTween.Sequence();
+        seedBlocks.ForEach(b =>
         {
             Debug.Log("New seed block. " + b);
-            return b.ConvertToDandelionSeed(dandelionPowerup);
-        }).ToList();
+            seedSequence.Append(b.ConvertToDandelionSeed(dandelionPowerup));
+        });
 
-        yield return new WaitWhile(() => seedTweeners.Any(t => t.IsActive() && !t.IsComplete()));
+        return seedSequence;
     }
 
     #endregion

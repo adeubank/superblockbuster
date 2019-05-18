@@ -679,10 +679,12 @@ MonoBehaviour:
   currentRound: 1
   holdNewBlocksImage: {fileID: 2002298706791298063}
   isHelpOnScreen: 0
-  lineClear1: {fileID: 8300000, guid: 1effb7535a3dba84bb91f2577c4380ee, type: 3}
-  lineClear2: {fileID: 8300000, guid: 94a6fd2777105df419dc7365d6b8bde4, type: 3}
-  lineClear3: {fileID: 8300000, guid: 6ea2d9bf63dfd734191764604aec86ce, type: 3}
-  lineClear4: {fileID: 8300000, guid: 6ea8a9fdd0a0afe46a686eeb4a1e88de, type: 3}
+  lineClearSounds:
+  - {fileID: 8300000, guid: e63e66b1e1ce81d489316d1e6eb63ea3, type: 3}
+  - {fileID: 8300000, guid: 1a299a7bc581b7b468b751072d7e937d, type: 3}
+  - {fileID: 8300000, guid: 85efe36e379575e43ab5f5c580664fec, type: 3}
+  - {fileID: 8300000, guid: d3a732306be7863499b6906bf1af71b3, type: 3}
+  - {fileID: 8300000, guid: 57505c33261e79249ae2323d9961955e, type: 3}
   MaxAllowedRescuePerGame: -1
   MaxAllowedVideoWatchRescue: 1
   MoveCount: 0
@@ -1955,7 +1957,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 349.6, y: 360}
+  m_AnchoredPosition: {x: 349.5996, y: 360}
   m_SizeDelta: {x: 700, y: 415}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3042951826641817521
@@ -2014,7 +2016,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 32767
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!1001 &1069573589762774470
 PrefabInstance:
