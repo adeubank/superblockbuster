@@ -238,6 +238,7 @@ public class Block : MonoBehaviour, IComparable
         isQuakePowerup = b.isQuakePowerup;
         isAvalanchePowerup = b.isAvalanchePowerup;
         isFrenzyPowerup = b.isFrenzyPowerup;
+        isOmnicolorBlock = b.isOmnicolorBlock;
 
         blockImage.sprite = b.blockImage.sprite;
         blockImage.color = b.blockImage.color;
@@ -383,6 +384,7 @@ public class Block : MonoBehaviour, IComparable
         isQuakePowerup = false;
         isAvalanchePowerup = false;
         isFrenzyPowerup = false;
+        isOmnicolorBlock = false;
     }
 
     public void RemovePowerupIcon()
