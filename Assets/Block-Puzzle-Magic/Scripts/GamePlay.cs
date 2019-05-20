@@ -979,7 +979,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="breakingLine">Breaking line.</param>
     private Sequence BreakThisLine(List<Block> breakingLine)
     {
-        Debug.Log("Breaking a line starting with block. " + breakingLine.First());
+        Debug.Log("Breaking this line: " + string.Join(", ", breakingLine));
 
         var lineBreakSequence = DOTween.Sequence();
 
