@@ -314,19 +314,24 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             UpdateBlockCount();
     }
 
-    private IEnumerator PrepPowerupsBeforeClearing(List<Block> clearedLineBlocks)
+    private IEnumerator PrepPowerupsBeforeClearing()
     {
         Debug.Log("Prepping any to be activated powerups");
+        var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
+
+        // find any bomb blocks about to be detonated
+        var bombPowerupMoveIds = clearedLineBlocks.Where(b => b.isBombPowerup).Select(b => b.moveID).Distinct();
+        var bombPowerups = blockGrid.FindAll(b => bombPowerupMoveIds.Contains(b.moveID));
+        if (bombPowerups.Any())
+        {
+            PrepDetonatingBombBlockPowerups(bombPowerups);
+            clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
+        }
 
         // find any quake blocks activated
         var quakePowerupMoveIds = clearedLineBlocks.Where(b => b.isQuakePowerup).Select(b => b.moveID).Distinct();
         var quakePowerups = blockGrid.FindAll(b => quakePowerupMoveIds.Contains(b.moveID));
         _activeQuakePowerups.AddRange(quakePowerups);
-
-        // find any bomb blocks about to be detonated
-        var bombPowerupMoveIds = clearedLineBlocks.Where(b => b.isBombPowerup).Select(b => b.moveID).Distinct();
-        var bombPowerups = blockGrid.FindAll(b => bombPowerupMoveIds.Contains(b.moveID));
-        if (bombPowerups.Any()) PrepDetonatingBombBlockPowerups(bombPowerups);
 
         // find any bomb blocks about to be detonated
         var colorCoderPowerupMoveIds =
@@ -369,6 +374,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return avalancheSequence.WaitForCompletion();
+        yield return new WaitForEndOfFrame();
     }
 
     public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock,
@@ -454,6 +460,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var quakeSequence = DOTween.Sequence();
         quakeTweeners.ForEach(t => quakeSequence.Join(t));
         yield return quakeSequence.WaitForCompletion();
+        yield return new WaitForEndOfFrame();
     }
 
     private List<Tweener> ShakeColumnDown(List<Block> column)
@@ -575,6 +582,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var colorCoderSequence = DOTween.Sequence();
         colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
         yield return colorCoderSequence.WaitForCompletion();
+        yield return new WaitForEndOfFrame();
     }
 
     public List<List<Block>> GetFilledRows()
@@ -668,6 +676,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
 
             yield return seedSproutSequence.WaitForCompletion();
+            yield return new WaitForEndOfFrame();
         }
 
         #endregion
@@ -731,6 +740,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         });
 
         yield return frenzySequence.WaitForCompletion();
+
+        yield return new WaitForEndOfFrame();
 
         // unlock
         _isFrenzyPowerupRunning = false;
@@ -843,8 +854,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         do
         {
-            var clearedLineBlocks = GetFilledRows().Concat(GetFilledColumns()).SelectMany(line => line).ToList();
-            yield return PrepPowerupsBeforeClearing(clearedLineBlocks);
+            yield return PrepPowerupsBeforeClearing();
 
             // pick up any changes from prep powerups
             breakingRows = GetFilledRows();
@@ -853,8 +863,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield return BreakLines(placingShapeBlockCount, comboMultiplier, breakingRows, breakingColumns);
 
             comboMultiplier += 1;
-            breakingRows = GetFilledRows();
-            breakingColumns = GetFilledColumns();
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
 
         timeSlider.ResumeTimer();
@@ -928,6 +936,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return allLineBreaksSequence.WaitForCompletion();
+        yield return new WaitForEndOfFrame();
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
         var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Where(moveId => moveId > 0)
@@ -1099,6 +1108,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             b.ConvertToFilledBlock(0);
             yield return new WaitForSeconds(0.01f);
         }
+
+        yield return new WaitForEndOfFrame();
 
         // no more storm blocks
         _spawnStormBlocks = 0;
