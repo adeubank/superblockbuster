@@ -188,13 +188,16 @@ public class Block : MonoBehaviour, IComparable
             blockImage.sprite = null;
             ClearExtraChildren();
 
+            RemovePowerup();
+
+            if (isOmnicolorBlock) RemovePowerupIcon();
+
             // reset all fields
+            moveID = -1;
             blockID = -1;
             isFilled = false;
             isBomb = false;
             prevBlockImageSprite = null;
-
-            RemovePowerup();
 
             if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
                 RemoveCounter();
@@ -225,6 +228,7 @@ public class Block : MonoBehaviour, IComparable
     public void Copy(Block b)
     {
         // copy most fields
+        moveID = b.moveID;
         blockID = b.blockID;
         isBombPowerup = b.isBombPowerup;
         isBomb = b.isBomb;
@@ -335,6 +339,7 @@ public class Block : MonoBehaviour, IComparable
 
     public void ConvertToOmnicolorBlock()
     {
+        blockID = 0;
         isFilled = true;
         isOmnicolorBlock = true;
         Instantiate(GamePlay.Instance.blockOmnicolorPrefab, blockImage.transform, false);
@@ -371,6 +376,9 @@ public class Block : MonoBehaviour, IComparable
 
     public void RemovePowerup()
     {
+        if (blockID < 1000) return;
+        Debug.Log("Removing powerup from moveID=" + moveID + " blockID=" + blockID + " " + this);
+
         RemovePowerupIcon();
 
         blockID = 0;

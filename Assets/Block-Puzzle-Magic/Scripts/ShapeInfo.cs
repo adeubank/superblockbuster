@@ -116,8 +116,8 @@ public class ShapeInfo : MonoBehaviour
 
                 Debug.Log("Played Bandage Powerup");
                 var randomBandageBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
-                StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-                    BlockShapeSpawner.Instance.FindPowerupById(randomBandageBlock.blockID), randomBandageBlock, true));
+                StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(randomBandageBlock.blockID,
+                    randomBandageBlock.moveID, randomBandageBlock, true));
 
                 break;
 
@@ -180,8 +180,8 @@ public class ShapeInfo : MonoBehaviour
         var powerupBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
 
         // since flood is activation once played, show sprite here
-        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock, true));
+        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(powerupBlock.blockID, powerupBlock.moveID,
+            powerupBlock, true));
 
         var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true).ToList();
         if (surroundingBlocks.Any())
@@ -208,8 +208,8 @@ public class ShapeInfo : MonoBehaviour
         var powerupBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
 
         // since doubler is activation once played, show sprite here
-        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(
-            BlockShapeSpawner.Instance.FindPowerupById(powerupBlock.blockID), powerupBlock, false));
+        StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(powerupBlock.blockID, powerupBlock.moveID,
+            powerupBlock, false));
         GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true)
             .Where(block => block.isFilled)
             .ToList()
