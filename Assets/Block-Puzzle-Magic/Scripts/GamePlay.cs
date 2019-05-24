@@ -375,7 +375,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return avalancheSequence.WaitForCompletion();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     public IEnumerator ShowPowerupActivationSprite(PowerupBlockSpawn powerupBlockSpawn, Block currentBlock,
@@ -461,7 +461,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var quakeSequence = DOTween.Sequence();
         quakeTweeners.ForEach(t => quakeSequence.Join(t));
         yield return quakeSequence.WaitForCompletion();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     private List<Tweener> ShakeColumnDown(List<Block> column)
@@ -561,7 +561,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     var prevImageSprite = block.blockImage.sprite;
 
                     // transition block to the next color
-                    return block.blockImage.DOFade(0.1f, 0.4f)
+                    return block.blockImage.DOFade(0.1f, 0.8f)
                         .OnStart(() => block.blockImage.sprite = colorCoderBlock.blockImage.sprite)
                         .OnComplete(() =>
                         {
@@ -583,7 +583,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var colorCoderSequence = DOTween.Sequence();
         colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
         yield return colorCoderSequence.WaitForCompletion();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     public List<List<Block>> GetFilledRows()
@@ -677,7 +677,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
 
             yield return seedSproutSequence.WaitForCompletion();
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSecondsRealtime(0.4f);
         }
 
         #endregion
@@ -742,7 +742,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return frenzySequence.WaitForCompletion();
 
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
 
         // unlock
         _isFrenzyPowerupRunning = false;
@@ -946,7 +946,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return allLineBreaksSequence.WaitForCompletion();
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
         var clearedMoveIds = breakingLines.SelectMany(line => line.Select(b => b.moveID)).Where(moveId => moveId > 0)
@@ -1119,7 +1119,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield return new WaitForSeconds(0.01f);
         }
 
-        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(0.4f);
 
         // no more storm blocks
         _spawnStormBlocks = 0;

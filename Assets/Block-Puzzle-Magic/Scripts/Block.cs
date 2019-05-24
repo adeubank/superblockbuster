@@ -281,7 +281,7 @@ public class Block : MonoBehaviour, IComparable
     {
         ClearExtraChildren();
         ConvertToFilledBlock(0);
-        return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 1f, 1, 0.1f);
+        return transform.DOPunchScale(new Vector3(1.05f, 1.05f, 1.05f), 0.8f, 1, 0.1f);
     }
 
     public void ConvertToColorCoder()
@@ -391,8 +391,11 @@ public class Block : MonoBehaviour, IComparable
     public void RemovePowerupIcon()
     {
         foreach (Transform t in blockImage.transform)
-            if (t != blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
-                Destroy(t.gameObject);
+        {
+            if (t == blockImage.transform) continue;
+            if (t.name.Contains("DandelionSeed")) continue; // only seed sprout should clear this
+            Destroy(t.gameObject);
+        }
     }
 
     public void ClearDandelionSeedIcon()
