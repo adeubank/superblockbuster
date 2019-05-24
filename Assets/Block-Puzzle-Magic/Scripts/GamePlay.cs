@@ -1465,7 +1465,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         public override string ToString()
         {
-            return this + " MoveID=" + MoveID + " PowerupID=" + PowerupID;
+            return base.ToString() + " MoveID=" + MoveID + " PowerupID=" + PowerupID;
         }
     }
 
