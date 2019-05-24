@@ -199,6 +199,7 @@ public class ShapeInfo : MonoBehaviour
             }
 
             yield return floodSequence.WaitForCompletion();
+            yield return new WaitForEndOfFrame();
         }
     }
 

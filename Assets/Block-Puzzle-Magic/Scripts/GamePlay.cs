@@ -276,9 +276,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public IEnumerator PlaceBlockCheckBoardStatus()
     {
-        Debug.Log("Placing Block and Checking Board Status");
-
         MoveCount += 1;
+
+        Debug.Log("Placing Block and Checking Board Status. MoveCount=" + MoveCount + " " + currentShape);
+
         SetImageToPlacingBlocks();
         AudioManager.Instance.PlaySound(blockPlaceSound);
 
@@ -671,7 +672,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     if (!surroundingBlock.isFilled)
                         seedSproutSequence.Join(surroundingBlock.ConvertToSeedSproutBlock());
 
-                seedBlock.ClearExtraChildren();
+                seedBlock.ClearDandelionSeedIcon();
                 seedBlock.isDandelionSeed = false;
             }
 
@@ -854,13 +855,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         do
         {
+            Debug.Log("Prepping powerups! rows=" + string.Join(",", breakingRows.SelectMany(r => r).Select(b => b)) +
+                      " cols=" + string.Join(",", breakingColumns.SelectMany(c => c).Select(b => b)));
             yield return PrepPowerupsBeforeClearing();
 
             // pick up any changes from prep powerups
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
 
+            Debug.Log("About to break lines! rows=" + string.Join(",", breakingRows.SelectMany(r => r).Select(b => b)) +
+                      " cols=" + string.Join(",", breakingColumns.SelectMany(c => c).Select(b => b)));
+
             yield return BreakLines(placingShapeBlockCount, comboMultiplier, breakingRows, breakingColumns);
+
+            // pick up any changes from after clear powerups
+            breakingRows = GetFilledRows();
+            breakingColumns = GetFilledColumns();
 
             comboMultiplier += 1;
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);

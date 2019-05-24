@@ -165,9 +165,10 @@ public class Block : MonoBehaviour, IComparable
         foreach (Transform t in blockImage.transform)
         {
             // ignore self and legacy text counter
-            if (blockImage.transform == t || t.name == "Text-Counter" ||
-                txtCounter != null && t == txtCounter.transform)
-                continue;
+            if (blockImage.transform == t) continue;
+            if (t.name == "Text-Counter") continue;
+            if (txtCounter != null && t == txtCounter.transform) continue;
+            if (t.name.Contains("DandelionSeed")) continue; // only seed block spawn should clear this
 
             Destroy(t.gameObject);
         }
@@ -391,6 +392,13 @@ public class Block : MonoBehaviour, IComparable
     {
         foreach (Transform t in blockImage.transform)
             if (t != blockImage.transform && t.name.StartsWith("PowerupBlockIcon"))
+                Destroy(t.gameObject);
+    }
+
+    public void ClearDandelionSeedIcon()
+    {
+        foreach (Transform t in blockImage.transform)
+            if (t != blockImage.transform && t.name.Contains("DandelionSeed"))
                 Destroy(t.gameObject);
     }
 
