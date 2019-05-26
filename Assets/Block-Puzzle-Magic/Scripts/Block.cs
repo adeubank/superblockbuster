@@ -140,10 +140,16 @@ public class Block : MonoBehaviour, IComparable
     {
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 1);
-        blockID = _blockID;
         colorId = sprite.name.TryParseInt();
-        moveID = moveCount;
-        isFilled = true;
+
+        // don't just replace the block info if it was filled
+        if (!isFilled)
+        {
+            blockID = _blockID;
+            moveID = moveCount;
+            isFilled = true;
+            isExploding = false;
+        }
     }
 
     /// <summary>
@@ -157,6 +163,7 @@ public class Block : MonoBehaviour, IComparable
         blockImage.color = new Color(1, 1, 1, 1);
         blockID = _blockID;
         isFilled = true;
+        isExploding = false;
     }
 
     public void ClearExtraChildren()
@@ -197,6 +204,7 @@ public class Block : MonoBehaviour, IComparable
             blockID = -1;
             isFilled = false;
             isBomb = false;
+            isExploding = false;
             prevBlockImageSprite = null;
 
             if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
@@ -341,6 +349,7 @@ public class Block : MonoBehaviour, IComparable
     {
         blockID = 0;
         isFilled = true;
+        isExploding = false;
         isOmnicolorBlock = true;
         Instantiate(GamePlay.Instance.blockOmnicolorPrefab, blockImage.transform, false);
     }
@@ -408,6 +417,7 @@ public class Block : MonoBehaviour, IComparable
 
     public void ClearDandelionSeedIcon()
     {
+        isDandelionSeed = false;
         foreach (Transform t in blockImage.transform)
             if (t != blockImage.transform && t.name.Contains("DandelionSeed"))
                 Destroy(t.gameObject);

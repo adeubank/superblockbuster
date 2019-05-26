@@ -682,7 +682,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                         seedSproutSequence.Join(surroundingBlock.ConvertToSeedSproutBlock());
 
                 seedBlock.ClearDandelionSeedIcon();
-                seedBlock.isDandelionSeed = false;
             }
 
             yield return seedSproutSequence.WaitForCompletion();
@@ -976,7 +975,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
         blockGrid.Where(b => b.moveID > 0 && clearedMoveIds.Contains(b.moveID)).ToList()
-            .ForEach(b => { b.RemovePowerup(); });
+            .ForEach(b =>
+            {
+                Debug.Log("Removing powerup from this block " + b);
+                b.RemovePowerup();
+            });
 
         Debug.Log("Cleared these move IDs: " + string.Join(", ", clearedMoveIds) + " and block IDs: " +
                   string.Join(", ", clearedBlockIds));
@@ -1000,6 +1003,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         #endregion
+
+        // do some cleanup, since there are still bugs
+        foreach (var block in blockGrid.Where(b => !b.isFilled && b.blockID > 0 && !b.isDandelionSeed))
+        {
+            Debug.Log("Cleanup this block that is in a bad state " + block);
+            block.ClearBlock(false);
+            block.RemovePowerup();
+            block.ClearDandelionSeedIcon();
+        }
 
         Debug.Log("Finished breaking lines.");
     }
@@ -1118,8 +1130,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (_spawnStormBlocks == 0) yield break;
 
-        Debug.Log("Activating storm! _spawnStormBlocks=" + _spawnStormBlocks);
-
         var allRows = new List<List<Block>>();
         var stormRows = new List<List<Block>>();
 
@@ -1131,6 +1141,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // so we always spawn at least 3
         var stormRowCount = 2 + _spawnStormBlocks;
+
+        Debug.Log("Activating storm! stormRowCount=" + stormRowCount);
 
         while (stormRowCount > 0)
         {

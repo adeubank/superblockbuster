@@ -191,7 +191,7 @@ public class ShapeInfo : MonoBehaviour
             {
                 floodSequence.AppendCallback(() =>
                 {
-                    block.ConvertToFilledBlock(0);
+                    if (!block.isFilled) block.ConvertToFilledBlock(0);
                     block.colorId = powerupBlock.colorId;
                     block.blockImage.sprite = powerupBlock.blockImage.sprite;
                 });
