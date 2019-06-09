@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PowerupSelectMenu : MonoBehaviour
+public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
     private List<PowerupBlockSpawn> _equippedPowerups;
     [SerializeField] private PowerupList availablePowerups;
@@ -18,24 +19,26 @@ public class PowerupSelectMenu : MonoBehaviour
         InitMenuOptions();
     }
 
-    private void InitMenuOptions()
+    [MenuItem("Powerups/Init Menu Options")]
+    private static void InitMenuOptions()
     {
-        LoadEquippedPowerups();
+        Instance.LoadEquippedPowerups();
 
         // clean the list first
-        foreach (Transform t in transform)
+        foreach (Transform t in Instance.transform)
         {
-            if (t == transform) continue;
+            if (t == Instance.transform) continue;
             Destroy(t);
         }
 
         // Add some empty space at the top of the list
-        Instantiate(emptySpacePrefab, transform);
+        Instantiate(Instance.emptySpacePrefab, Instance.transform);
 
-        var equippedPowerupSpawns = _equippedPowerups;
-        foreach (var powerupBlockSpawn in availablePowerups.powerupBlockSpawns)
+        var equippedPowerupSpawns = Instance._equippedPowerups;
+        foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns)
         {
-            var powerupOption = Instantiate(powerupOptionPrefab, transform).GetComponent<PowerupOption>();
+            var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.transform)
+                .GetComponent<PowerupOption>();
 
             if (equippedPowerupSpawns.Contains(powerupBlockSpawn))
             {
@@ -57,7 +60,7 @@ public class PowerupSelectMenu : MonoBehaviour
         }
 
         // empty space at the bottom
-        Instantiate(emptySpacePrefab, transform);
+        Instantiate(Instance.emptySpacePrefab, Instance.transform);
     }
 
     private void LoadEquippedPowerups()
