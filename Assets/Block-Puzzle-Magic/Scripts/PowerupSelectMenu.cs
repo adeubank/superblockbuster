@@ -15,6 +15,11 @@ public class PowerupSelectMenu : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        InitMenuOptions();
+    }
+
+    private void InitMenuOptions()
+    {
         LoadEquippedPowerups();
 
         // clean the list first
@@ -53,11 +58,6 @@ public class PowerupSelectMenu : MonoBehaviour
 
         // empty space at the bottom
         Instantiate(emptySpacePrefab, transform);
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
     }
 
     private void LoadEquippedPowerups()
