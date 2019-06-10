@@ -12,6 +12,8 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     [SerializeField] private PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
     public GameObject powerupOptionPrefab;
+    public Transform powerupOptionsListTransform;
+    public Transform powerupSelectedListTransform;
 
     // Start is called before the first frame update
     private void Start()
@@ -25,19 +27,19 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         Instance.LoadEquippedPowerups();
 
         // clean the list first
-        foreach (Transform t in Instance.transform)
+        foreach (Transform t in Instance.powerupOptionsListTransform)
         {
-            if (t == Instance.transform) continue;
+            if (t == Instance.powerupOptionsListTransform) continue;
             Destroy(t);
         }
 
         // Add some empty space at the top of the list
-        Instantiate(Instance.emptySpacePrefab, Instance.transform);
+        Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
         var equippedPowerupSpawns = Instance._equippedPowerups;
         foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns)
         {
-            var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.transform)
+            var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
             if (equippedPowerupSpawns.Contains(powerupBlockSpawn))
@@ -60,7 +62,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         }
 
         // empty space at the bottom
-        Instantiate(Instance.emptySpacePrefab, Instance.transform);
+        Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
     }
 
     private void LoadEquippedPowerups()

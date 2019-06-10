@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 2.8999634, y: -4.899358}
-  m_SizeDelta: {x: 554.6, y: 648.6}
+  m_SizeDelta: {x: 554.6, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &8621037742671759134
 CanvasRenderer:
@@ -80,9 +80,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availablePowerups: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
-  powerupOptionPrefab: {fileID: 2840695140443860139, guid: c586e29315ec04f8690059309e07e77d,
-    type: 3}
   emptySpacePrefab: {fileID: 7759915513461289549, guid: 0f6ba654d984544eb9973b04a7fa3b28,
+    type: 3}
+  powerupOptionPrefab: {fileID: 2840695140443860139, guid: c586e29315ec04f8690059309e07e77d,
     type: 3}
 --- !u!114 &8409111600092737254
 MonoBehaviour:

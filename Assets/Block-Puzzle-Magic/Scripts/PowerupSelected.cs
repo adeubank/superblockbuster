@@ -1,12 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
-public class PowerupSelect : MonoBehaviour
+public class PowerupSelected : MonoBehaviour
 {
-    [SerializeField] private PowerupList availablePowerups;
-
-    public PowerupList equipedPowerups;
-
-    public GameObject powerupList;
+    public Sprite noPowerupImage;
+    public Image powerupImage;
 
     // Start is called before the first frame update
     private void Start()
