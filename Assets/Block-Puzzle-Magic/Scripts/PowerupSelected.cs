@@ -3,16 +3,27 @@ using UnityEngine.UI;
 
 public class PowerupSelected : MonoBehaviour
 {
+    private PowerupBlockSpawn _equippedPowerup;
     public Sprite noPowerupImage;
+    [SerializeField] private Button powerupButton;
     public Image powerupImage;
 
-    // Start is called before the first frame update
-    private void Start()
+    public void SetPowerup(PowerupBlockSpawn equippedPowerup)
     {
+        _equippedPowerup = equippedPowerup;
+        powerupImage.sprite = equippedPowerup.powerupBlockIcon.GetComponent<Image>().sprite;
+        powerupButton.enabled = true;
+        powerupButton.onClick.AddListener(() =>
+        {
+            PowerupSelectMenu.Instance.RemoveEquippedPowerup(_equippedPowerup);
+            SetNoPowerup();
+            powerupButton.onClick.RemoveAllListeners();
+        });
     }
 
-    // Update is called once per frame
-    private void Update()
+    public void SetNoPowerup()
     {
+        powerupButton.enabled = false;
+        powerupImage.sprite = noPowerupImage;
     }
 }

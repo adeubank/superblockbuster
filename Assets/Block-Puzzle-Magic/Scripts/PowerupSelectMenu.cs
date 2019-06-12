@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
@@ -14,6 +12,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     public GameObject powerupOptionPrefab;
     public Transform powerupOptionsListTransform;
     public Transform powerupSelectedListTransform;
+    public GameObject powerupSelectedPrefab;
 
     // Start is called before the first frame update
     private void Start()
@@ -24,13 +23,18 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     [MenuItem("Powerups/Init Menu Options")]
     private static void InitMenuOptions()
     {
-        Instance.LoadEquippedPowerups();
+        Instance.LoadSavedEquippedPowerups();
+        Instance.InitEquippedPowerups();
+        Instance.InitAvailablePowerups();
+    }
 
+    private void InitAvailablePowerups()
+    {
         // clean the list first
         foreach (Transform t in Instance.powerupOptionsListTransform)
         {
             if (t == Instance.powerupOptionsListTransform) continue;
-            Destroy(t);
+            Destroy(t.gameObject);
         }
 
         // Add some empty space at the top of the list
@@ -42,30 +46,42 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
-            if (equippedPowerupSpawns.Contains(powerupBlockSpawn))
-            {
-                powerupOption.checkedIcon.gameObject.SetActive(true);
-                powerupOption.powerupPrice.gameObject.SetActive(false);
-            }
-            else
-            {
-                powerupOption.checkedIcon.gameObject.SetActive(false);
-                powerupOption.powerupPrice.gameObject.SetActive(true);
-            }
-
-            powerupOption.powerupIcon.sprite = powerupBlockSpawn.powerupBlockIcon.GetComponent<Image>().sprite;
-            var powerupNameSplit = powerupBlockSpawn.shapeBlock.name.Split('-');
-            if (powerupNameSplit.Length == 3)
-                powerupOption.powerupName.text = powerupNameSplit[2].ToUpper();
-            else
-                throw new Exception("Failed to parse powerup name from " + powerupBlockSpawn.shapeBlock.name);
+            powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn));
         }
 
         // empty space at the bottom
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
     }
 
-    private void LoadEquippedPowerups()
+    private void InitEquippedPowerups()
+    {
+        Debug.Log("Initializing equipped powerups list " + _equippedPowerups);
+
+        // clean the list first
+        foreach (Transform t in powerupSelectedListTransform)
+        {
+            if (t == powerupSelectedListTransform) continue;
+            Destroy(t.gameObject);
+        }
+
+        for (var i = 0; i < 3; i++)
+        {
+            var powerupSelected = Instantiate(powerupSelectedPrefab, powerupSelectedListTransform)
+                .GetComponent<PowerupSelected>();
+            if (i < _equippedPowerups.Count)
+                powerupSelected.SetPowerup(_equippedPowerups[i]);
+            else
+                powerupSelected.SetNoPowerup();
+        }
+    }
+
+    public void RemoveEquippedPowerup(PowerupBlockSpawn equippedPowerup)
+    {
+        Debug.Log("Removing equipped powerup " + equippedPowerup);
+        _equippedPowerups.Remove(equippedPowerup);
+    }
+
+    private void LoadSavedEquippedPowerups()
     {
         if (File.Exists(EquippedPowerupPath()))
         {
@@ -73,9 +89,11 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             var file = File.Open(EquippedPowerupPath(), FileMode.Open);
             _equippedPowerups = (List<PowerupBlockSpawn>) bf.Deserialize(file);
             file.Close();
+            Debug.Log("Loaded saved equipped powerups " + _equippedPowerups);
         }
         else
         {
+            Debug.Log("No saved equipped powerups " + _equippedPowerups);
             _equippedPowerups = new List<PowerupBlockSpawn>();
         }
     }
@@ -91,5 +109,19 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         var file = File.Create(EquippedPowerupPath());
         bf.Serialize(file, _equippedPowerups);
         file.Close();
+        Debug.Log("Saved equipped powerups " + _equippedPowerups);
+    }
+
+    public bool AddEquippedPowerup(PowerupBlockSpawn powerup)
+    {
+        if (_equippedPowerups.Count < 3)
+        {
+            _equippedPowerups.Add(powerup);
+            return true;
+        }
+
+        Debug.Log("Not equipping more than 3!");
+        // TODO add a feedback to show we can't equip more than 3
+        return false;
     }
 }

@@ -625,7 +625,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3696a050ee3324484b398ce703ffc848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerupIcon: {fileID: 2808736284167951249}
   checkedIcon: {fileID: 2551559280350033313}
+  powerupIcon: {fileID: 2808736284167951249}
   powerupName: {fileID: 2808736284147085655}
   powerupPrice: {fileID: 2808736281630921479}
+  powerupButton: {fileID: 2808736313477973677}
