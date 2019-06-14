@@ -10,6 +10,7 @@ public class StackManager : Singleton<StackManager>
 
     public GameObject mainMenu;
     public GameObject pauseSceen;
+    public GameObject powerupSelectScreen;
     public GameObject purchaseFailScreen;
     public GameObject purchaseSuccessScreen;
     public GameObject quitConfirmGameScreen;

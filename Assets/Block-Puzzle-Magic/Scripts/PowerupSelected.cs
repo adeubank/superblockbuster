@@ -8,14 +8,16 @@ public class PowerupSelected : MonoBehaviour
     [SerializeField] private Button powerupButton;
     public Image powerupImage;
 
-    public void SetPowerup(PowerupBlockSpawn equippedPowerup)
+    public void SetPowerup(int equippedPowerupId)
     {
-        _equippedPowerup = equippedPowerup;
-        powerupImage.sprite = equippedPowerup.powerupBlockIcon.GetComponent<Image>().sprite;
+        _equippedPowerup =
+            PowerupSelectMenu.Instance.availablePowerups.powerupBlockSpawns.Find(powerup =>
+                powerup.BlockID == equippedPowerupId);
+        powerupImage.sprite = _equippedPowerup.powerupBlockIcon.GetComponent<Image>().sprite;
         powerupButton.enabled = true;
         powerupButton.onClick.AddListener(() =>
         {
-            PowerupSelectMenu.Instance.RemoveEquippedPowerup(_equippedPowerup);
+            PowerupSelectMenu.Instance.RemoveEquippedPowerupId(_equippedPowerup.BlockID);
             SetNoPowerup();
             powerupButton.onClick.RemoveAllListeners();
         });

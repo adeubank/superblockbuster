@@ -1,33 +1,32 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PowerupOption : MonoBehaviour
 {
     private PowerupBlockSpawn _powerup;
-    public Image checkedIcon;
+    [FormerlySerializedAs("checkedIcon")] public Image equippedIcon;
     [SerializeField] private Button powerupButton;
     public Image powerupIcon;
     public Text powerupName;
     public Text powerupPrice;
 
-    public void SetPowerup(PowerupBlockSpawn powerup, bool equipped)
+    public void SetPowerup(PowerupBlockSpawn powerup, bool equipped, bool purchased)
     {
         _powerup = powerup;
         powerupButton.onClick.RemoveAllListeners();
+        equippedIcon.gameObject.SetActive(purchased);
+        equippedIcon.color = equipped ? Color.white : Color.clear;
+        powerupPrice.gameObject.SetActive(!purchased);
 
         if (equipped)
-        {
-            checkedIcon.gameObject.SetActive(true);
-            powerupPrice.gameObject.SetActive(false);
-            powerupButton.enabled = true;
+            powerupButton.onClick.AddListener(UnequipThisPowerup);
+        else if (purchased)
             powerupButton.onClick.AddListener(EquipThisPowerup);
-        }
         else
-        {
-            checkedIcon.gameObject.SetActive(false);
-            powerupPrice.gameObject.SetActive(true);
-        }
+            // TODO implement buying powerups modal with demo video
+            powerupButton.onClick.AddListener(BuyThisPowerup);
 
         powerupIcon.sprite = powerup.powerupBlockIcon.GetComponent<Image>().sprite;
         var powerupNameSplit = powerup.shapeBlock.name.Split('-');
@@ -37,9 +36,18 @@ public class PowerupOption : MonoBehaviour
             throw new Exception("Failed to parse powerup name from " + powerup.shapeBlock.name);
     }
 
-    public void EquipThisPowerup()
+    private void BuyThisPowerup()
     {
-        if (PowerupSelectMenu.Instance.AddEquippedPowerup(_powerup))
-            SetPowerup(_powerup, true);
+        throw new NotImplementedException();
+    }
+
+    private void EquipThisPowerup()
+    {
+        PowerupSelectMenu.Instance.AddEquippedPowerupId(_powerup);
+    }
+
+    private void UnequipThisPowerup()
+    {
+        PowerupSelectMenu.Instance.RemoveEquippedPowerupId(_powerup.BlockID);
     }
 }

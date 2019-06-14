@@ -40,6 +40,9 @@
     <string name="txt-success-content" text="Purchase completed successfully." />
     <string name="txt-fail-content" text="Purchase Failed, Please try again." />
 
+    <!--PowerupSelectScreen-->
+    <string name="txt-powerup-select" text="SELECT"/>
+
     <!--Pause-->
 
     <string name="txt-paused" text="PAUSED" />

@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEditor;
 using UnityEngine;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
-    private List<PowerupBlockSpawn> _equippedPowerups;
-    [SerializeField] private PowerupList availablePowerups;
+    private List<int> _purchasedPowerupIds;
+    [SerializeField] public PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
+    [HideInInspector] public List<int> equippedPowerupIds;
     public GameObject powerupOptionPrefab;
     public Transform powerupOptionsListTransform;
     public Transform powerupSelectedListTransform;
@@ -20,15 +22,30 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         InitMenuOptions();
     }
 
+#if UNITY_EDITOR
     [MenuItem("Powerups/Init Menu Options")]
+#endif
     private static void InitMenuOptions()
     {
+        Instance.LoadSavedPurchasedPowerups();
         Instance.LoadSavedEquippedPowerups();
-        Instance.InitEquippedPowerups();
-        Instance.InitAvailablePowerups();
+        Instance.UpdateMenu();
     }
 
-    private void InitAvailablePowerups()
+    private void UpdateMenu()
+    {
+        UpdateAvailablePowerups();
+        UpdateEquippedPowerups();
+        SaveData();
+    }
+
+    private void SaveData()
+    {
+        SaveEquippedPowerups();
+        SavePurchasedPowerups();
+    }
+
+    private void UpdateAvailablePowerups()
     {
         // clean the list first
         foreach (Transform t in Instance.powerupOptionsListTransform)
@@ -40,22 +57,23 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         // Add some empty space at the top of the list
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
-        var equippedPowerupSpawns = Instance._equippedPowerups;
+        var equippedPowerupSpawns = Instance.equippedPowerupIds;
         foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns)
         {
             var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
-            powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn));
+            powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID),
+                _purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
         }
 
         // empty space at the bottom
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
     }
 
-    private void InitEquippedPowerups()
+    private void UpdateEquippedPowerups()
     {
-        Debug.Log("Initializing equipped powerups list " + _equippedPowerups);
+        Debug.Log("Initializing equipped powerups list " + equippedPowerupIds);
 
         // clean the list first
         foreach (Transform t in powerupSelectedListTransform)
@@ -68,60 +86,106 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         {
             var powerupSelected = Instantiate(powerupSelectedPrefab, powerupSelectedListTransform)
                 .GetComponent<PowerupSelected>();
-            if (i < _equippedPowerups.Count)
-                powerupSelected.SetPowerup(_equippedPowerups[i]);
+            if (i < equippedPowerupIds.Count)
+                powerupSelected.SetPowerup(equippedPowerupIds[i]);
             else
                 powerupSelected.SetNoPowerup();
         }
     }
 
-    public void RemoveEquippedPowerup(PowerupBlockSpawn equippedPowerup)
+    public static void LoadSavedPowerups(string path, out List<int> list)
     {
-        Debug.Log("Removing equipped powerup " + equippedPowerup);
-        _equippedPowerups.Remove(equippedPowerup);
+        if (File.Exists(path))
+        {
+            var bf = new BinaryFormatter();
+            var file = File.Open(path, FileMode.Open);
+            list = (List<int>) bf.Deserialize(file);
+            file.Close();
+            Debug.Log("Loaded saved powerups. path=" + path);
+        }
+        else
+        {
+            Debug.Log("No saved powerups. path=" + path);
+            list = new List<int>();
+        }
     }
 
     private void LoadSavedEquippedPowerups()
     {
-        if (File.Exists(EquippedPowerupPath()))
-        {
-            var bf = new BinaryFormatter();
-            var file = File.Open(EquippedPowerupPath(), FileMode.Open);
-            _equippedPowerups = (List<PowerupBlockSpawn>) bf.Deserialize(file);
-            file.Close();
-            Debug.Log("Loaded saved equipped powerups " + _equippedPowerups);
-        }
-        else
-        {
-            Debug.Log("No saved equipped powerups " + _equippedPowerups);
-            _equippedPowerups = new List<PowerupBlockSpawn>();
-        }
+        LoadSavedPowerups(EquippedPowerupPath(), out equippedPowerupIds);
     }
 
-    private string EquippedPowerupPath()
+    private void LoadSavedPurchasedPowerups()
     {
-        return Application.persistentDataPath + "./equipped-powerups.json";
+        _purchasedPowerupIds = Instance.availablePowerups.powerupBlockSpawns.Select(p => p.BlockID).ToList();
+        // TODO load from disk after implementing checkout 
+//        LoadSavedPowerups(PurchasedPowerupPath(), out _purchasedPowerups);
+    }
+
+    public static string EquippedPowerupPath()
+    {
+        return Application.persistentDataPath + "/equipped-powerups.json";
+    }
+
+    private string PurchasedPowerupPath()
+    {
+        return Application.persistentDataPath + "/purchased-powerups.json";
     }
 
     private void SaveEquippedPowerups()
     {
-        var bf = new BinaryFormatter();
-        var file = File.Create(EquippedPowerupPath());
-        bf.Serialize(file, _equippedPowerups);
-        file.Close();
-        Debug.Log("Saved equipped powerups " + _equippedPowerups);
+        SavePowerups(EquippedPowerupPath(), equippedPowerupIds);
     }
 
-    public bool AddEquippedPowerup(PowerupBlockSpawn powerup)
+    private void SavePurchasedPowerups()
     {
-        if (_equippedPowerups.Count < 3)
-        {
-            _equippedPowerups.Add(powerup);
-            return true;
-        }
+        SavePowerups(PurchasedPowerupPath(), _purchasedPowerupIds);
+    }
 
-        Debug.Log("Not equipping more than 3!");
-        // TODO add a feedback to show we can't equip more than 3
-        return false;
+    private void SavePowerups(string path, List<int> powerups)
+    {
+        var bf = new BinaryFormatter();
+        var file = File.Create(path);
+        bf.Serialize(file, powerups);
+        file.Close();
+        Debug.Log("Saved powerups " + path);
+    }
+
+    public bool AddEquippedPowerupId(PowerupBlockSpawn powerup)
+    {
+        Debug.Log("Adding equipped powerup " + powerup);
+
+        if (equippedPowerupIds.Count == 3) RemoveEquippedPowerupId(equippedPowerupIds[equippedPowerupIds.Count - 1]);
+
+        equippedPowerupIds.Add(powerup.BlockID);
+        UpdateMenu();
+
+        return true;
+    }
+
+    public bool RemoveEquippedPowerupId(int equippedPowerup)
+    {
+        Debug.Log("Removing equipped powerup " + equippedPowerup);
+        equippedPowerupIds.Remove(equippedPowerup);
+        UpdateMenu();
+        return true;
+    }
+
+    public void OnPlayButtonClicked()
+    {
+        AudioManager.Instance.PlayButtonClickSound();
+        GameController.gameMode = GameMode.TIMED;
+        StackManager.Instance.ActivateGamePlay();
+        StackManager.Instance.mainMenu.Deactivate();
+        gameObject.Deactivate();
+    }
+
+    public void OnCloseButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            gameObject.Deactivate();
+        }
     }
 }

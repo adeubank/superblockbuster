@@ -676,6 +676,7 @@ MonoBehaviour:
   blockPlaceSound: {fileID: 8300000, guid: 5f2bd1a3704c6e249a71a649e936e6b2, type: 3}
   blockSelectSound: {fileID: 8300000, guid: c0f1083b827f4db4399cf9ef58a7d767, type: 3}
   BombSprite: {fileID: 21300000, guid: f69f794b3f5ab754da6c57e3de814758, type: 3}
+  comboSound: {fileID: 8300000, guid: 6ea8a9fdd0a0afe46a686eeb4a1e88de, type: 3}
   currentRound: 1
   holdNewBlocksImage: {fileID: 2002298706791298063}
   isHelpOnScreen: 0
