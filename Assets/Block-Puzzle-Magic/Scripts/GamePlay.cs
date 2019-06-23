@@ -1005,9 +1005,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #endregion
 
         // do some cleanup, since there are still bugs
-        foreach (var block in blockGrid.Where(b => !b.isFilled && b.blockID > 0 && !b.isDandelionSeed))
+        foreach (var block in blockGrid.Where(b => b.blockID == -1 && !b.isDandelionSeed))
         {
-            Debug.Log("Cleanup this block that is in a bad state " + block);
+            Debug.Log("Cleanup this block " + block);
             block.ClearBlock(false);
             block.RemovePowerup();
             block.ClearDandelionSeedIcon();
@@ -1382,7 +1382,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // give open blocks more priority over empty
         var availableBlocks = Instance.blockGrid.Where(b => !b.isFilled).ToList();
-        availableBlocks.ToList().AddRange(Instance.blockGrid);
+        availableBlocks.AddRange(Instance.blockGrid);
 
         while (seedBlocks.Count < 5)
         {
