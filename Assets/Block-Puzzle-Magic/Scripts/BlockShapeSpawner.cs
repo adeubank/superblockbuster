@@ -61,9 +61,15 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         #endregion
 
         SetBlockShapeToSix();
-        Invoke("SetupPreviousSessionShapes", 0.2F);
-        Invoke("createShapeBlockProbabilityList", 0.5F);
-        Invoke("FillShapeContainer", 0.5F);
+        Invoke(nameof(SetupPreviousSessionShapes), 0.2F);
+        Invoke(nameof(createShapeBlockProbabilityList), 0.5F);
+        Invoke(nameof(FillShapeContainer), 0.5F);
+        Invoke(nameof(CallSetAutoMove), 0.6f);
+    }
+
+    private void CallSetAutoMove()
+    {
+        GamePlay.Instance.SetAutoMove();
     }
 
     /// <summary>

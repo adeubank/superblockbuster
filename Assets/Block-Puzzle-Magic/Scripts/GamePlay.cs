@@ -110,7 +110,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 if (hittingBlock == null || hit.collider.transform != hittingBlock)
                 {
                     hittingBlock = hit.collider.transform;
-                    CanPlaceShape(hit.collider.transform);
+                    CanPlaceDraggedShape(hit.collider.transform);
                 }
             }
             else
@@ -202,10 +202,36 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #endregion
     }
 
+    private void Awake()
+    {
+        SetAutoMove();
+    }
+
+    public void SetAutoMove()
+    {
+        Debug.Log("Setting auto move. ");
+        var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
+        foreach (var block in blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse())
+        foreach (var info in playableShapes)
+        {
+            currentShape = info;
+            if (CanPlaceShape(block.transform, currentShape))
+                return;
+        }
+    }
+
     /// <summary>
     ///     Determines whether this instance can place shape the specified currentHittingBlock.
     /// </summary>
-    public bool CanPlaceShape(Transform currentHittingBlock)
+    public bool CanPlaceDraggedShape(Transform currentHittingBlock)
+    {
+        return CanPlaceShape(currentHittingBlock, currentShape);
+    }
+
+    /// <summary>
+    ///     Determines whether this instance can place shape the specified currentHittingBlock.
+    /// </summary>
+    public bool CanPlaceShape(Transform currentHittingBlock, ShapeInfo shapeInfo)
     {
         var currentCell = currentHittingBlock.GetComponent<Block>();
         var currentRowID = currentCell.rowID;
@@ -214,13 +240,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         StopHighlighting();
 
-        foreach (var c in currentShape.ShapeBlocks)
+        foreach (var c in shapeInfo.ShapeBlocks)
         {
             var checkingCell = blockGrid.Find(o =>
-                o.rowID == currentRowID + c.rowID + currentShape.startOffsetX &&
-                o.columnID == currentColumnID + (c.columnID - currentShape.startOffsetY));
+                o.rowID == currentRowID + c.rowID + shapeInfo.startOffsetX &&
+                o.columnID == currentColumnID + (c.columnID - shapeInfo.startOffsetY));
 
-            if (checkingCell == null || checkingCell != null && !currentShape.IsBandageShape() && checkingCell.isFilled)
+            if (checkingCell == null || checkingCell != null && !shapeInfo.IsBandageShape() && checkingCell.isFilled)
             {
                 canPlaceShape = false;
                 highlightingBlocks.Clear();
@@ -314,6 +340,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
+
+        SetAutoMove();
     }
 
     private IEnumerator PrepPowerupsBeforeClearing()
@@ -423,10 +451,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                       powerupBlock);
 
             if (removePowerup)
-                blockGrid.Where(b => b.moveID == moveId && b.blockID == powerupId).ToList().ForEach(b =>
-                {
-                    b.RemovePowerup();
-                });
+                blockGrid.Where(b => b.moveID == moveId && b.blockID == powerupId).ToList().ForEach(b => { b.RemovePowerup(); });
             Destroy(powerupActivationSprite);
         });
 
@@ -633,8 +658,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield return RoundClearPowerups();
 
             yield return StartScoring(placingShapeBlockCount);
-
-            CheckIfOutOfMoves();
         }
 
         #region re-enable timer

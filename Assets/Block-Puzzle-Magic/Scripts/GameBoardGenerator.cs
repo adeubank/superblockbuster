@@ -93,7 +93,8 @@ public class GameBoardGenerator : Singleton<GameBoardGenerator>
             newPosY -= blockHeight + blockSpace;
         }
 
-        SetupPreviousSessionBoard();
+        // TODO fix setting up previous session
+//        SetupPreviousSessionBoard();
     }
 
     /// <summary>
