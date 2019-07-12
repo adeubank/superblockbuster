@@ -15,6 +15,8 @@ using DG.Tweening;
 public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHandler, IBeginDragHandler, IDragHandler
 {
     private readonly List<Block> _activeQuakePowerups = new List<Block>();
+
+    private bool _autoMoveLocked;
     private bool _holdingNewBlocks;
     private bool _isFrenzyPowerupRunning;
 
@@ -110,11 +112,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 if (hittingBlock == null || hit.collider.transform != hittingBlock)
                 {
                     hittingBlock = hit.collider.transform;
-                    CanPlaceDraggedShape(hit.collider.transform);
+                    CanPlaceDraggedShape(hittingBlock);
                 }
             }
             else
             {
+                hittingBlock = null;
                 StopHighlighting();
             }
         }
@@ -132,50 +135,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (HoldingNewBlocks()) return;
 
-        if (eventData.pointerCurrentRaycast.gameObject != null)
-        {
-            var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
+        if (eventData.pointerCurrentRaycast.gameObject == null) return;
 
-            if (clickedObject.GetComponent<ShapeInfo>() != null)
-                if (clickedObject.transform.childCount > 0)
-                {
-                    currentShape = clickedObject.GetComponent<ShapeInfo>();
-                    var pos = Camera.main.ScreenToWorldPoint(eventData.position);
-                    currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
-                    currentShape.transform.localPosition = new Vector3(pos.x, pos.y, 0);
-                    AudioManager.Instance.PlaySound(blockSelectSound);
+        var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
+        if (clickedObject.GetComponent<ShapeInfo>() == null) return;
+        if (clickedObject.transform.childCount <= 0) return;
 
-                    if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
-                }
-        }
-    }
+        currentShape = clickedObject.GetComponent<ShapeInfo>();
+        var pos = Camera.main.ScreenToWorldPoint(eventData.position);
+        Transform transform1;
+        (transform1 = currentShape.transform).localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
+        transform1.localPosition = new Vector3(pos.x, pos.y, 0);
+        AudioManager.Instance.PlaySound(blockSelectSound);
 
-    #endregion
-
-    #region IPointerUpHandler implementation
-
-    /// <summary>
-    ///     Raises the pointer up event.
-    /// </summary>
-    /// <param name="eventData">Event data.</param>
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (currentShape != null)
-        {
-            if (highlightingBlocks.Count > 0)
-            {
-                StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
-            }
-            else
-            {
-#if HBDOTween
-                currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
-                currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
-#endif
-                currentShape = null;
-                AudioManager.Instance.PlaySound(blockNotPlacedSound);
-            }
-        }
+        if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
     }
 
     #endregion
@@ -204,20 +177,31 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void Awake()
     {
-        SetAutoMove();
+        StartCoroutine(SetAutoMove());
     }
 
-    public void SetAutoMove()
+    public IEnumerator SetAutoMove()
     {
+        if (_autoMoveLocked) yield break;
+
+        _autoMoveLocked = true;
+
+        yield return new WaitWhile(() => HoldingNewBlocks() || currentShape != null || DOTween.TotalPlayingTweens() > 0);
+
         Debug.Log("Setting auto move. ");
         var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
-        foreach (var block in blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse())
-        foreach (var info in playableShapes)
+        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+        blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse().Any(block =>
         {
-            currentShape = info;
-            if (CanPlaceShape(block.transform, currentShape))
-                return;
-        }
+            foreach (var info in playableShapes)
+            {
+                currentShape = info;
+                if (CanPlaceShape(block.transform, currentShape)) return true;
+            }
+
+            return false;
+        });
+        _autoMoveLocked = false;
     }
 
     /// <summary>
@@ -302,6 +286,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public IEnumerator PlaceBlockCheckBoardStatus()
     {
+        HoldNewBlocks(true);
         MoveCount += 1;
 
         Debug.Log(
@@ -341,7 +326,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE)
             UpdateBlockCount();
 
-        SetAutoMove();
+        HoldNewBlocks(false);
+        StartCoroutine(SetAutoMove());
     }
 
     private IEnumerator PrepPowerupsBeforeClearing()
@@ -881,7 +867,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         timeSlider.PauseTimer();
-        HoldNewBlocks(true);
         var comboMultiplier = 0;
 
         do
@@ -916,7 +901,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
 
         timeSlider.ResumeTimer();
-        HoldNewBlocks(false);
     }
 
     private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows,
@@ -1503,6 +1487,68 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return base.ToString() + " MoveID=" + MoveID + " PowerupID=" + PowerupID;
         }
     }
+
+    #region IPointerUpHandler implementation
+
+    /// <summary>
+    ///     Raises the pointer up event.
+    /// </summary>
+    /// <param name="eventData">Event data.</param>
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (HoldingNewBlocks()) return;
+        if (currentShape == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        if (eventData.dragging && highlightingBlocks.Count > 0)
+        {
+            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            return;
+        }
+
+        if (eventData.pointerCurrentRaycast.gameObject == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.transform.GetComponent<Block>();
+
+        // check if not a tap, but was dragging
+        if (clickedBlocked == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
+        {
+            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            return;
+        }
+
+        ResetCurrentShape();
+    }
+
+    private void ResetCurrentShape()
+    {
+        if (currentShape != null)
+        {
+#if HBDOTween
+            currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
+            currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
+#endif
+            currentShape = null;
+            AudioManager.Instance.PlaySound(blockNotPlacedSound);
+        }
+
+        StartCoroutine(SetAutoMove());
+    }
+
+    #endregion
 
     #region Bomb Mode Specific
 

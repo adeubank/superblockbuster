@@ -164,6 +164,7 @@ MonoBehaviour:
   gameOverScreen: {fileID: 2057389771}
   mainMenu: {fileID: 1342716143}
   pauseSceen: {fileID: 1796045300}
+  powerupSelectScreen: {fileID: 1074852730}
   purchaseFailScreen: {fileID: 20279008}
   purchaseSuccessScreen: {fileID: 1195194307}
   quitConfirmGameScreen: {fileID: 1356135477}
@@ -172,7 +173,6 @@ MonoBehaviour:
   selectModeScreen: {fileID: 1359835090}
   settingsScreen: {fileID: 1369380778}
   shopScreen: {fileID: 1947819125}
-  powerupSelectScreen: {fileID: 1074852730}
 --- !u!1001 &155007940
 PrefabInstance:
   m_ObjectHideFlags: 0
