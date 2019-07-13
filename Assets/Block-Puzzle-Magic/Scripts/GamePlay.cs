@@ -1234,16 +1234,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnUnableToPlaceShape()
     {
-        HoldNewBlocks(true);
-        if (TotalRescueDone < MaxAllowedRescuePerGame || MaxAllowedRescuePerGame < 0)
-        {
-            GamePlayUI.Instance.ShowRescue(GameOverReason.OUT_OF_MOVES);
-        }
-        else
-        {
-            Debug.Log("GameOver Called..");
-            OnGameOver();
-        }
+        ExecuteRescue();
     }
 
     /// <summary>
@@ -1271,8 +1262,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.OUT_OF_MOVES)
         {
-            var TotalBreakingColumns = 3;
-            var TotalBreakingRows = 3;
+            var TotalBreakingColumns = 4;
+            var TotalBreakingRows = 4;
 
             var totalColumns = GameBoardGenerator.Instance.TotalColumns;
             var totalRows = GameBoardGenerator.Instance.TotalRows;
@@ -1290,7 +1281,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             for (var rowIndex = startingRow; rowIndex <= startingRow + (TotalBreakingRows - 1); rowIndex++)
                 breakingRows.Add(GetEntireRowForRescue(rowIndex));
-            StartCoroutine(BreakAllCompletedLines(0));
+            StartCoroutine(BreakAllCompletedLines(-1));
         }
 
         #region bomb mode
