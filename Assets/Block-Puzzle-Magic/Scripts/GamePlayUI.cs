@@ -64,6 +64,12 @@ public class GamePlayUI : Singleton<GamePlayUI>
 
         #endregion
 
+        yield return DisplayAlert(reason);
+        StackManager.Instance.recueScreen.Activate();
+    }
+
+    public IEnumerator DisplayAlert(GameOverReason reason)
+    {
         switch (reason)
         {
             case GameOverReason.OUT_OF_MOVES:
@@ -84,7 +90,6 @@ public class GamePlayUI : Singleton<GamePlayUI>
         alertWindow.SetActive(true);
         yield return new WaitForSeconds(1.5F);
         alertWindow.SetActive(false);
-        StackManager.Instance.recueScreen.Activate();
     }
 }
 

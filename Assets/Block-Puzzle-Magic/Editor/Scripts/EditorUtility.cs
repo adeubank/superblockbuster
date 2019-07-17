@@ -60,4 +60,11 @@ public class EditorUtility : MonoBehaviour
                       DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
         //ScreenCapture.CaptureScreenshot ((Application.dataPath + "/" + imgName),2);
     }
+
+    [MenuItem("Block Magic Puzzle/Execute Rescue")]
+    private static void ExecuteRescue()
+    {
+        GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
+        GamePlay.Instance.OnUnableToPlaceShape();
+    }
 }

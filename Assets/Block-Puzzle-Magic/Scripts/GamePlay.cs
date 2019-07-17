@@ -903,8 +903,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         timeSlider.ResumeTimer();
     }
 
-    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows,
-        List<List<Block>> breakingColumns)
+    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns, bool activatePowerups = true)
     {
         if (comboMultiplier > 0) AudioManager.Instance.PlaySound(comboSound);
 
@@ -973,7 +972,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     AudioManager.Instance.PlaySound(lineClearSounds.Last());
                 }
             });
-            allLineBreaksSequence.Join(BreakThisLine(line));
+            allLineBreaksSequence.Join(BreakThisLine(line, activatePowerups));
             ScoreManager.Instance.AddScore(newScore * multiplier);
         }
 
@@ -1028,12 +1027,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     /// <returns>The all completed lines.</returns>
     /// <param name="placingShapeBlockCount">Placing shape block count.</param>
-    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
+    /// <param name="activatePowerups">Flag whether to call powerup code or not</param>
+    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount, bool activatePowerups = true)
     {
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
-        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns);
+        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns, activatePowerups);
     }
 
     /// <summary>
@@ -1041,7 +1041,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     /// <returns>The this line.</returns>
     /// <param name="breakingLine">Breaking line.</param>
-    private Sequence BreakThisLine(List<Block> breakingLine)
+    /// <param name="activatePowerups">Flag whether to call powerup code or not</param>
+    private Sequence BreakThisLine(List<Block> breakingLine, bool activatePowerups = true)
     {
         Debug.Log("Breaking this line: " + string.Join(", ", breakingLine));
 
@@ -1050,7 +1051,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         foreach (var b in breakingLine)
         {
             var maybeNewPowerup = new PowerupActivation(b);
-            var shouldActivatePowerup = ShouldActivatePowerup(maybeNewPowerup, b);
+            var shouldActivatePowerup = activatePowerups && ShouldActivatePowerup(maybeNewPowerup, b);
 
             if (b.isDandelionPowerup && shouldActivatePowerup)
             {
@@ -1234,7 +1235,66 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnUnableToPlaceShape()
     {
-        ExecuteRescue();
+//        if (TotalRescueDone < MaxAllowedRescuePerGame || MaxAllowedRescuePerGame < 0)
+//        {
+//            GamePlayUI.Instance.ShowRescue(GameOverReason.OUT_OF_MOVES);
+//        }
+//        else
+//        {
+//            Debug.Log("GameOver Called..");
+//            OnGameOver();
+//        }
+
+
+        StartCoroutine(StartOutOfMovesRescue());
+    }
+
+    public IEnumerator StartOutOfMovesRescue()
+    {
+        #region hold play
+
+        HoldNewBlocks(true);
+
+        #endregion
+
+        #region notify users of out of moves
+
+        GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
+        yield return GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES);
+
+        #endregion
+
+        #region clean up the board for them
+
+        yield return ExecuteRescue();
+
+        #endregion
+
+        #region dock their score
+
+        var minusScore = -1 * (float) ScoreManager.Instance.Score / 4;
+        ScoreManager.Instance.AddScore((int) minusScore);
+
+        #endregion
+
+        #region dock their time
+
+        timeSlider.AddSeconds(-10);
+        timeSlider.ResumeTimer();
+
+        #endregion
+
+        #region let it sink in
+
+        yield return new WaitForSecondsRealtime(2);
+
+        #endregion
+
+        #region lets play
+
+        HoldNewBlocks(false);
+
+        #endregion
     }
 
     /// <summary>
@@ -1256,8 +1316,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Executes the rescue.
     /// </summary>
-    private void ExecuteRescue()
+    private IEnumerator ExecuteRescue()
     {
+        Debug.Log("Executing rescue! currentGameOverReson=" + GamePlayUI.Instance.currentGameOverReson);
         HoldNewBlocks(true);
 
         if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.OUT_OF_MOVES)
@@ -1281,7 +1342,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             for (var rowIndex = startingRow; rowIndex <= startingRow + (TotalBreakingRows - 1); rowIndex++)
                 breakingRows.Add(GetEntireRowForRescue(rowIndex));
-            StartCoroutine(BreakAllCompletedLines(-1));
+
+            breakingRows.Concat(breakingColums).SelectMany(b => b).ToList().ForEach(b => b.isFilled = true);
+            yield return BreakAllCompletedLines(-1, false);
         }
 
         #region bomb mode
@@ -1302,10 +1365,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region time mode
 
         if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-        {
-            if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.TIME_OVER) timeSlider.AddSeconds(30);
-            timeSlider.ResumeTimer();
-        }
+            if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.TIME_OVER)
+            {
+                timeSlider.AddSeconds(30);
+                timeSlider.ResumeTimer();
+            }
 
         #endregion
     }
