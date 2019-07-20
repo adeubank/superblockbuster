@@ -153,6 +153,69 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #endregion
 
+    #region IPointerUpHandler implementation
+
+    /// <summary>
+    ///     Raises the pointer up event.
+    /// </summary>
+    /// <param name="eventData">Event data.</param>
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (HoldingNewBlocks()) return;
+        if (currentShape == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        if (eventData.dragging && highlightingBlocks.Count > 0)
+        {
+            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            return;
+        }
+
+        if (eventData.pointerCurrentRaycast.gameObject == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.transform.GetComponent<Block>();
+
+        // check if not a tap, but was dragging
+        if (clickedBlocked == null)
+        {
+            ResetCurrentShape();
+            return;
+        }
+
+        if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
+        {
+            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            return;
+        }
+
+        ResetCurrentShape();
+    }
+
+    #endregion
+
+    private void ResetCurrentShape()
+    {
+        if (currentShape != null)
+        {
+#if HBDOTween
+            currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
+            currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
+#endif
+            currentShape = null;
+            AudioManager.Instance.PlaySound(blockNotPlacedSound);
+        }
+
+        StartCoroutine(SetAutoMove());
+    }
+
+
     private void Start()
     {
         //Generate board from GameBoardGenerator Script Component.
@@ -1542,68 +1605,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return base.ToString() + " MoveID=" + MoveID + " PowerupID=" + PowerupID;
         }
     }
-
-    #region IPointerUpHandler implementation
-
-    /// <summary>
-    ///     Raises the pointer up event.
-    /// </summary>
-    /// <param name="eventData">Event data.</param>
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (HoldingNewBlocks()) return;
-        if (currentShape == null)
-        {
-            ResetCurrentShape();
-            return;
-        }
-
-        if (eventData.dragging && highlightingBlocks.Count > 0)
-        {
-            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
-            return;
-        }
-
-        if (eventData.pointerCurrentRaycast.gameObject == null)
-        {
-            ResetCurrentShape();
-            return;
-        }
-
-        var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.transform.GetComponent<Block>();
-
-        // check if not a tap, but was dragging
-        if (clickedBlocked == null)
-        {
-            ResetCurrentShape();
-            return;
-        }
-
-        if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
-        {
-            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
-            return;
-        }
-
-        ResetCurrentShape();
-    }
-
-    private void ResetCurrentShape()
-    {
-        if (currentShape != null)
-        {
-#if HBDOTween
-            currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
-            currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
-#endif
-            currentShape = null;
-            AudioManager.Instance.PlaySound(blockNotPlacedSound);
-        }
-
-        StartCoroutine(SetAutoMove());
-    }
-
-    #endregion
 
     #region Bomb Mode Specific
 
