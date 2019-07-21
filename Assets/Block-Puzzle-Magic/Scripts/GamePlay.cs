@@ -1359,6 +1359,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region lets play
 
         HoldNewBlocks(false);
+        StartCoroutine(SetAutoMove());
 
         #endregion
     }
