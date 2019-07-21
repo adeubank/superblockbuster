@@ -55,6 +55,7 @@ public class PowerupOption : MonoBehaviour
             {
                 AudioManager.Instance.PlayButtonClickSound();
                 PowerupSelectMenu.Instance.AddPurchasedPowerupId(_powerup);
+                EquipThisPowerup();
             }
             else
             {
