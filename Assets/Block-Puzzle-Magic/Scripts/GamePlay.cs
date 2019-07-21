@@ -18,6 +18,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private bool _autoMoveLocked;
     private bool _holdingNewBlocks;
+    private bool _isDraggingPlayableShape;
     private bool _isFrenzyPowerupRunning;
 
     private bool _powerupActivationAlreadyRunning;
@@ -77,7 +78,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (HoldingNewBlocks()) return;
 
-        if (currentShape != null)
+        if (_isDraggingPlayableShape && currentShape != null)
         {
             var pos = Camera.main.ScreenToWorldPoint(eventData.position);
             pos.z = currentShape.transform.localPosition.z;
@@ -97,7 +98,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (HoldingNewBlocks()) return;
 
-        if (currentShape != null)
+        if (_isDraggingPlayableShape && currentShape != null)
         {
             var pos = Camera.main.ScreenToWorldPoint(eventData.position);
             pos = new Vector3(pos.x, pos.y + 1F, 0F);
@@ -133,6 +134,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerDown(PointerEventData eventData)
     {
+        _isDraggingPlayableShape = false;
         if (HoldingNewBlocks()) return;
 
         if (eventData.pointerCurrentRaycast.gameObject == null) return;
@@ -141,6 +143,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (clickedObject.GetComponent<ShapeInfo>() == null) return;
         if (clickedObject.transform.childCount <= 0) return;
 
+        _isDraggingPlayableShape = true;
         currentShape = clickedObject.GetComponent<ShapeInfo>();
         var pos = Camera.main.ScreenToWorldPoint(eventData.position);
         Transform transform1;
@@ -168,7 +171,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return;
         }
 
-        if (eventData.dragging && highlightingBlocks.Count > 0)
+        if (_isDraggingPlayableShape && eventData.dragging && highlightingBlocks.Count > 0)
         {
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
@@ -202,7 +205,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void ResetCurrentShape()
     {
-        if (currentShape != null)
+        if (_isDraggingPlayableShape && currentShape != null)
         {
 #if HBDOTween
             currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
