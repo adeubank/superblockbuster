@@ -53,8 +53,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 100
-  m_MinHeight: 100
+  m_MinWidth: -1
+  m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
@@ -110,8 +110,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   noPowerupImage: {fileID: 21300000, guid: 92ddf666d0ba8e34d9c329b6f0c274e0, type: 3}
-  powerupImage: {fileID: 7398802485700208262}
   powerupButton: {fileID: 1745792379405535899}
+  powerupImage: {fileID: 7398802485700208262}
 --- !u!114 &1745792379405535899
 MonoBehaviour:
   m_ObjectHideFlags: 0

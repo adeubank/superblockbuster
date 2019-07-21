@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEditor;
 using UnityEngine;
@@ -117,19 +116,17 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void LoadSavedPurchasedPowerups()
     {
-        _purchasedPowerupIds = Instance.availablePowerups.powerupBlockSpawns.Select(p => p.BlockID).ToList();
-        // TODO load from disk after implementing checkout 
-//        LoadSavedPowerups(PurchasedPowerupPath(), out _purchasedPowerups);
+        LoadSavedPowerups(PurchasedPowerupPath(), out _purchasedPowerupIds);
     }
 
     public static string EquippedPowerupPath()
     {
-        return Application.persistentDataPath + "/equipped-powerups.json";
+        return Application.persistentDataPath + "/equipped-powerups.dat";
     }
 
     private string PurchasedPowerupPath()
     {
-        return Application.persistentDataPath + "/purchased-powerups.json";
+        return Application.persistentDataPath + "/purchased-powerups.dat";
     }
 
     private void SaveEquippedPowerups()

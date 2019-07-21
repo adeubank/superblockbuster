@@ -2750,6 +2750,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PowerupSelectMenu
       objectReference: {fileID: 0}
+    - target: {fileID: 5347529710938962186, guid: 2b67b81cd454f4e0b886419a5262799a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5273291449605247878, guid: 2b67b81cd454f4e0b886419a5262799a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2854,6 +2859,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1534428260830055068, guid: 2b67b81cd454f4e0b886419a5262799a,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1534428260830055068, guid: 2b67b81cd454f4e0b886419a5262799a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b67b81cd454f4e0b886419a5262799a, type: 3}
