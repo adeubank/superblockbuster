@@ -393,18 +393,18 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: c2975462f3b515647a35e8ae0e6a06f3, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 10
-    m_MaxSize: 30
+    m_MinSize: 14
+    m_MaxSize: 40
     m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: $0.99
+  m_Text: 500
 --- !u!114 &2808132285095507331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -625,8 +625,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3696a050ee3324484b398ce703ffc848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkedIcon: {fileID: 2551559280350033313}
+  equippedIcon: {fileID: 2551559280350033313}
+  powerupButton: {fileID: 2808736313477973677}
   powerupIcon: {fileID: 2808736284167951249}
   powerupName: {fileID: 2808736284147085655}
   powerupPrice: {fileID: 2808736281630921479}
-  powerupButton: {fileID: 2808736313477973677}

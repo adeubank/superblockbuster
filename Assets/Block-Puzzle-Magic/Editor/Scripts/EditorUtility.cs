@@ -67,4 +67,13 @@ public class EditorUtility : MonoBehaviour
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
         GamePlay.Instance.OnUnableToPlaceShape();
     }
+
+
+#if UNITY_EDITOR
+    [MenuItem("Block Magic Puzzle/Init Powerups Menu Options")]
+#endif
+    private static void InitMenuOptions()
+    {
+        PowerupSelectMenu.Instance.InitMenuOptions();
+    }
 }

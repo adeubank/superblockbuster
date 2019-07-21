@@ -15,11 +15,19 @@ public class PowerupOption : MonoBehaviour
     public void SetPowerup(PowerupBlockSpawn powerup, bool equipped, bool purchased)
     {
         _powerup = powerup;
-        powerupButton.onClick.RemoveAllListeners();
+
+        //region update equippable status
         equippedIcon.gameObject.SetActive(purchased);
         equippedIcon.color = equipped ? Color.white : Color.clear;
-        powerupPrice.gameObject.SetActive(!purchased);
+        //endregion
 
+        //region update pricing
+        powerupPrice.gameObject.SetActive(!purchased);
+        powerupPrice.text = PriceForPowerup(powerup).ToString();
+        //endregion
+
+        //region rebind event handlers
+        powerupButton.onClick.RemoveAllListeners();
         if (equipped)
             powerupButton.onClick.AddListener(UnequipThisPowerup);
         else if (purchased)
@@ -27,6 +35,7 @@ public class PowerupOption : MonoBehaviour
         else
             // TODO implement buying powerups modal with demo video
             powerupButton.onClick.AddListener(BuyThisPowerup);
+        //endregion
 
         powerupIcon.sprite = powerup.powerupBlockIcon.GetComponent<Image>().sprite;
         var powerupNameSplit = powerup.shapeBlock.name.Split('-');
@@ -49,5 +58,47 @@ public class PowerupOption : MonoBehaviour
     private void UnequipThisPowerup()
     {
         PowerupSelectMenu.Instance.RemoveEquippedPowerupId(_powerup.BlockID);
+    }
+
+    public static int PriceForPowerup(PowerupBlockSpawn powerup)
+    {
+        switch (powerup.BlockID)
+        {
+            // region tier 1 powerups
+            case (int) ShapeInfo.Powerups.Doubler:
+                return 100;
+            case (int) ShapeInfo.Powerups.ColorCoder:
+                return 100;
+            case (int) ShapeInfo.Powerups.Bandage:
+                return 200;
+            case (int) ShapeInfo.Powerups.Bomb:
+                return 200;
+            case (int) ShapeInfo.Powerups.SticksGalore:
+                return 200;
+            //endregion
+
+            // region tier 2 powerups
+            case (int) ShapeInfo.Powerups.Flood:
+                return 500;
+            case (int) ShapeInfo.Powerups.Dandelion:
+                return 750;
+            case (int) ShapeInfo.Powerups.Quake:
+                return 500;
+            //endregion
+
+            // region tier 3 powerups
+            case (int) ShapeInfo.Powerups.Frenzy:
+                return 1500;
+            case (int) ShapeInfo.Powerups.Storm:
+                return 1500;
+            case (int) ShapeInfo.Powerups.Lag:
+                return 2000;
+            case (int) ShapeInfo.Powerups.Avalanche:
+                return 2000;
+            //endregion
+
+            default:
+                throw new NotImplementedException("Price for powerup is not implemented. " + powerup.BlockID);
+        }
     }
 }

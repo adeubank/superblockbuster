@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using UnityEditor;
 using UnityEngine;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
@@ -21,10 +21,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         InitMenuOptions();
     }
 
-#if UNITY_EDITOR
-    [MenuItem("Powerups/Init Menu Options")]
-#endif
-    private static void InitMenuOptions()
+    public void InitMenuOptions()
     {
         Instance.LoadSavedPurchasedPowerups();
         Instance.LoadSavedEquippedPowerups();
@@ -57,7 +54,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
         var equippedPowerupSpawns = Instance.equippedPowerupIds;
-        foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns)
+        foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupOption.PriceForPowerup))
         {
             var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
