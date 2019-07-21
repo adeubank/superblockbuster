@@ -40,7 +40,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void Awake()
     {
-        PowerupSelectMenu.LoadSavedPowerups(PowerupSelectMenu.EquippedPowerupPath(), out var equippedPowerupIds);
+        PowerupSelectMenu.LoadSavedPowerups(PowerupSelectMenu.EquippedPowerupPrefsKey(), out var equippedPowerupIds);
         ActiveShapeBlocks =
             new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count +
                                       PowerupSelectMenu.Instance.equippedPowerupIds.Count);

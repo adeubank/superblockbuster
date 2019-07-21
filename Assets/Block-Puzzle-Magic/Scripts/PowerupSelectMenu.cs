@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
@@ -89,60 +87,55 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         }
     }
 
-    public static void LoadSavedPowerups(string path, out List<int> list)
+    public static void LoadSavedPowerups(string prefsKey, out List<int> list)
     {
-        if (File.Exists(path))
+        if (PlayerPrefs.HasKey(prefsKey))
         {
-            var bf = new BinaryFormatter();
-            var file = File.Open(path, FileMode.Open);
-            list = (List<int>) bf.Deserialize(file);
-            file.Close();
-            Debug.Log("Loaded saved powerups. path=" + path);
+            list = PlayerPrefs.GetString(prefsKey).Split(',').Select(int.Parse).ToList();
+            Debug.Log("Loaded saved powerups. prefsKey=" + prefsKey);
         }
         else
         {
-            Debug.Log("No saved powerups. path=" + path);
+            Debug.Log("No saved powerups. prefsKey=" + prefsKey);
             list = new List<int>();
         }
     }
 
     private void LoadSavedEquippedPowerups()
     {
-        LoadSavedPowerups(EquippedPowerupPath(), out equippedPowerupIds);
+        LoadSavedPowerups(EquippedPowerupPrefsKey(), out equippedPowerupIds);
     }
 
     private void LoadSavedPurchasedPowerups()
     {
-        LoadSavedPowerups(PurchasedPowerupPath(), out _purchasedPowerupIds);
+        LoadSavedPowerups(PurchasedPowerupPrefsKey(), out _purchasedPowerupIds);
     }
 
-    public static string EquippedPowerupPath()
+    public static string EquippedPowerupPrefsKey()
     {
-        return Application.persistentDataPath + "/equipped-powerups.dat";
+        return "powerups_equipped";
     }
 
-    private string PurchasedPowerupPath()
+    private string PurchasedPowerupPrefsKey()
     {
-        return Application.persistentDataPath + "/purchased-powerups.dat";
+        return "purchased_powerups";
     }
 
     private void SaveEquippedPowerups()
     {
-        SavePowerups(EquippedPowerupPath(), equippedPowerupIds);
+        SavePowerups(EquippedPowerupPrefsKey(), equippedPowerupIds);
     }
 
     private void SavePurchasedPowerups()
     {
-        SavePowerups(PurchasedPowerupPath(), _purchasedPowerupIds);
+        SavePowerups(PurchasedPowerupPrefsKey(), _purchasedPowerupIds);
     }
 
-    private void SavePowerups(string path, List<int> powerups)
+    private void SavePowerups(string prefsName, List<int> powerups)
     {
-        var bf = new BinaryFormatter();
-        var file = File.Create(path);
-        bf.Serialize(file, powerups);
-        file.Close();
-        Debug.Log("Saved powerups " + path);
+        PlayerPrefs.SetString(prefsName, string.Join(",", powerups));
+        PlayerPrefs.Save();
+        Debug.Log("Saved powerups " + prefsName);
     }
 
     public bool AddEquippedPowerupId(PowerupBlockSpawn powerup)
@@ -181,5 +174,14 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             AudioManager.Instance.PlayButtonClickSound();
             gameObject.Deactivate();
         }
+    }
+
+    public bool AddPurchasedPowerupId(PowerupBlockSpawn purchasedPowerup)
+    {
+        Debug.Log("Adding purchased powerup " + purchasedPowerup);
+        _purchasedPowerupIds.Add(purchasedPowerup.BlockID);
+        UpdateMenu();
+
+        return true;
     }
 }

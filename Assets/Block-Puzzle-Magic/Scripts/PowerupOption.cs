@@ -47,7 +47,20 @@ public class PowerupOption : MonoBehaviour
 
     private void BuyThisPowerup()
     {
-        throw new NotImplementedException();
+        if (InputManager.Instance.canInput())
+        {
+            var coinDeduced = CurrencyManager.Instance.deductBalance(PriceForPowerup(_powerup));
+
+            if (coinDeduced)
+            {
+                AudioManager.Instance.PlayButtonClickSound();
+                PowerupSelectMenu.Instance.AddPurchasedPowerupId(_powerup);
+            }
+            else
+            {
+                StackManager.Instance.shopScreen.Activate();
+            }
+        }
     }
 
     private void EquipThisPowerup()

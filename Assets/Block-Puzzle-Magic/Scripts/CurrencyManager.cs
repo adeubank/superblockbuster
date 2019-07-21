@@ -5,7 +5,7 @@ public class CurrencyManager : Singleton<CurrencyManager>
 {
     private int coinBalance;
 
-    public int InitialCoinBalance = 100;
+    public int InitialCoinBalance = 1000;
     public static event Action<int> OnCoinBalanceUpdated;
 
     /// <summary>
