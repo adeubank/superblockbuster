@@ -1494,9 +1494,24 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
+        var currentScore = ScoreManager.Instance.Score;
+        var coinReward = 50;
+
+        if (currentScore <= 300_000)
+            coinReward = 100;
+
+        if (currentScore <= 500_000)
+            coinReward = 150;
+
+        if (currentScore <= 1_000_000)
+            coinReward = 200;
+
+        if (currentScore > 1_000_000)
+            coinReward = 500;
+
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
-        gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score, 10);
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score, coinReward);
         GameProgressManager.Instance.ClearProgress();
         StackManager.Instance.DeactivateGamePlay();
     }
