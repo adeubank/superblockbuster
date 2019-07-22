@@ -1494,20 +1494,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
+        //region compute a variable coin reward based on the score
         var currentScore = ScoreManager.Instance.Score;
         var coinReward = 50;
 
-        if (currentScore <= 300_000)
+        if (currentScore >= 300_000)
             coinReward = 100;
 
-        if (currentScore <= 500_000)
+        if (currentScore >= 500_000)
             coinReward = 150;
 
-        if (currentScore <= 1_000_000)
+        if (currentScore >= 1_000_000)
             coinReward = 200;
 
-        if (currentScore > 1_000_000)
+        if (currentScore > 1_500_000)
             coinReward = 500;
+        //endregion
 
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
