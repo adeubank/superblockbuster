@@ -65,7 +65,8 @@ public class GamePlayUI : Singleton<GamePlayUI>
         #endregion
 
         yield return DisplayAlert(reason);
-        StackManager.Instance.recueScreen.Activate();
+
+        GamePlay.Instance.OnGameOver();
     }
 
     public IEnumerator DisplayAlert(GameOverReason reason)

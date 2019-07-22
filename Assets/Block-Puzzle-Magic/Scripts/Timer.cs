@@ -27,17 +27,16 @@ public class Timer : MonoBehaviour
     {
         if (timeRemaining <= Mathf.Epsilon)
         {
+            timeRemaining = 0;
             GamePlayUI.Instance.ShowRescue(GameOverReason.TIME_OVER);
         }
-        else
-        {
-            var sliderValue = timeRemaining / MaxTimeCounter;
-            imageProgress.fillAmount = sliderValue;
-            var minutesRemaining = ((int) _timeRemaining / 60).ToString("F0");
-            var secondsRemaining = ((int) _timeRemaining % 60).ToString("F0");
-            txtTimeRemaining.text = minutesRemaining + ":" +
-                                    secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
-        }
+
+        var sliderValue = timeRemaining / MaxTimeCounter;
+        imageProgress.fillAmount = sliderValue;
+        var minutesRemaining = ((int) _timeRemaining / 60).ToString("F0");
+        var secondsRemaining = ((int) _timeRemaining % 60).ToString("F0");
+        txtTimeRemaining.text = minutesRemaining + ":" +
+                                secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
     }
 
     public void UpdateTimerSpeed(float newRate)

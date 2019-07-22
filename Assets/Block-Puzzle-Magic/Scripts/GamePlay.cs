@@ -313,6 +313,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void HoldNewBlocks(bool b)
     {
+        if (b)
+            InputManager.Instance.DisableTouch();
+        else
+            InputManager.Instance.EnableTouch();
         holdNewBlocksImage.gameObject.SetActive(b);
         _holdingNewBlocks = b;
     }
@@ -1359,7 +1363,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region lets play
 
         HoldNewBlocks(false);
-        StartCoroutine(SetAutoMove());
+        Invoke("SetAutoMove", 0.8f);
 
         #endregion
     }
