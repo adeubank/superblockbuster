@@ -975,7 +975,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns, bool activatePowerups = true)
     {
-        if (comboMultiplier > 0) AudioManager.Instance.PlaySound(comboSound);
+        if (comboMultiplier > 0 && placingShapeBlockCount > 0) AudioManager.Instance.PlaySound(comboSound);
 
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count + comboMultiplier;
         var totalBreakingRowBlocks =
@@ -1003,7 +1003,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
-        var newScore = 10 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 10;
+        var newScore = 100 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 100;
 
         Debug.Log("Breaking lines! " +
                   "\n\tplacingShapeBlockCount=" + placingShapeBlockCount +
@@ -1043,8 +1043,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 }
             });
             allLineBreaksSequence.Join(BreakThisLine(line, activatePowerups));
-            ScoreManager.Instance.AddScore(newScore * multiplier);
         }
+
+        ScoreManager.Instance.AddScore(newScore * multiplier);
 
         yield return allLineBreaksSequence.WaitForCompletion();
         yield return new WaitForSecondsRealtime(0.4f);
