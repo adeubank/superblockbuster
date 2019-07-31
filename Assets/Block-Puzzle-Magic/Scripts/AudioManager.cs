@@ -75,8 +75,9 @@ public class AudioManager : Singleton<AudioManager>
     ///     Plays the sound given.
     /// </summary>
     /// <param name="clip">Clip.</param>
-    public void PlaySound(AudioClip clip)
+    /// <param name="volumeScale"></param>
+    public void PlaySound(AudioClip clip, float volumeScale = .75f)
     {
-        if (Instance.isSoundEnabled) audioSource.PlayOneShot(clip);
+        if (Instance.isSoundEnabled) audioSource.PlayOneShot(clip, volumeScale);
     }
 }

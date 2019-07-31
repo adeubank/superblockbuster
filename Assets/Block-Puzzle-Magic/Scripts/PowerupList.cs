@@ -13,4 +13,5 @@ public class PowerupBlockSpawn : ShapeBlockSpawn
 {
     public GameObject powerupActivationSprite;
     public GameObject powerupBlockIcon;
+    public AudioClip powerupSfx;
 }
