@@ -69,11 +69,15 @@ public class EditorUtility : MonoBehaviour
     }
 
 
-#if UNITY_EDITOR
     [MenuItem("Block Magic Puzzle/Init Powerups Menu Options")]
-#endif
     private static void InitMenuOptions()
     {
         PowerupSelectMenu.Instance.InitMenuOptions();
+    }
+
+    [MenuItem("Block Magic Puzzle/Show Help In Game")]
+    private static void ShowHelpInGame()
+    {
+        GamePlay.Instance.ShowBasicHelp();
     }
 }

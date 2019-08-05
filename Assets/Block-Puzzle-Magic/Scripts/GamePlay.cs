@@ -1754,7 +1754,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Shows the basic help.
     /// </summary>
-    private void ShowBasicHelp()
+    public void ShowBasicHelp()
     {
         var isBasicHelpShown = PlayerPrefs.GetInt("isBasicHelpShown", 0) == 0 ? false : true;
         if (!isBasicHelpShown)
