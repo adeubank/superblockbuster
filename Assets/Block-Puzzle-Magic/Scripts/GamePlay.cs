@@ -244,11 +244,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private void Awake()
     {
         StartCoroutine(SetAutoMove());
+        InvokeRepeating("SetAutoMove", 2.0f, 0.8f);
     }
 
-    public IEnumerator SetAutoMove()
+    public IEnumerator SetAutoMove(bool force = false)
     {
-        if (_autoMoveLocked) yield break;
+        if (_autoMoveLocked || force) yield break;
 
         _autoMoveLocked = true;
 
@@ -510,6 +511,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 blockGrid.Where(b => b.moveID == moveId && b.blockID == powerupId).ToList().ForEach(b => { b.RemovePowerup(); });
             Destroy(powerupActivationSprite);
         });
+
+        if (powerupBlockSpawn.powerupSfx != null) AudioManager.Instance.PlaySound(powerupBlockSpawn.powerupSfx);
 
         yield return powerupActivationSequence.WaitForCompletion();
     }
@@ -1364,7 +1367,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region lets play
 
         HoldNewBlocks(false);
-        Invoke("SetAutoMove", 0.8f);
+
+        Debug.Log("Waiting for Start out of moves tweens to finish");
 
         #endregion
     }
