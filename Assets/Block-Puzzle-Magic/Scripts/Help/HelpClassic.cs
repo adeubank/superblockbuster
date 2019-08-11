@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 #if HBDOTween
 using DG.Tweening;
@@ -15,7 +16,7 @@ public class HelpClassic : MonoBehaviour
     private Vector2 firstPosition = Vector2.zero;
 
     [SerializeField] private Transform handImage;
-
+    [SerializeField] private Transform secondHandImage;
     private Vector2 secondPosition = Vector2.zero;
 
     /// <summary>
@@ -56,6 +57,9 @@ public class HelpClassic : MonoBehaviour
             _highlightedBlocks.Add(c);
         });
 
+        var middlePos = GamePlay.Instance.highlightingBlocks.Aggregate(Vector2.zero, (avgPos, b) => avgPos + (Vector2) b.gameObject.transform.position);
+        secondHandImage = Instantiate(handImage, middlePos, Quaternion.Euler(-handImage.eulerAngles), transform);
+
 #if HBDOTween
         transform.GetComponent<CanvasGroup>().DOFade(1F, 0.5F).OnComplete(() => { AnimateInLoop(); });
 #endif
@@ -68,7 +72,19 @@ public class HelpClassic : MonoBehaviour
     {
 #if HBDOTween
         handImage.transform.position = firstPosition;
-        handImage.transform.DOMove(secondPosition, 1F).SetDelay(1).OnComplete(() => { handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1).OnComplete(AnimateInLoop); });
+        var handImgSequence = DOTween.Sequence();
+        handImgSequence.Append(handImage.transform.DOMove(secondPosition, 1F).SetDelay(1));
+        handImgSequence.Append(handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1));
+        handImgSequence.SetLoops(-1, LoopType.Restart);
+
 #endif
+        var secondHandTransform = secondHandImage.transform;
+        var secondHandPosition = secondHandTransform.position;
+        var secondFirstPos = secondHandPosition + new Vector3(secondHandPosition.x, secondHandPosition.y - 5f);
+        var secondLastPos = secondHandPosition + new Vector3(secondHandPosition.x, secondHandPosition.y);
+        var secondHandImgSequence = DOTween.Sequence();
+        secondHandImgSequence.Append(secondHandImage.transform.DOMove(secondFirstPos, 1F).SetDelay(1));
+        secondHandImgSequence.Append(secondHandImage.transform.DOMove(secondLastPos, 0.5F).SetDelay(1));
+        secondHandImgSequence.SetLoops(-1, LoopType.Restart);
     }
 }
