@@ -42,7 +42,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private ShapeInfo currentShape;
 
-    private List<Block> highlightingBlocks;
+    public List<Block> highlightingBlocks;
     private Transform hittingBlock;
 
     [SerializeField] private Image holdNewBlocksImage;
@@ -244,7 +244,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private void Awake()
     {
         StartCoroutine(SetAutoMove());
-        InvokeRepeating("SetAutoMove", 2.0f, 0.8f);
     }
 
     public IEnumerator SetAutoMove(bool force = false)
@@ -255,7 +254,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return new WaitWhile(() => HoldingNewBlocks() || currentShape != null || DOTween.TotalPlayingTweens() > 0);
 
-        Debug.Log("Setting auto move. ");
+        Debug.Log("Setting auto move.");
         var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
         blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse().Any(block =>
@@ -327,7 +326,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     private void SetHighLightImage()
     {
-        foreach (var c in highlightingBlocks) c.SetHighlightImage(currentShape.blockImage);
+        foreach (var c in highlightingBlocks)
+        {
+            c.gameObject.tag = "Block/Highlighted";
+            c.SetHighlightImage(currentShape.blockImage);
+        }
     }
 
     /// <summary>
@@ -337,7 +340,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (highlightingBlocks != null && highlightingBlocks.Count > 0)
             foreach (var c in highlightingBlocks)
+            {
+                c.gameObject.tag = "";
                 c.StopHighlighting();
+            }
+
         hittingBlock = null;
         highlightingBlocks.Clear();
     }

@@ -78,6 +78,8 @@ public class EditorUtility : MonoBehaviour
     [MenuItem("Block Magic Puzzle/Show Help In Game")]
     private static void ShowHelpInGame()
     {
+        PlayerPrefs.SetInt("isHelpShown_" + GameController.gameMode, 1);
+        PlayerPrefs.SetInt("isBasicHelpShown", 1);
         GamePlay.Instance.ShowBasicHelp();
     }
 }
