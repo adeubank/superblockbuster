@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -91,8 +92,16 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     {
         if (PlayerPrefs.HasKey(prefsKey))
         {
-            list = PlayerPrefs.GetString(prefsKey).Split(',').Select(int.Parse).ToList();
-            Debug.Log("Loaded saved powerups. prefsKey=" + prefsKey);
+            try
+            {
+                list = PlayerPrefs.GetString(prefsKey).Split(',').Select(int.Parse).ToList();
+                Debug.Log("Loaded saved powerups. prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
+            }
+            catch (FormatException e)
+            {
+                Debug.LogError("Failed to parse powerups! prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
+                list = new List<int>();
+            }
         }
         else
         {
