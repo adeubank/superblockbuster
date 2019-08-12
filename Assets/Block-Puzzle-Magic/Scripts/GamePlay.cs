@@ -150,8 +150,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         (transform1 = currentShape.transform).localScale = BlockShapeSpawner.Instance.ShapePickupLocalScale();
         transform1.localPosition = new Vector3(pos.x, pos.y, 0);
         AudioManager.Instance.PlaySound(blockSelectSound);
-
-        if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
     }
 
     #endregion
@@ -164,6 +162,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
+
         if (HoldingNewBlocks()) return;
         if (currentShape == null)
         {

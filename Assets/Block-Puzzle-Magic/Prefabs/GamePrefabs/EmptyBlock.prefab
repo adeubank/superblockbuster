@@ -183,6 +183,8 @@ GameObject:
   - component: {fileID: 114050881783536824}
   - component: {fileID: 114964284619945726}
   - component: {fileID: 61475109600377552}
+  - component: {fileID: 7176690231600805044}
+  - component: {fileID: 7621193003825877357}
   m_Layer: 5
   m_Name: EmptyBlock
   m_TagString: Untagged
@@ -265,7 +267,6 @@ MonoBehaviour:
   colorId: -1
   columnID: 0
   isAvalanchePowerup: 0
-  isBandagePowerup: 0
   isBomb: 0
   isBombPowerup: 0
   isColorCoderPowerup: 0
@@ -275,15 +276,15 @@ MonoBehaviour:
   isEdge: 0
   isExploding: 0
   isFilled: 0
+  isFrenzyPowerup: 0
   isLagPowerup: 0
   isOmnicolorBlock: 0
   isQuakePowerup: 0
   isSticksGalorePowerup: 0
   isStormPowerup: 0
-  isFrenzyPowerup: 0
+  moveID: 0
   prevBlockImageSprite: {fileID: 0}
   rowID: 0
-  moveID: 0
 --- !u!61 &61475109600377552
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -310,3 +311,41 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 70, y: 70}
   m_EdgeRadius: 0
+--- !u!223 &7176690231600805044
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993577205933158}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &7621193003825877357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993577205933158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

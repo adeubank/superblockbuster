@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
 
@@ -18,7 +17,6 @@ public class HelpClassic : MonoBehaviour
     private Vector2 firstPosition = Vector2.zero;
     [SerializeField] private Transform handImage;
 
-    [SerializeField] private Text helpText;
     private Vector2 secondPosition = Vector2.zero;
     [SerializeField] private Transform tapHandImage;
     private Sequence tapHandSequence;
@@ -33,7 +31,12 @@ public class HelpClassic : MonoBehaviour
 
     private void OnDestroy()
     {
-        _highlightedBlocks.ForEach(Destroy);
+        _highlightedBlocks.ForEach(go =>
+        {
+            var c = go.GetComponent<Canvas>();
+            c.overrideSorting = false;
+            c.sortingOrder = 0;
+        });
         firstHandSequence?.Kill();
         tapHandSequence?.Kill();
     }
@@ -43,10 +46,6 @@ public class HelpClassic : MonoBehaviour
     /// </summary>
     private void StartHelp()
     {
-        var textPosition = GamePlay.Instance.transform.Find("Top-Panel").position;
-        helpText.transform.position = textPosition;
-
-
         var firstShape = BlockShapeSpawner.Instance.transform.GetChild(0).gameObject;
 
         firstPosition = firstShape.transform.position;
@@ -61,7 +60,7 @@ public class HelpClassic : MonoBehaviour
         var unused = GamePlay.Instance.SetAutoMove();
         GamePlay.Instance.highlightingBlocks.ForEach(b =>
         {
-            var c = b.gameObject.AddComponent<Canvas>();
+            var c = b.gameObject.GetComponent<Canvas>();
             c.overrideSorting = true;
             c.sortingOrder = 3;
             _highlightedBlocks.Add(c);
