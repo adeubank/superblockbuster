@@ -1514,6 +1514,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var currentScore = ScoreManager.Instance.Score;
         var coinReward = 50;
 
+        if (currentScore == 0)
+            coinReward = 0;
+
         if (currentScore >= 300_000)
             coinReward = 100;
 
