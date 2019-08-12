@@ -341,7 +341,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (highlightingBlocks != null && highlightingBlocks.Count > 0)
             foreach (var c in highlightingBlocks)
             {
-                c.gameObject.tag = "";
+                c.gameObject.tag = "Untagged";
                 c.StopHighlighting();
             }
 

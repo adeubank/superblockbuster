@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 #if HBDOTween
 using DG.Tweening;
 
@@ -13,11 +14,14 @@ using DG.Tweening;
 public class HelpClassic : MonoBehaviour
 {
     private readonly List<Canvas> _highlightedBlocks = new List<Canvas>();
+    private Sequence firstHandSequence;
     private Vector2 firstPosition = Vector2.zero;
-
     [SerializeField] private Transform handImage;
-    [SerializeField] private Transform secondHandImage;
+
+    [SerializeField] private Text helpText;
     private Vector2 secondPosition = Vector2.zero;
+    [SerializeField] private Transform tapHandImage;
+    private Sequence tapHandSequence;
 
     /// <summary>
     ///     Start this instance.
@@ -30,6 +34,8 @@ public class HelpClassic : MonoBehaviour
     private void OnDestroy()
     {
         _highlightedBlocks.ForEach(Destroy);
+        firstHandSequence?.Kill();
+        tapHandSequence?.Kill();
     }
 
     /// <summary>
@@ -37,6 +43,10 @@ public class HelpClassic : MonoBehaviour
     /// </summary>
     private void StartHelp()
     {
+        var textPosition = GamePlay.Instance.transform.Find("Top-Panel").position;
+        helpText.transform.position = textPosition;
+
+
         var firstShape = BlockShapeSpawner.Instance.transform.GetChild(0).gameObject;
 
         firstPosition = firstShape.transform.position;
@@ -57,8 +67,8 @@ public class HelpClassic : MonoBehaviour
             _highlightedBlocks.Add(c);
         });
 
-        var middlePos = GamePlay.Instance.highlightingBlocks.Aggregate(Vector2.zero, (avgPos, b) => avgPos + (Vector2) b.gameObject.transform.position);
-        secondHandImage = Instantiate(handImage, middlePos, Quaternion.Euler(-handImage.eulerAngles), transform);
+        var middlePos = GamePlay.Instance.highlightingBlocks.Aggregate(Vector3.zero, (avgPos, b) => avgPos + b.gameObject.transform.position) / GamePlay.Instance.highlightingBlocks.Count;
+        tapHandImage.position = (Vector2) middlePos - new Vector2(0, 0.6f);
 
 #if HBDOTween
         transform.GetComponent<CanvasGroup>().DOFade(1F, 0.5F).OnComplete(() => { AnimateInLoop(); });
@@ -72,19 +82,18 @@ public class HelpClassic : MonoBehaviour
     {
 #if HBDOTween
         handImage.transform.position = firstPosition;
-        var handImgSequence = DOTween.Sequence();
-        handImgSequence.Append(handImage.transform.DOMove(secondPosition, 1F).SetDelay(1));
-        handImgSequence.Append(handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1));
-        handImgSequence.SetLoops(-1, LoopType.Restart);
-
+        firstHandSequence = DOTween.Sequence();
+        firstHandSequence.Append(handImage.transform.DOMove(secondPosition, 1F).SetDelay(1));
+        firstHandSequence.Append(handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1));
+        firstHandSequence.SetLoops(-1, LoopType.Restart);
 #endif
-        var secondHandTransform = secondHandImage.transform;
-        var secondHandPosition = secondHandTransform.position;
-        var secondFirstPos = secondHandPosition + new Vector3(secondHandPosition.x, secondHandPosition.y - 5f);
-        var secondLastPos = secondHandPosition + new Vector3(secondHandPosition.x, secondHandPosition.y);
-        var secondHandImgSequence = DOTween.Sequence();
-        secondHandImgSequence.Append(secondHandImage.transform.DOMove(secondFirstPos, 1F).SetDelay(1));
-        secondHandImgSequence.Append(secondHandImage.transform.DOMove(secondLastPos, 0.5F).SetDelay(1));
-        secondHandImgSequence.SetLoops(-1, LoopType.Restart);
+        var secondHandTransform = tapHandImage.transform;
+        var secondHandPosition = (Vector2) secondHandTransform.position;
+        var secondFirstPos = secondHandPosition - new Vector2(0, 0.2f);
+        var secondLastPos = secondHandPosition + new Vector2(0, 0.2f);
+        tapHandSequence = DOTween.Sequence();
+        tapHandSequence.Append(tapHandImage.transform.DOMove(secondFirstPos, 0.4F).SetDelay(0.4f));
+        tapHandSequence.Append(tapHandImage.transform.DOMove(secondLastPos, 0.4F).SetDelay(0.4f));
+        tapHandSequence.SetLoops(-1, LoopType.Yoyo);
     }
 }
