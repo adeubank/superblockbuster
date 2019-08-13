@@ -80,4 +80,18 @@ public class PausedScreen : MonoBehaviour
         StackManager.Instance.ActivateGamePlay();
         gameObject.Deactivate();
     }
+
+    /// <summary>
+    ///     Raises the home button pressed event.
+    /// </summary>
+    public void OnHelpButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            PlayerPrefs.SetInt("isHelpShown_" + GameController.gameMode, 0);
+            PlayerPrefs.SetInt("isBasicHelpShown", 0);
+            GamePlay.Instance.CheckForHelp();
+            gameObject.Deactivate();
+        }
+    }
 }

@@ -21,10 +21,12 @@ public class PowerupSelected : MonoBehaviour
             SetNoPowerup();
             powerupButton.onClick.RemoveAllListeners();
         });
+        gameObject.SetActive(true);
     }
 
     public void SetNoPowerup()
     {
+        gameObject.SetActive(false);
         powerupButton.enabled = false;
         powerupImage.sprite = noPowerupImage;
     }

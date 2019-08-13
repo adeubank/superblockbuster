@@ -162,8 +162,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
-
         if (HoldingNewBlocks()) return;
         if (currentShape == null)
         {
@@ -173,6 +171,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (_isDraggingPlayableShape && eventData.dragging && highlightingBlocks.Count > 0)
         {
+            if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
@@ -194,6 +193,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
         {
+            if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }

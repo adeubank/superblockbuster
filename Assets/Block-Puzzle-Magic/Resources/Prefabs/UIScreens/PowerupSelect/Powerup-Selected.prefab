@@ -109,7 +109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fb528a9dd86a9e4a9526fb2e2fd08b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noPowerupImage: {fileID: 21300000, guid: 92ddf666d0ba8e34d9c329b6f0c274e0, type: 3}
+  noPowerupImage: {fileID: 21300000, guid: a815a3d79859f824687c85d31f99c446, type: 3}
   powerupButton: {fileID: 1745792379405535899}
   powerupImage: {fileID: 7398802485700208262}
 --- !u!114 &1745792379405535899

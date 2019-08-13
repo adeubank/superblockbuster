@@ -21,7 +21,14 @@ public static class LocalizationExtention
 
     public static void SetLocalizedTextForTag(this Text txt, string tag)
     {
-        txt.text = LocalizationManager.Instance.GetLocalizedTextForTag(tag);
+        var localizedText = LocalizationManager.Instance.GetLocalizedTextForTag(tag);
+        if (string.IsNullOrEmpty(localizedText))
+        {
+            Debug.LogWarning("Did not find localized text for tag, " + tag);
+            return;
+        }
+
+        txt.text = localizedText;
     }
 
     public static void SetLocalizedTextForTag(this GameObject txt, string tag)

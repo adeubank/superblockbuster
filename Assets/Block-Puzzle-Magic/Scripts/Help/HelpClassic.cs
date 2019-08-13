@@ -15,6 +15,7 @@ public class HelpClassic : MonoBehaviour
     private readonly List<Canvas> _highlightedBlocks = new List<Canvas>();
     private Sequence firstHandSequence;
     private Vector2 firstPosition = Vector2.zero;
+    private Canvas firstShapeCanvas;
     [SerializeField] private Transform handImage;
 
     private Vector2 secondPosition = Vector2.zero;
@@ -39,6 +40,7 @@ public class HelpClassic : MonoBehaviour
         });
         firstHandSequence?.Kill();
         tapHandSequence?.Kill();
+        firstShapeCanvas.sortingOrder = 0;
     }
 
     /// <summary>
@@ -55,7 +57,10 @@ public class HelpClassic : MonoBehaviour
         secondPosition = GamePlay.Instance.transform.Find("Game-Content").position;
 
         if (firstShape.transform.childCount > 0)
-            firstShape.transform.GetChild(0).GetComponent<Canvas>().sortingOrder = 3;
+        {
+            firstShapeCanvas = firstShape.transform.GetChild(0).GetComponent<Canvas>();
+            firstShapeCanvas.sortingOrder = 3;
+        }
 
         var unused = GamePlay.Instance.SetAutoMove();
         GamePlay.Instance.highlightingBlocks.ForEach(b =>
