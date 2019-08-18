@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
+    private GameObject _helpGameObject;
     private List<int> _purchasedPowerupIds;
     [SerializeField] public PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
     [HideInInspector] public List<int> equippedPowerupIds;
+    public GameObject helpIcon;
+    public Scrollbar powerupMenuScrollView;
     public GameObject powerupOptionPrefab;
     public Transform powerupOptionsListTransform;
     public Transform powerupSelectedListTransform;
@@ -52,11 +57,14 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         // Add some empty space at the top of the list
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
+        PowerupOption firstPowerupOption = null;
         var equippedPowerupSpawns = Instance.equippedPowerupIds;
         foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupOption.PriceForPowerup))
         {
             var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
+
+            if (firstPowerupOption == null) firstPowerupOption = powerupOption;
 
             powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID),
                 _purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
@@ -64,6 +72,15 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
         // empty space at the bottom
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
+
+        helpIcon.SetActive(true);
+
+        // show view is scrollable
+        var showScrollableSequence = DOTween.Sequence();
+        showScrollableSequence.Insert(0, helpIcon.transform.DOLocalMoveY(5.0f, 1.0f));
+        showScrollableSequence.Insert(0, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0.25f, 1.0f));
+        showScrollableSequence.Insert(1, helpIcon.transform.DOLocalMoveY(0, 1.0f));
+        showScrollableSequence.Insert(1, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0, 1.0f));
     }
 
     private void UpdateEquippedPowerups()
