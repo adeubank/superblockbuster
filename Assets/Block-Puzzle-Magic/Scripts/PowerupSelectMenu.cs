@@ -9,8 +9,11 @@ using UnityEngine.UI;
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
     private GameObject _helpGameObject;
+    private Sequence _helpIconLoopSequence;
+    private bool _isHelpShown;
     private List<int> _purchasedPowerupIds;
     private Sequence _showScrollableSequence;
+
     [SerializeField] public PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
     [HideInInspector] public List<int> equippedPowerupIds;
@@ -36,9 +39,16 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void UpdateMenu()
     {
+        if (_isHelpShown) StopHelp();
         UpdateAvailablePowerups();
         UpdateEquippedPowerups();
         SaveData();
+    }
+
+    private void StopHelp()
+    {
+        _showScrollableSequence.Kill(true);
+        _helpIconLoopSequence.Kill(true);
     }
 
     private void SaveData()
@@ -75,39 +85,65 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         // empty space at the bottom
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
+        Invoke("CheckPowerupMenuHelp", 1f);
+    }
 
-        Invoke("ActivatePowerupMenuHelp", 1f);
+    public void CheckPowerupMenuHelp()
+    {
+        ActivatePowerupMenuHelp(false);
     }
 
     public void ActivatePowerupMenuHelp(bool force = true)
     {
-        if (!force && PlayerPrefs.HasKey("powerup_menu_help") && PlayerPrefs.GetInt("powerup_menu_help") == 1) return;
-
-        StartCoroutine(ShowPowerupMenuScrollableHelp());
-        PlayerPrefs.SetInt("powerup_menu_help", 1);
+        StartCoroutine(ShowPowerupMenuScrollableHelp(force));
     }
 
-    private IEnumerator ShowPowerupMenuScrollableHelp()
+    private IEnumerator ShowPowerupMenuScrollableHelp(bool force = true)
     {
-        helpIcon.SetActive(true);
-
-        yield return new WaitForEndOfFrame();
-
-        // show view is scrollable
-        _showScrollableSequence = DOTween.Sequence();
-        var origHelpIconY = helpIcon.transform.localPosition.y;
-        _showScrollableSequence.Insert(0, helpIcon.transform.DOLocalMoveY(origHelpIconY + -origHelpIconY, 1.0f));
-        _showScrollableSequence.Insert(0, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0.75f, 1.0f));
-        _showScrollableSequence.AppendInterval(1f);
-        _showScrollableSequence.Insert(2, helpIcon.transform.DOLocalMoveY(origHelpIconY, 1.0f));
-        _showScrollableSequence.Insert(2, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 1, 1.0f));
-        _showScrollableSequence.AppendCallback(() =>
+        if (force || !PlayerPrefs.HasKey("powerup_menu_scrollable_help") || PlayerPrefs.GetInt("powerup_menu_scrollable_help") != 1)
         {
-            helpIcon.SetActive(false);
-            powerupMenuScrollView.value = 1;
-        });
+            _isHelpShown = true;
+            helpIcon.SetActive(true);
+            yield return new WaitForEndOfFrame();
+            // show view is scrollable
+            _showScrollableSequence = DOTween.Sequence();
+            var origHelpIconY = helpIcon.transform.localPosition.y;
+            _showScrollableSequence.Insert(0, helpIcon.transform.DOLocalMoveY(origHelpIconY + -origHelpIconY, 1.0f));
+            _showScrollableSequence.Insert(0, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0.75f, 1.0f));
+            _showScrollableSequence.AppendInterval(1f);
+            _showScrollableSequence.Insert(2, helpIcon.transform.DOLocalMoveY(origHelpIconY, 1.0f));
+            _showScrollableSequence.Insert(2, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 1, 1.0f));
+            _showScrollableSequence.AppendCallback(() =>
+            {
+                powerupMenuScrollView.value = 1;
+                StartCoroutine(ShowSelectPowerupHelp());
+            });
+            PlayerPrefs.SetInt("powerup_menu_scrollable_help", 1);
+        }
+        else if (equippedPowerupIds.Count == 0)
+        {
+            StartCoroutine(ShowSelectPowerupHelp());
+        }
 
         yield return null;
+    }
+
+    private IEnumerator ShowSelectPowerupHelp()
+    {
+        _isHelpShown = true;
+
+        var firstOptionPosition = (Vector2) powerupOptionsListTransform.GetChild(1).transform.position - new Vector2(0, 35f);
+        var secondOptionPosition = firstOptionPosition - new Vector2(0, 15f);
+        helpIcon.transform.position = firstOptionPosition;
+
+        helpIcon.SetActive(true);
+        yield return new WaitForEndOfFrame();
+
+        _helpIconLoopSequence = DOTween.Sequence();
+        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(secondOptionPosition, 0.4F).SetDelay(0.4f));
+        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(firstOptionPosition, 0.4F).SetDelay(0.4f));
+        _helpIconLoopSequence.SetLoops(-1, LoopType.Restart);
+        _helpIconLoopSequence.OnKill(() => helpIcon.SetActive(false));
     }
 
     private void UpdateEquippedPowerups()
