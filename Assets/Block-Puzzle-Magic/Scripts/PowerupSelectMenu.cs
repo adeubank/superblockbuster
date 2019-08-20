@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -9,6 +10,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
     private GameObject _helpGameObject;
     private List<int> _purchasedPowerupIds;
+    private Sequence _showScrollableSequence;
     [SerializeField] public PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
     [HideInInspector] public List<int> equippedPowerupIds;
@@ -73,14 +75,39 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         // empty space at the bottom
         Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
 
+
+        Invoke("ActivatePowerupMenuHelp", 1f);
+    }
+
+    public void ActivatePowerupMenuHelp(bool force = true)
+    {
+        if (!force && PlayerPrefs.HasKey("powerup_menu_help") && PlayerPrefs.GetInt("powerup_menu_help") == 1) return;
+
+        StartCoroutine(ShowPowerupMenuScrollableHelp());
+        PlayerPrefs.SetInt("powerup_menu_help", 1);
+    }
+
+    private IEnumerator ShowPowerupMenuScrollableHelp()
+    {
         helpIcon.SetActive(true);
 
+        yield return new WaitForEndOfFrame();
+
         // show view is scrollable
-        var showScrollableSequence = DOTween.Sequence();
-        showScrollableSequence.Insert(0, helpIcon.transform.DOLocalMoveY(5.0f, 1.0f));
-        showScrollableSequence.Insert(0, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0.25f, 1.0f));
-        showScrollableSequence.Insert(1, helpIcon.transform.DOLocalMoveY(0, 1.0f));
-        showScrollableSequence.Insert(1, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0, 1.0f));
+        _showScrollableSequence = DOTween.Sequence();
+        var origHelpIconY = helpIcon.transform.localPosition.y;
+        _showScrollableSequence.Insert(0, helpIcon.transform.DOLocalMoveY(origHelpIconY + -origHelpIconY, 1.0f));
+        _showScrollableSequence.Insert(0, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 0.75f, 1.0f));
+        _showScrollableSequence.AppendInterval(1f);
+        _showScrollableSequence.Insert(2, helpIcon.transform.DOLocalMoveY(origHelpIconY, 1.0f));
+        _showScrollableSequence.Insert(2, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 1, 1.0f));
+        _showScrollableSequence.AppendCallback(() =>
+        {
+            helpIcon.SetActive(false);
+            powerupMenuScrollView.value = 1;
+        });
+
+        yield return null;
     }
 
     private void UpdateEquippedPowerups()
