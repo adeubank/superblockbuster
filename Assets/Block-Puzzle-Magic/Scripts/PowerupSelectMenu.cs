@@ -132,8 +132,8 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     {
         _isHelpShown = true;
 
-        var firstOptionPosition = (Vector2) powerupOptionsListTransform.GetChild(1).transform.position - new Vector2(0, 35f);
-        var secondOptionPosition = firstOptionPosition - new Vector2(0, 15f);
+        var firstOptionPosition = (Vector2) powerupOptionsListTransform.GetChild(1).transform.position - new Vector2(0, 70f);
+        var secondOptionPosition = firstOptionPosition - new Vector2(0, 30f);
         helpIcon.transform.position = firstOptionPosition;
 
         helpIcon.SetActive(true);
