@@ -21,6 +21,8 @@ public class ScoreManager : Singleton<ScoreManager>
 
     public void AddScore(int scoreToAdd, bool doAnimate = true)
     {
+        if (scoreToAdd == 0) return;
+
         var oldScore = Score;
         Score += scoreToAdd;
 
@@ -31,7 +33,10 @@ public class ScoreManager : Singleton<ScoreManager>
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
             scoreAnimator.transform.position = mousePos;
-            txtAnimatedText.text = "+" + scoreToAdd;
+            if (scoreToAdd >= 0)
+                txtAnimatedText.text = "+" + scoreToAdd;
+            else
+                txtAnimatedText.text = scoreToAdd.ToString();
             scoreAnimator.SetActive(true);
         }
     }
