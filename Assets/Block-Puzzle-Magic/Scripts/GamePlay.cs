@@ -248,7 +248,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     public IEnumerator SetAutoMove(bool force = false)
     {
-        if (_autoMoveLocked || force) yield break;
+        if (_autoMoveLocked || !force) yield break;
 
         _autoMoveLocked = true;
 
@@ -1055,7 +1055,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             allLineBreaksSequence.Join(BreakThisLine(line, activatePowerups));
         }
 
-        ScoreManager.Instance.AddScore(newScore * multiplier);
+        if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * multiplier);
 
         yield return allLineBreaksSequence.WaitForCompletion();
         yield return new WaitForSecondsRealtime(0.4f);
@@ -1375,7 +1375,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         HoldNewBlocks(false);
 
-        Debug.Log("Waiting for Start out of moves tweens to finish");
+        StartCoroutine(SetAutoMove(true));
 
         #endregion
     }

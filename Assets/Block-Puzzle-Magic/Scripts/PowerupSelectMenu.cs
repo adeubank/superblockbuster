@@ -140,8 +140,8 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         yield return new WaitForEndOfFrame();
 
         _helpIconLoopSequence = DOTween.Sequence();
-        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(secondOptionPosition, 0.4F).SetDelay(0.4f));
-        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(firstOptionPosition, 0.4F).SetDelay(0.4f));
+        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(secondOptionPosition, 0.4F).SetDelay(0.2f));
+        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(firstOptionPosition, 0.4F).SetDelay(0.2f));
         _helpIconLoopSequence.SetLoops(-1, LoopType.Restart);
         _helpIconLoopSequence.OnKill(() => helpIcon.SetActive(false));
     }
