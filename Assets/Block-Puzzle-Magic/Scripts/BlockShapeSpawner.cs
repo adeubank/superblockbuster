@@ -69,7 +69,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     private void CallSetAutoMove()
     {
-        var unused = GamePlay.Instance.SetAutoMove();
+        StartCoroutine(GamePlay.Instance.SetAutoMove());
     }
 
     /// <summary>

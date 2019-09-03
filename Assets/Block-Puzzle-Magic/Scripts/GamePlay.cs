@@ -45,8 +45,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public List<Block> highlightingBlocks;
     private Transform hittingBlock;
 
-    [SerializeField] private Image holdNewBlocksImage;
-
     public bool isHelpOnScreen;
 
     // Line break sounds.
@@ -248,11 +246,22 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     public IEnumerator SetAutoMove()
     {
+        Debug.Log("Starting auto move. _autoMoveLocked=" + _autoMoveLocked);
+
         if (_autoMoveLocked) yield break;
 
         _autoMoveLocked = true;
 
-        yield return new WaitWhile(() => HoldingNewBlocks() || currentShape != null || DOTween.TotalPlayingTweens() > 0);
+        yield return new WaitWhile(() =>
+        {
+            if (HoldingNewBlocks())
+            {
+                Debug.Log("Auto move needs to wait. Holding new blocks");
+                return true;
+            }
+
+            return false;
+        });
 
         Debug.Log("Setting auto move.");
         var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
@@ -317,7 +326,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             InputManager.Instance.DisableTouch();
         else
             InputManager.Instance.EnableTouch();
-        holdNewBlocksImage.gameObject.SetActive(b);
         _holdingNewBlocks = b;
     }
 
@@ -405,7 +413,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             UpdateBlockCount();
 
         HoldNewBlocks(false);
-        StartCoroutine(SetAutoMove());
+        yield return SetAutoMove();
     }
 
     private IEnumerator PrepPowerupsBeforeClearing()
@@ -582,12 +590,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate,
                         nextBlockToFall.transform.position, Quaternion.identity,
                         GameBoardGenerator.Instance.BoardContent.transform);
-                    var emptyCellCanvas = emptyCell.AddComponent(typeof(Canvas)) as Canvas;
+                    var emptyCellCanvas = emptyCell.GetComponent(typeof(Canvas)) as Canvas;
                     emptyCellCanvas.overrideSorting = true;
                     emptyCellCanvas.sortingOrder = 2;
 
                     // have it render on top of everything as it falls down
-                    var nextBlockToFallCanvas = nextBlockToFall.gameObject.AddComponent(typeof(Canvas)) as Canvas;
+                    var nextBlockToFallCanvas = nextBlockToFall.gameObject.GetComponent(typeof(Canvas)) as Canvas;
                     nextBlockToFallCanvas.overrideSorting = true;
                     nextBlockToFallCanvas.sortingOrder = 3;
 
@@ -608,7 +616,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                             // since the dandelion seed has fallen, clear the old one
                             nextBlockToFall.ClearDandelionSeedIcon();
                             Destroy(emptyCell);
-                            Destroy(nextBlockToFallCanvas);
                         });
 
                     tweeners.Add(tweener);
@@ -1374,8 +1381,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region lets play
 
         HoldNewBlocks(false);
-
-        StartCoroutine(SetAutoMove());
+        yield return SetAutoMove();
 
         #endregion
     }
