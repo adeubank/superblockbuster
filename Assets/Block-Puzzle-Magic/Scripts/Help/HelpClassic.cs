@@ -62,7 +62,15 @@ public class HelpClassic : MonoBehaviour
             firstShapeCanvas.sortingOrder = 3;
         }
 
+        #region Show tap on highlighting blocks
+
         var unused = GamePlay.Instance.SetAutoMove();
+        if (!GamePlay.Instance.highlightingBlocks.Any())
+        {
+            Debug.LogWarning("Did not find any highlighting blocks for Help Classic.");
+            return;
+        }
+
         GamePlay.Instance.highlightingBlocks.ForEach(b =>
         {
             var c = b.gameObject.GetComponent<Canvas>();
@@ -77,6 +85,8 @@ public class HelpClassic : MonoBehaviour
 #if HBDOTween
         transform.GetComponent<CanvasGroup>().DOFade(1F, 0.5F).OnComplete(() => { AnimateInLoop(); });
 #endif
+
+        #endregion
     }
 
     /// <summary>

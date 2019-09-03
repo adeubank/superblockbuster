@@ -47,8 +47,17 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void StopHelp()
     {
-        _showScrollableSequence.Kill(true);
-        _helpIconLoopSequence.Kill(true);
+        if (_showScrollableSequence != null && _showScrollableSequence.IsPlaying())
+        {
+            _showScrollableSequence.Kill(true);
+            _showScrollableSequence = null;
+        }
+
+        if (_helpIconLoopSequence != null && _helpIconLoopSequence.IsPlaying())
+        {
+            _helpIconLoopSequence.Kill(true);
+            _helpIconLoopSequence = null;
+        }
     }
 
     private void SaveData()

@@ -246,9 +246,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         StartCoroutine(SetAutoMove());
     }
 
-    public IEnumerator SetAutoMove(bool force = false)
+    public IEnumerator SetAutoMove()
     {
-        if (_autoMoveLocked || !force) yield break;
+        if (_autoMoveLocked) yield break;
 
         _autoMoveLocked = true;
 
@@ -1375,7 +1375,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         HoldNewBlocks(false);
 
-        StartCoroutine(SetAutoMove(true));
+        StartCoroutine(SetAutoMove());
 
         #endregion
     }
