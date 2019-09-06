@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    private float _timeRemaining = 120.0F;
+    private float _timeRemaining = 90.0F;
     [SerializeField] private Image imageProgress;
 
-    [SerializeField] private int MaxTimeCounter = 120;
+    [SerializeField] private int MaxTimeCounter = 90;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;

@@ -8,6 +8,12 @@ public class GameOver : MonoBehaviour
 
     [SerializeField] private Text txtScore;
 
+    private void OnEnable()
+    {
+        Debug.Log("Game over screen awake!");
+        InputManager.Instance.EnableTouch();
+    }
+
     public void SetLevelScore(int score, int coinReward)
     {
         var bestScore = PlayerPrefs.GetInt("BestScore_" + GameController.gameMode, score);

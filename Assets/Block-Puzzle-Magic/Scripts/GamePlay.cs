@@ -244,6 +244,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         StartCoroutine(SetAutoMove());
     }
 
+    private void OnDestroy()
+    {
+        DOTween.CompleteAll();
+    }
+
     public IEnumerator SetAutoMove()
     {
         Debug.Log("Starting auto move. _autoMoveLocked=" + _autoMoveLocked);
@@ -611,6 +616,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                             nextBlockToFill.Copy(nextBlockToFall);
 
                             // clean up the falling block
+                            nextBlockToFallCanvas.overrideSorting = false;
+                            nextBlockToFallCanvas.sortingOrder = 0;
                             nextBlockToFall.ClearBlock(false);
                             nextBlockToFall.transform.localPosition = origPos;
                             // since the dandelion seed has fallen, clear the old one
