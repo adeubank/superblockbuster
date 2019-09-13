@@ -2783,11 +2783,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 6380312038211938954, guid: 754c4c4a151906148b0bc0b44f5c4124,
-        type: 3}
-      propertyPath: MaxTimeCounter
-      value: 120
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 754c4c4a151906148b0bc0b44f5c4124, type: 3}
 --- !u!224 &2001503111 stripped
