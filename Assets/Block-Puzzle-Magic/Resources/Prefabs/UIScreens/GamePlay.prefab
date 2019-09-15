@@ -1929,11 +1929,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 971}
     m_Modifications:
-    - target: {fileID: 6327104755775502384, guid: dcd94b92eeaa9a54b880375c3ec68a72,
-        type: 3}
-      propertyPath: m_Name
-      value: Default Timer
-      objectReference: {fileID: 0}
     - target: {fileID: 6112625226721291772, guid: dcd94b92eeaa9a54b880375c3ec68a72,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2039,10 +2034,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 6327104755775502384, guid: dcd94b92eeaa9a54b880375c3ec68a72,
+        type: 3}
+      propertyPath: m_Name
+      value: Default Timer
+      objectReference: {fileID: 0}
     - target: {fileID: 6222998858913709900, guid: dcd94b92eeaa9a54b880375c3ec68a72,
         type: 3}
       propertyPath: MaxTimeCounter
-      value: 90
+      value: 120
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcd94b92eeaa9a54b880375c3ec68a72, type: 3}
