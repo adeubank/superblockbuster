@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class EditorUtility : MonoBehaviour
 {
-    [MenuItem("Block Magic Puzzle/Plugin Setup/Check Setup", false, 1)]
+    [MenuItem("Super Block Buster/Plugin Setup/Check Setup", false, 1)]
     private static void SetUp()
     {
         DependencyChecker.OpenWelcomeWindow();
     }
 
-    [MenuItem("Block Magic Puzzle/Plugin Setup/Setup IAP Catalog", false, 2)]
+    [MenuItem("Super Block Buster/Plugin Setup/Setup IAP Catalog", false, 2)]
     private static void SetUpIAPCatalog()
     {
         var sourcePath = Application.dataPath + "/Block-Puzzle-Magic/UnityIAPCatalog/IAPProductCatalog.json";
@@ -31,19 +31,19 @@ public class EditorUtility : MonoBehaviour
         }
     }
 
-    [MenuItem("Block Magic Puzzle/Clear PlayerPrefs")]
+    [MenuItem("Super Block Buster/Clear PlayerPrefs")]
     private static void ClearPrefs()
     {
         PlayerPrefs.DeleteAll();
     }
 
-    [MenuItem("Block Magic Puzzle/Persistent Data Path/Remove All Files")]
+    [MenuItem("Super Block Buster/Persistent Data Path/Remove All Files")]
     private static void DeleteAllFilesFromPersistentDataPath()
     {
         FileUtil.DeleteFileOrDirectory(Application.persistentDataPath);
     }
 
-    [MenuItem("Block Magic Puzzle/Capture Screenshot/1X")]
+    [MenuItem("Super Block Buster/Capture Screenshot/1X")]
     private static void Capture1XScreenshot()
     {
         var imgName = "IMG-" + DateTime.Now.Year + DateTime.Now.Month.ToString("00") +
@@ -52,7 +52,7 @@ public class EditorUtility : MonoBehaviour
         //ScreenCapture.CaptureScreenshot ((Application.dataPath + "/" + imgName),1);
     }
 
-    [MenuItem("Block Magic Puzzle/Capture Screenshot/2X")]
+    [MenuItem("Super Block Buster/Capture Screenshot/2X")]
     private static void Capture2XScreenshot()
     {
         var imgName = "IMG-" + DateTime.Now.Year + DateTime.Now.Month.ToString("00") +
@@ -61,7 +61,7 @@ public class EditorUtility : MonoBehaviour
         //ScreenCapture.CaptureScreenshot ((Application.dataPath + "/" + imgName),2);
     }
 
-    [MenuItem("Block Magic Puzzle/Execute Rescue")]
+    [MenuItem("Super Block Buster/Execute Rescue")]
     private static void ExecuteRescue()
     {
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
@@ -69,13 +69,13 @@ public class EditorUtility : MonoBehaviour
     }
 
 
-    [MenuItem("Block Magic Puzzle/Init Powerups Menu Options")]
+    [MenuItem("Super Block Buster/Init Powerups Menu Options")]
     private static void InitMenuOptions()
     {
         PowerupSelectMenu.Instance.InitMenuOptions();
     }
 
-    [MenuItem("Block Magic Puzzle/Show Help In Game")]
+    [MenuItem("Super Block Buster/Show Help In Game")]
     private static void ShowHelpInGame()
     {
         PlayerPrefs.SetInt("isHelpShown_" + GameController.gameMode, 0);

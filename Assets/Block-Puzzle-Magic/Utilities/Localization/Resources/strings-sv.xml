@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Resources>
-    <string name="txtTitle" text="BLOCK MAGIC PUZZLE" />
+    <string name="txtTitle" text="SUPER BLOCK BUSTER"/>
     <string name="txt-selectmode" text="VÄLJ MODE" />
 
     <!--Quit Game-->

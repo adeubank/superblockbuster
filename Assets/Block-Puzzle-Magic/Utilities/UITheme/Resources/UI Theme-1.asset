@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UIStyle:
   - tagName: main-bg
-    UIColor: {r: 0.09803922, g: 0.11372549, b: 0.16078432, a: 1}
+    UIColor: {r: 0.06666667, g: 0.003921569, b: 0.1686275, a: 1}
   - tagName: title-text
     UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: btn-1
-    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.2509804, a: 1}
+    UIColor: {r: 0.06666667, g: 0.003921569, b: 0.1686275, a: 1}
   - tagName: popup-bg-1
     UIColor: {r: 0.12941177, g: 0.14509805, b: 0.20392157, a: 1}
   - tagName: popup-title-1
@@ -38,11 +38,11 @@ MonoBehaviour:
   - tagName: language-text
     UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: gameplay-bg
-    UIColor: {r: 0.09803922, g: 0.11372549, b: 0.16078432, a: 1}
+    UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: gameplay-shape-bg
-    UIColor: {r: 0.28627452, g: 0.29803923, b: 0.32941177, a: 1}
+    UIColor: {r: 0.06666667, g: 0.003921569, b: 0.1686275, a: 1}
   - tagName: gameplay-btn-pause
-    UIColor: {r: 0.16862746, g: 0.1882353, b: 0.24705882, a: 1}
+    UIColor: {r: 0.06666667, g: 0.003921569, b: 0.1686275, a: 1}
   - tagName: gameplay-btn-pause-inner
     UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: gameplay-timer
