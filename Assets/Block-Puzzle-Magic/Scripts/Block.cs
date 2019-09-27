@@ -213,7 +213,7 @@ public class Block : MonoBehaviour, IComparable
 
         if (!animate)
         {
-            emptyBlockImage.color = new Color(1, 1, 1, 0.65f);
+            emptyBlockImage.color = new Color(1, 1, 1, 1f);
             blockImage.color = new Color(1, 1, 1, 0);
             blockImage.transform.localScale = Vector3.one;
             blockImage.sprite = null;
@@ -226,7 +226,7 @@ public class Block : MonoBehaviour, IComparable
         emptyBlockImage.color = new Color(1, 1, 1, 0);
         clearSequence.Join(blockImage.transform.DOScale(Vector3.zero, 0.4F));
         clearSequence.Join(blockImage.DOFade(0, 0.4F));
-        clearSequence.Join(emptyBlockImage.DOFade(0.65f, 0.4F));
+        clearSequence.Join(emptyBlockImage.DOFade(1f, 0.4F));
 
         clearSequence.AppendCallback(clearActionCallback);
 

@@ -46,7 +46,7 @@ MonoBehaviour:
   - tagName: gameplay-btn-pause-inner
     UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: gameplay-timer
-    UIColor: {r: 0.1254902, g: 0.81960785, b: 1, a: 1}
+    UIColor: {r: 1, g: 0, b: 0.32941177, a: 1}
   - tagName: text-quit-confirm
     UIColor: {r: 1, g: 1, b: 1, a: 1}
   - tagName: btn-stay
