@@ -398,7 +398,6 @@ GameObject:
   - component: {fileID: 711}
   - component: {fileID: 453}
   - component: {fileID: 1105}
-  - component: {fileID: 1591}
   m_Layer: 5
   m_Name: Image-BackLayer
   m_TagString: Untagged
@@ -460,19 +459,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &1591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 77}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36f621f1fa8606e498c0d022e74f2866, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIColorTag: gameplay-bg
 --- !u!1 &79
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,7 +585,7 @@ RectTransform:
   - {fileID: 696}
   - {fileID: 740}
   - {fileID: 949}
-  - {fileID: 2728901761853543927}
+  - {fileID: 2792322783466111304}
   - {fileID: 883}
   - {fileID: 971}
   m_Father: {fileID: 0}
@@ -622,7 +608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41deca56866f2a54abe0ef271cc1944c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  alertWindow: {fileID: 2728901761853542547}
+  alertWindow: {fileID: 2727353095048517222}
   currentGameOverReson: 0
 --- !u!114 &1228
 MonoBehaviour:
@@ -676,7 +662,7 @@ MonoBehaviour:
   MaxAllowedRescuePerGame: -1
   MaxAllowedVideoWatchRescue: 1
   MoveCount: 0
-  timeSlider: {fileID: 1069573589762773601}
+  timeSlider: {fileID: 6380312038211938954}
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
@@ -1628,7 +1614,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1069573589762773335}
+  - {fileID: 6486181556454127674}
   - {fileID: 973}
   - {fileID: 977}
   m_Father: {fileID: 752}
@@ -2012,13 +1998,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcd94b92eeaa9a54b880375c3ec68a72, type: 3}
---- !u!224 &1069573589762773335 stripped
+--- !u!224 &6486181556454127674 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6112625226721291772, guid: dcd94b92eeaa9a54b880375c3ec68a72,
     type: 3}
   m_PrefabInstance: {fileID: 1069573589762774470}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1069573589762773601 stripped
+--- !u!114 &6380312038211938954 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6222998858913709900, guid: dcd94b92eeaa9a54b880375c3ec68a72,
     type: 3}
@@ -2148,13 +2134,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9375602d6c093f341beb518083316223, type: 3}
---- !u!1 &2728901761853542547 stripped
+--- !u!1 &2727353095048517222 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1830142361601998, guid: 9375602d6c093f341beb518083316223,
     type: 3}
   m_PrefabInstance: {fileID: 2728901761853542824}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &2728901761853543927 stripped
+--- !u!224 &2792322783466111304 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224990278443700448, guid: 9375602d6c093f341beb518083316223,
     type: 3}
