@@ -159,7 +159,7 @@ PlayerSettings:
     Android: com.supergeekgames.supertilepuzzle
     iOS: com.sgg.SuperBlockBuster
   buildNumber:
-    iOS: 28
+    iOS: 29
   AndroidBundleVersionCode: 27
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 0
