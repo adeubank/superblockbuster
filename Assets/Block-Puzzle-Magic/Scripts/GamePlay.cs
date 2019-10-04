@@ -507,7 +507,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         var powerupActivationSprite = Instantiate(powerupBlockSpawn.powerupActivationSprite,
             powerupBlock.transform.position, Quaternion.identity,
-            GameBoardGenerator.Instance.BoardContent.transform);
+            gameObject.transform);
         var powerupActivationSpriteCanvas = powerupActivationSprite.AddComponent(typeof(Canvas)) as Canvas;
         powerupActivationSpriteCanvas.overrideSorting = true;
         powerupActivationSpriteCanvas.sortingOrder = 999;
