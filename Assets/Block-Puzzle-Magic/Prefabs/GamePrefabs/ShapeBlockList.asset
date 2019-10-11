@@ -16,6 +16,50 @@ MonoBehaviour:
   - BlockID: 1
     shapeBlock: {fileID: 1010243961825246, guid: 2509dd877d97b98449247aa502ef2ce0,
       type: 3}
+    spawnProbability: 5
+  - BlockID: 2
+    shapeBlock: {fileID: 1701273378565990, guid: b63699d2eff8086449cd314f803ead91,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 3
+    shapeBlock: {fileID: 1835239184810644, guid: c54a97c95198d1e4fa4a7363949c1fe3,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 4
+    shapeBlock: {fileID: 1327983622121420, guid: 439afad4d974e154a970c64093e37bbe,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 5
+    shapeBlock: {fileID: 1327983622121420, guid: 284e5dc07c0b6a64c9bfe0e6f3db6d1a,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 6
+    shapeBlock: {fileID: 1327983622121420, guid: d223335b03d190c46a7399cf217ae94e,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 7
+    shapeBlock: {fileID: 1561065657387102, guid: 89a0d1b466bb9514493e9d7d28151321,
+      type: 3}
+    spawnProbability: 3
+  - BlockID: 8
+    shapeBlock: {fileID: 1561065657387102, guid: 4ed681533b63cb546beac34ae84bd38a,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 9
+    shapeBlock: {fileID: 1561065657387102, guid: 4299cc380f1c9a847a98058389d26a0d,
+      type: 3}
+    spawnProbability: 5
+  - BlockID: 10
+    shapeBlock: {fileID: 1371705531683594, guid: 5ae92bedfc3b4114e8adb565598fc6e7,
+      type: 3}
+    spawnProbability: 2
+  - BlockID: 11
+    shapeBlock: {fileID: 1555100378851348, guid: 4f2bcd06013dde04985a8404e9c7bba0,
+      type: 3}
+    spawnProbability: 2
+  - BlockID: 1
+    shapeBlock: {fileID: 1010243961825246, guid: 2509dd877d97b98449247aa502ef2ce0,
+      type: 3}
     spawnProbability: 3
   - BlockID: 2
     shapeBlock: {fileID: 1701273378565990, guid: b63699d2eff8086449cd314f803ead91,
@@ -53,10 +97,6 @@ MonoBehaviour:
     shapeBlock: {fileID: 1371705531683594, guid: 5ae92bedfc3b4114e8adb565598fc6e7,
       type: 3}
     spawnProbability: 2
-  - BlockID: 11
-    shapeBlock: {fileID: 1555100378851348, guid: 4f2bcd06013dde04985a8404e9c7bba0,
-      type: 3}
-    spawnProbability: 1
   - BlockID: 12
     shapeBlock: {fileID: 1065050409816296, guid: 314e092a46c7f1542b035d315882fc7c,
       type: 3}
