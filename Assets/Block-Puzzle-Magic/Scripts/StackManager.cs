@@ -41,9 +41,14 @@ public class StackManager : Singleton<StackManager>
         return thisScreen;
     }
 
+    public bool GamePlayActive()
+    {
+        return gamePlayScreen != null;
+    }
+
     public void ActivateGamePlay()
     {
-        if (gamePlayScreen == null)
+        if (!GamePlayActive())
         {
             gamePlayScreen = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay"));
             gamePlayScreen.name = "GamePlay";
@@ -57,7 +62,7 @@ public class StackManager : Singleton<StackManager>
 
     public void DeactivateGamePlay()
     {
-        if (gamePlayScreen != null) Destroy(gamePlayScreen);
+        if (GamePlayActive()) Destroy(gamePlayScreen);
     }
 
     public void Push(string screenName)

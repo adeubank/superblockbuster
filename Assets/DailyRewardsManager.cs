@@ -1,77 +1,44 @@
 ﻿using System;
-using System.Collections;
-using System.Globalization;
 using UnityEngine;
 
-public class DailyRewardsManager : MonoBehaviour
+public class DailyRewardsManager : Singleton<DailyRewardsManager>
 {
-    private const string DAILY_REWARDS_PREFS_KEY = "last-daily-rewards-shown";
-
-    private GameObject _dailyRewardsGameObject;
-
-    public GameObject DailyRewardsPrefab;
+    public FortuneWheelManager fortuneWheel;
 
     // Start is called before the first frame update
     private void Awake()
     {
-        StartCoroutine(ShowDailyRewards());
+        if (fortuneWheel == null) throw new NullReferenceException("Missing FortuneWheelManager reference");
+        Debug.Log("Daily Rewards Manager is awake");
+        Invoke("PerformDailyReward", 0);
     }
 
-    private IEnumerator ShowDailyRewards()
+    private void PerformDailyReward()
     {
-        if (DailyRewardsPrefab == null)
-        {
-            Debug.LogError("Did not find DailyRewardsPrefab");
-            yield break;
-        }
+        // no daily rewards while game is on
+        if (StackManager.Instance.GamePlayActive()) return;
 
         Debug.Log("Checking Daily Rewards eligibility");
 
-        if (ShouldShowDailyRewards())
+        if (fortuneWheel.FreeTurnAvailable())
         {
             Debug.Log("Earned Daily Reward");
-            _dailyRewardsGameObject = Instantiate(DailyRewardsPrefab);
-            SetDailyRewardsCheckedAt();
+            ShowFortuneWheel();
         }
         else
         {
-            var lastDailyRewardsCheck = LastDailyRewardsCheckedAt();
-            Debug.Log("No Daily Reward lastDailyRewardsCheck=" + lastDailyRewardsCheck.GetValueOrDefault(DateTime.Now));
-        }
-
-        yield return null;
-    }
-
-    private void SetDailyRewardsCheckedAt()
-    {
-        var now = DateTime.Now;
-        PlayerPrefs.SetString(DAILY_REWARDS_PREFS_KEY, now.ToString("o"));
-    }
-
-    private DateTime? LastDailyRewardsCheckedAt()
-    {
-        if (!PlayerPrefs.HasKey(DAILY_REWARDS_PREFS_KEY)) return null;
-
-        try
-        {
-            return DateTime.Parse(PlayerPrefs.GetString(DAILY_REWARDS_PREFS_KEY), null, DateTimeStyles.RoundtripKind);
-        }
-        catch (Exception)
-        {
-            return null;
+            HideFortuneWheel();
         }
     }
 
-    private bool ShouldShowDailyRewards()
+    public void ShowFortuneWheel()
     {
-        var lastDailyRewardsCheck = LastDailyRewardsCheckedAt();
+        fortuneWheel.gameObject.SetActive(true);
+    }
 
-        if (!lastDailyRewardsCheck.HasValue)
-        {
-            SetDailyRewardsCheckedAt();
-            return false;
-        }
-
-        return lastDailyRewardsCheck.Value.Day < DateTime.Now.Day;
+    public void HideFortuneWheel()
+    {
+        if (fortuneWheel.IsSpinning()) return;
+        fortuneWheel.gameObject.SetActive(false);
     }
 }
