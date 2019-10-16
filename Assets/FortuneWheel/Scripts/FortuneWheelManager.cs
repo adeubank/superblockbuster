@@ -400,6 +400,11 @@ public class FortuneWheelManager : Singleton<FortuneWheelManager>
     {
         return _isStarted;
     }
+
+    public void OnCloseButtonPressed()
+    {
+        Destroy(gameObject);
+    }
 }
 
 /**

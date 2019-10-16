@@ -82,10 +82,4 @@ public class EditorUtility : MonoBehaviour
         PlayerPrefs.SetInt("isBasicHelpShown", 0);
         GamePlay.Instance.ShowBasicHelp();
     }
-
-    [MenuItem("SuperBlockBuster/Show Fortune Wheel")]
-    private static void ShowFortuneWheel()
-    {
-        DailyRewardsManager.Instance.ShowFortuneWheel();
-    }
 }
