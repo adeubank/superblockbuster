@@ -691,6 +691,7 @@ MonoBehaviour:
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
+  outOfMoveSound: {fileID: 8300000, guid: 6590680d77b524cfc94b476779ad906e, type: 3}
 --- !u!114 &1305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1484,6 +1485,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 9591cdaa499a9154dae4ff87a8473bb9, type: 3}
   - {fileID: 21300000, guid: 1cab8c72cd59d2c48934cf2d2dde3750, type: 3}
   - {fileID: 21300000, guid: b97a6bd29a34c6d4b904e7b957f03273, type: 3}
+  - {fileID: 21300000, guid: e5bcf05d9e224ff45b46092d066001fe, type: 3}
+  - {fileID: 21300000, guid: 28960a1f1b3a9734289b3067c9390c79, type: 3}
   ShapeContainers:
   - {fileID: 849}
   - {fileID: 939}
@@ -2066,6 +2069,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 971}
     m_Modifications:
+    - target: {fileID: 6327104755775502384, guid: dcd94b92eeaa9a54b880375c3ec68a72,
+        type: 3}
+      propertyPath: m_Name
+      value: Default Timer
+      objectReference: {fileID: 0}
     - target: {fileID: 6112625226721291772, guid: dcd94b92eeaa9a54b880375c3ec68a72,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2170,11 +2178,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6327104755775502384, guid: dcd94b92eeaa9a54b880375c3ec68a72,
-        type: 3}
-      propertyPath: m_Name
-      value: Default Timer
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcd94b92eeaa9a54b880375c3ec68a72, type: 3}

@@ -58,13 +58,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int MoveCount;
 
+    [SerializeField] private AudioClip outOfMoveSound;
+
     public Timer timeSlider;
 
     [HideInInspector] public int TotalFreeRescueDone;
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
-
 
     #region IBeginDragHandler implementation
 
@@ -1072,7 +1073,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * multiplier);
 
         yield return allLineBreaksSequence.WaitForCompletion();
-        yield return new WaitForSecondsRealtime(0.4f);
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
         blockGrid.Where(b => b.moveID > 0 && clearedMoveIds.Contains(b.moveID)).ToList()
@@ -1354,6 +1354,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #region notify users of out of moves
 
+        AudioManager.Instance.PlaySound(outOfMoveSound);
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
         yield return GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES);
 
