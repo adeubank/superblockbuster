@@ -154,7 +154,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: Image-BackLayer
+    path: Root
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -182,7 +182,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Image-BackLayer
+    path: Root
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -394,7 +394,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: Image-BackLayer
+    path: Root
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -422,7 +422,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Image-BackLayer
+    path: Root
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []

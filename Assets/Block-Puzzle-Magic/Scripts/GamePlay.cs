@@ -1349,6 +1349,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region hold play
 
         HoldNewBlocks(true);
+        timeSlider.PauseTimer();
 
         #endregion
 
@@ -1373,16 +1374,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #endregion
 
-        #region dock their time
-
-        timeSlider.AddSeconds(-10);
-        timeSlider.ResumeTimer();
-
-        #endregion
-
         #region let it sink in
 
-        yield return new WaitForSecondsRealtime(2);
+        yield return new WaitForSecondsRealtime(1);
 
         #endregion
 
@@ -1390,6 +1384,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         HoldNewBlocks(false);
         yield return SetAutoMove();
+        timeSlider.ResumeTimer();
 
         #endregion
     }
