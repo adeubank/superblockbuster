@@ -634,9 +634,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   alertWindow: {fileID: 2727353095048517222}
+  backLayer: {fileID: 7596675843209186085}
   currentGameOverReson: 0
   imgAlert: {fileID: 3825049560346740507}
-  backLayer: {fileID: 7596675843209186085}
 --- !u!114 &1228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2330,6 +2330,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5132974920623423161, guid: 9375602d6c093f341beb518083316223,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9375602d6c093f341beb518083316223, type: 3}
