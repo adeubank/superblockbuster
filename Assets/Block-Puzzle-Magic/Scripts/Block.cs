@@ -8,6 +8,7 @@ using DG.Tweening;
 
 public class Block : MonoBehaviour, IComparable
 {
+    public GameObject autoMoveHighlight;
     public int blockID = -1;
 
     //Block image instance.
@@ -110,6 +111,7 @@ public class Block : MonoBehaviour, IComparable
             prevBlockImageSprite = blockImage.sprite;
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 0.5F);
+        autoMoveHighlight.SetActive(true);
     }
 
     /// <summary>
@@ -117,6 +119,7 @@ public class Block : MonoBehaviour, IComparable
     /// </summary>
     public void StopHighlighting()
     {
+        autoMoveHighlight.SetActive(false);
         if (prevBlockImageSprite && isFilled)
         {
             blockImage.sprite = prevBlockImageSprite;

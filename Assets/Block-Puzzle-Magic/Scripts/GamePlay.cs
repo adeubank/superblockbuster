@@ -27,6 +27,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int _spawnAvalancheBlocks;
     private int _spawnStormBlocks;
     private int _sticksGaloreRounds;
+
+    [SerializeField] private GameObject autoMoveHighlightImage;
     [SerializeField] public GameObject blockDandelionSeedPrefab;
     [HideInInspector] public List<Block> blockGrid;
 
@@ -282,6 +284,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             return false;
         });
+
+        playableShapes.ForEach(info =>
+        {
+            if (info == currentShape)
+                currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
+            else
+                info.ShapeBlocks.ForEach(shapeBlock =>
+                {
+                    foreach (Transform child in shapeBlock.block)
+                        if (child.name == autoMoveHighlightImage.name)
+                            Destroy(child);
+                });
+        });
+
         _autoMoveLocked = false;
     }
 
@@ -370,7 +386,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (highlightingBlocks != null && highlightingBlocks.Count > 0)
             foreach (var c in highlightingBlocks)
+            {
+                c.StopHighlighting();
                 c.SetBlockImage(currentShape.blockImage, currentShape.ShapeID, MoveCount);
+            }
     }
 
     /// <summary>

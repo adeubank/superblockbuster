@@ -694,6 +694,8 @@ MonoBehaviour:
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
+  autoMoveHighlightImage: {fileID: 2588384506376997288, guid: 993354f9c18ad44788e2456bf68e6e31,
+    type: 3}
 --- !u!114 &1305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1497,6 +1499,7 @@ MonoBehaviour:
   - {fileID: 967}
   - {fileID: 978}
   sticksGaloreColorId: -1
+  autoMoveHighlight: {fileID: 0}
 --- !u!114 &1628
 MonoBehaviour:
   m_ObjectHideFlags: 0
