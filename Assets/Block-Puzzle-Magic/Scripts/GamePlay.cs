@@ -62,6 +62,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [SerializeField] private AudioClip outOfMoveSound;
 
+    [SerializeField] private GameObject shapeSelectionArrow;
+
     public Timer timeSlider;
 
     [HideInInspector] public int TotalFreeRescueDone;
@@ -288,14 +290,21 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         playableShapes.ForEach(info =>
         {
             if (info == currentShape)
+            {
+                shapeSelectionArrow.SetActive(true);
+                shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
+                shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
                 currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
+            }
             else
+            {
                 info.ShapeBlocks.ForEach(shapeBlock =>
                 {
                     foreach (Transform child in shapeBlock.block)
                         if (child.name == autoMoveHighlightImage.name)
                             Destroy(child);
                 });
+            }
         });
 
         _autoMoveLocked = false;
@@ -392,6 +401,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
     }
 
+
     /// <summary>
     ///     Checks the board status.
     /// </summary>
@@ -400,9 +410,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         HoldNewBlocks(true);
         MoveCount += 1;
 
-        Debug.Log(
-            "Placing Block and Checking Board Status. MoveCount=" + MoveCount + " ShapeID=" + currentShape.ShapeID);
+        Debug.Log("Placing Block and Checking Board Status. MoveCount=" + MoveCount + " ShapeID=" + currentShape.ShapeID);
 
+        shapeSelectionArrow.SetActive(false);
+        shapeSelectionArrow.transform.SetParent(gameObject.transform);
         SetImageToPlacingBlocks();
         AudioManager.Instance.PlaySound(blockPlaceSound);
 
