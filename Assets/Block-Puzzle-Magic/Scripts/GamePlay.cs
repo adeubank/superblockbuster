@@ -289,23 +289,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         playableShapes.ForEach(info =>
         {
-            if (info == currentShape)
+            info.ShapeBlocks.ForEach(shapeBlock =>
             {
-                shapeSelectionArrow.SetActive(true);
-                shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
-                shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
-                currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
-            }
-            else
-            {
-                info.ShapeBlocks.ForEach(shapeBlock =>
-                {
-                    foreach (Transform child in shapeBlock.block)
-                        if (child.name == autoMoveHighlightImage.name)
-                            Destroy(child);
-                });
-            }
+                foreach (Transform child in shapeBlock.block)
+                    if (child.name.StartsWith(autoMoveHighlightImage.name))
+                        Destroy(child.gameObject);
+            });
         });
+
+        shapeSelectionArrow.SetActive(true);
+        shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
+        shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
+        currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
 
         _autoMoveLocked = false;
     }
