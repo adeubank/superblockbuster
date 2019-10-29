@@ -507,7 +507,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         yield return avalancheSequence.WaitForCompletion();
-        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     public IEnumerator ShowPowerupActivationSprite(int powerupId, int moveId,
@@ -596,8 +595,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         _activeQuakePowerups.Clear();
 
         foreach (var quakeTweener in quakeTweeners) yield return quakeTweener.WaitForCompletion();
-
-        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     private List<Tweener> ShakeColumnDown(List<Block> column)
@@ -618,15 +615,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     alreadyFalling.Add(nextBlockToFall);
                     nextBlockToFall.isFilled = false; // mark it empty
 
-                    var emptyCell = Instantiate(GameBoardGenerator.Instance.emptyBlockTemplate,
-                        nextBlockToFall.transform.position, Quaternion.identity,
-                        GameBoardGenerator.Instance.BoardContent.transform);
-                    var emptyCellCanvas = emptyCell.GetComponent(typeof(Canvas)) as Canvas;
-                    emptyCellCanvas.overrideSorting = true;
-                    emptyCellCanvas.sortingOrder = 2;
-
                     // have it render on top of everything as it falls down
-                    var nextBlockToFallCanvas = nextBlockToFall.gameObject.GetComponent(typeof(Canvas)) as Canvas;
+                    var nextBlockToFallCanvas = nextBlockToFall.blockImage.GetComponent(typeof(Canvas)) as Canvas;
                     nextBlockToFallCanvas.overrideSorting = true;
                     nextBlockToFallCanvas.sortingOrder = 3;
 
@@ -648,7 +638,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                             nextBlockToFall.transform.localPosition = origPos;
                             // since the dandelion seed has fallen, clear the old one
                             nextBlockToFall.ClearDandelionSeedIcon();
-                            Destroy(emptyCell);
                         });
 
                     tweeners.Add(tweener);
@@ -723,7 +712,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var colorCoderSequence = DOTween.Sequence();
         colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
         yield return colorCoderSequence.WaitForCompletion();
-        yield return new WaitForSecondsRealtime(0.4f);
     }
 
     public List<List<Block>> GetFilledRows()
@@ -814,7 +802,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
 
             yield return seedSproutSequence.WaitForCompletion();
-            yield return new WaitForSecondsRealtime(0.4f);
         }
 
         #endregion
@@ -879,7 +866,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return frenzySequence.WaitForCompletion();
 
-        yield return new WaitForSecondsRealtime(0.4f);
 
         // unlock
         _isFrenzyPowerupRunning = false;
@@ -1289,8 +1275,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             b.ConvertToFilledBlock(0);
             yield return new WaitForSeconds(0.01f);
         }
-
-        yield return new WaitForSecondsRealtime(0.4f);
 
         // no more storm blocks
         _spawnStormBlocks = 0;
