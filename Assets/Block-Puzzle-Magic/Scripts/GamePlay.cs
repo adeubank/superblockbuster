@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -224,6 +225,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void Start()
     {
+        AnalyticsEvent.GameStart();
+
         //Generate board from GameBoardGenerator Script Component.
         GetComponent<GameBoardGenerator>().GenerateBoard();
         highlightingBlocks = new List<Block>();
@@ -1753,25 +1756,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void CheckForHelp()
     {
-        var isHelpShown = false;
-        if (GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.ADVANCE ||
-            GameController.gameMode == GameMode.TIMED)
-        {
-            isHelpShown = PlayerPrefs.GetInt("isHelpShown_" + GameController.gameMode, 0) == 0 ? false : true;
-            if (!isHelpShown)
-            {
-                var inGameHelp = gameObject.AddComponent<InGameHelp>();
-                inGameHelp.StartHelp();
-            }
-            else
-            {
-                ShowBasicHelp();
-            }
-        }
-        else
-        {
-            ShowBasicHelp();
-        }
+        var isBasicHelpShown = PlayerPrefs.GetInt("isBasicHelpShown", 0) == 0 ? false : true;
+        if (!isBasicHelpShown) ShowBasicHelp();
     }
 
     /// <summary>
@@ -1788,13 +1774,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void ShowBasicHelp()
     {
-        var isBasicHelpShown = PlayerPrefs.GetInt("isBasicHelpShown", 0) == 0 ? false : true;
-        if (!isBasicHelpShown)
-        {
-            var inGameHelp = gameObject.GetComponent<InGameHelp>();
-            if (inGameHelp == null) inGameHelp = gameObject.AddComponent<InGameHelp>();
-            inGameHelp.ShowBasicHelp();
-        }
+        var inGameHelp = gameObject.GetComponent<InGameHelp>();
+        if (inGameHelp == null) inGameHelp = gameObject.AddComponent<InGameHelp>();
+        inGameHelp.ShowBasicHelp();
     }
 
     #endregion

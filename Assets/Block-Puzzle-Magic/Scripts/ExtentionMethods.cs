@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Analytics;
 
 /// <summary>
 ///     Extention methods.
@@ -48,7 +49,7 @@ public static class ExtentionMethods
         target.transform.SetAsLastSibling();
         var transition = target.GetComponent<PopupAnimation>();
         if (transition != null) transition.OnWindowAdded();
-
+        AnalyticsEvent.ScreenVisit(target.name);
         StackManager.Instance.Push(target.name);
     }
 

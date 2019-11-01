@@ -24,7 +24,7 @@ public class GamePlayUI : Singleton<GamePlayUI>
         if (InputManager.Instance.canInput())
         {
             AudioManager.Instance.PlayButtonClickSound();
-            StackManager.Instance.pauseSceen.SetActive(true);
+            StackManager.Instance.pauseSceen.Activate();
         }
     }
 

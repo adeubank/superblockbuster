@@ -88,9 +88,7 @@ public class PausedScreen : MonoBehaviour
     {
         if (InputManager.Instance.canInput())
         {
-            PlayerPrefs.SetInt("isHelpShown_" + GameController.gameMode, 0);
-            PlayerPrefs.SetInt("isBasicHelpShown", 0);
-            GamePlay.Instance.CheckForHelp();
+            GamePlay.Instance.ShowBasicHelp();
             gameObject.Deactivate();
         }
     }

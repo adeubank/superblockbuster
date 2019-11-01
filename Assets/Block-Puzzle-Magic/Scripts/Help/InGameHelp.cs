@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Analytics;
 
 public class InGameHelp : MonoBehaviour
 {
@@ -36,6 +37,7 @@ public class InGameHelp : MonoBehaviour
     /// </summary>
     public void ShowBasicHelp()
     {
+        AnalyticsEvent.TutorialStart("Help-Classic");
         helpObject = StackManager.Instance.SpawnUIScreen("Help-Classic");
 
         if (helpObject != null)
@@ -63,6 +65,7 @@ public class InGameHelp : MonoBehaviour
         {
             Destroy(helpObject);
             PlayerPrefs.SetInt("isBasicHelpShown", 1);
+            AnalyticsEvent.TutorialComplete("Help-Classic");
         }
 
         GamePlay.Instance.isHelpOnScreen = false;
