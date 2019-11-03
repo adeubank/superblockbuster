@@ -801,6 +801,7 @@ Transform:
   - {fileID: 1863145566}
   - {fileID: 726736430}
   - {fileID: 1662973112}
+  - {fileID: 1436310739}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2190,6 +2191,52 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1369380776}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1436310738
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1436310739}
+  - component: {fileID: 1436310740}
+  m_Layer: 0
+  m_Name: PowerupController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1436310739
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436310738}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 522622124}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1436310740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1436310738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5fc88d8cc4b43648a9c6a00168d318b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availablePowerups: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
+  equippedPowerupIds: 
+  purchasedPowerupIds: 
 --- !u!1 &1662973111
 GameObject:
   m_ObjectHideFlags: 0

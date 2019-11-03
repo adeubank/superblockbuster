@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
@@ -11,12 +9,9 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     private GameObject _helpGameObject;
     private Sequence _helpIconLoopSequence;
     private bool _isHelpShown;
-    private List<int> _purchasedPowerupIds;
     private Sequence _showScrollableSequence;
 
-    [SerializeField] public PowerupList availablePowerups;
     public GameObject emptySpacePrefab;
-    [HideInInspector] public List<int> equippedPowerupIds;
     public GameObject helpIcon;
     public Scrollbar powerupMenuScrollView;
     public GameObject powerupOptionPrefab;
@@ -32,9 +27,9 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     public void InitMenuOptions()
     {
-        Instance.LoadSavedPurchasedPowerups();
-        Instance.LoadSavedEquippedPowerups();
-        Instance.UpdateMenu();
+        PowerupController.Instance.LoadSavedPurchasedPowerups();
+        PowerupController.Instance.LoadSavedEquippedPowerups();
+        UpdateMenu();
     }
 
     private void UpdateMenu()
@@ -62,37 +57,37 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void SaveData()
     {
-        SaveEquippedPowerups();
-        SavePurchasedPowerups();
+        PowerupController.Instance.SaveEquippedPowerups();
+        PowerupController.Instance.SavePurchasedPowerups();
     }
 
     private void UpdateAvailablePowerups()
     {
         // clean the list first
-        foreach (Transform t in Instance.powerupOptionsListTransform)
+        foreach (Transform t in powerupOptionsListTransform)
         {
-            if (t == Instance.powerupOptionsListTransform) continue;
+            if (t == powerupOptionsListTransform) continue;
             Destroy(t.gameObject);
         }
 
         // Add some empty space at the top of the list
-        Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
+        Instantiate(emptySpacePrefab, powerupOptionsListTransform);
 
         PowerupOption firstPowerupOption = null;
-        var equippedPowerupSpawns = Instance.equippedPowerupIds;
-        foreach (var powerupBlockSpawn in Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupOption.PriceForPowerup))
+        var equippedPowerupSpawns = PowerupController.Instance.equippedPowerupIds;
+        foreach (var powerupBlockSpawn in PowerupController.Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupOption.PriceForPowerup))
         {
-            var powerupOption = Instantiate(Instance.powerupOptionPrefab, Instance.powerupOptionsListTransform)
+            var powerupOption = Instantiate(powerupOptionPrefab, powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
             if (firstPowerupOption == null) firstPowerupOption = powerupOption;
 
             powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID),
-                _purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
+                PowerupController.Instance.purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
         }
 
         // empty space at the bottom
-        Instantiate(Instance.emptySpacePrefab, Instance.powerupOptionsListTransform);
+        Instantiate(emptySpacePrefab, powerupOptionsListTransform);
 
         Invoke("CheckPowerupMenuHelp", 1f);
     }
@@ -129,7 +124,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             });
             PlayerPrefs.SetInt("powerup_menu_scrollable_help", 1);
         }
-        else if (equippedPowerupIds.Count == 0)
+        else if (PowerupController.Instance.equippedPowerupIds.Count == 0)
         {
             StartCoroutine(ShowSelectPowerupHelp());
         }
@@ -157,7 +152,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void UpdateEquippedPowerups()
     {
-        Debug.Log("Initializing equipped powerups list " + equippedPowerupIds);
+        Debug.Log("Initializing equipped powerups list " + PowerupController.Instance.equippedPowerupIds);
 
         // clean the list first
         foreach (Transform t in powerupSelectedListTransform)
@@ -170,89 +165,26 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         {
             var powerupSelected = Instantiate(powerupSelectedPrefab, powerupSelectedListTransform)
                 .GetComponent<PowerupSelected>();
-            if (i < equippedPowerupIds.Count)
-                powerupSelected.SetPowerup(equippedPowerupIds[i]);
+            if (i < PowerupController.Instance.equippedPowerupIds.Count)
+                powerupSelected.SetPowerup(PowerupController.Instance.equippedPowerupIds[i]);
             else
                 powerupSelected.SetNoPowerup();
         }
     }
 
-    public static void LoadSavedPowerups(string prefsKey, out List<int> list)
+    public bool AddEquippedPowerupId(PowerupBlockSpawn powerup, bool updateMenu = true)
     {
-        if (PlayerPrefs.HasKey(prefsKey))
-        {
-            try
-            {
-                list = PlayerPrefs.GetString(prefsKey).Split(',').Select(int.Parse).ToList();
-                Debug.Log("Loaded saved powerups. prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
-            }
-            catch (FormatException e)
-            {
-                Debug.LogError("Failed to parse powerups! prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
-                list = new List<int>();
-            }
-        }
-        else
-        {
-            Debug.Log("No saved powerups. prefsKey=" + prefsKey);
-            list = new List<int>();
-        }
-    }
+        PowerupController.Instance.AddEquippedPowerupId(powerup.BlockID);
 
-    private void LoadSavedEquippedPowerups()
-    {
-        LoadSavedPowerups(EquippedPowerupPrefsKey(), out equippedPowerupIds);
-    }
-
-    private void LoadSavedPurchasedPowerups()
-    {
-        LoadSavedPowerups(PurchasedPowerupPrefsKey(), out _purchasedPowerupIds);
-    }
-
-    public static string EquippedPowerupPrefsKey()
-    {
-        return "powerups_equipped";
-    }
-
-    private string PurchasedPowerupPrefsKey()
-    {
-        return "purchased_powerups";
-    }
-
-    private void SaveEquippedPowerups()
-    {
-        SavePowerups(EquippedPowerupPrefsKey(), equippedPowerupIds);
-    }
-
-    private void SavePurchasedPowerups()
-    {
-        SavePowerups(PurchasedPowerupPrefsKey(), _purchasedPowerupIds);
-    }
-
-    private void SavePowerups(string prefsName, List<int> powerups)
-    {
-        PlayerPrefs.SetString(prefsName, string.Join(",", powerups));
-        PlayerPrefs.Save();
-        Debug.Log("Saved powerups " + prefsName);
-    }
-
-    public bool AddEquippedPowerupId(PowerupBlockSpawn powerup)
-    {
-        Debug.Log("Adding equipped powerup " + powerup);
-
-        if (equippedPowerupIds.Count == 3) RemoveEquippedPowerupId(equippedPowerupIds[equippedPowerupIds.Count - 1]);
-
-        equippedPowerupIds.Add(powerup.BlockID);
-        UpdateMenu();
+        if (updateMenu) UpdateMenu();
 
         return true;
     }
 
-    public bool RemoveEquippedPowerupId(int equippedPowerup)
+    public bool RemoveEquippedPowerupId(int equippedPowerup, bool updateMenu = true)
     {
-        Debug.Log("Removing equipped powerup " + equippedPowerup);
-        equippedPowerupIds.Remove(equippedPowerup);
-        UpdateMenu();
+        PowerupController.Instance.RemoveEquippedPowerupId(equippedPowerup);
+        if (updateMenu) UpdateMenu();
         return true;
     }
 
@@ -274,11 +206,11 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         }
     }
 
-    public bool AddPurchasedPowerupId(PowerupBlockSpawn purchasedPowerup)
+
+    public bool AddPurchasedPowerupId(PowerupBlockSpawn purchasedPowerup, bool updateMenu = true)
     {
-        Debug.Log("Adding purchased powerup " + purchasedPowerup);
-        _purchasedPowerupIds.Add(purchasedPowerup.BlockID);
-        UpdateMenu();
+        PowerupController.Instance.AddPurchasedPowerupId(purchasedPowerup.BlockID);
+        if (updateMenu) UpdateMenu();
 
         return true;
     }
