@@ -9,6 +9,11 @@ public class PowerupController : Singleton<PowerupController>
     public List<int> equippedPowerupIds;
     public List<int> purchasedPowerupIds;
 
+    public void Start()
+    {
+        LoadSavedEquippedPowerups();
+        LoadSavedPurchasedPowerups();
+    }
 
     public void LoadSavedEquippedPowerups()
     {
@@ -75,7 +80,7 @@ public class PowerupController : Singleton<PowerupController>
         return true;
     }
 
-    public void LoadSavedPowerups(string prefsKey, out List<int> list)
+    public static void LoadSavedPowerups(string prefsKey, out List<int> list)
     {
         if (PlayerPrefs.HasKey(prefsKey))
         {

@@ -240,11 +240,15 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #endregion
 
-        #region check for help
-
-        Invoke("CheckForHelp", 0.5F);
-
-        #endregion
+        if (!IsBasicHelpShown())
+        {
+            BlockShapeSpawner.Instance.FillShapesForHelp();
+            ShowBasicHelp();
+        }
+        else
+        {
+            BlockShapeSpawner.Instance.FillShapeContainer();
+        }
     }
 
     private void Awake()
@@ -1754,10 +1758,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Checks for help.
     /// </summary>
-    public void CheckForHelp()
+    public bool IsBasicHelpShown()
     {
-        var isBasicHelpShown = PlayerPrefs.GetInt("isBasicHelpShown", 0) == 0 ? false : true;
-        if (!isBasicHelpShown) ShowBasicHelp();
+        return PlayerPrefs.GetInt("isBasicHelpShown", 0) != 0;
     }
 
     /// <summary>

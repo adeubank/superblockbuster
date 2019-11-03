@@ -40,10 +40,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void Awake()
     {
-        PowerupController.Instance.LoadSavedPowerups(PowerupController.Instance.EquippedPowerupPrefsKey(), out var equippedPowerupIds);
         ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
         ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
-        ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => equippedPowerupIds.Contains(p.BlockID)));
+        ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));
     }
 
     /// <summary>
@@ -61,13 +60,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         SetBlockShapeToSix();
         Invoke(nameof(SetupPreviousSessionShapes), 0.2F);
         Invoke(nameof(createShapeBlockProbabilityList), 0.5F);
-        Invoke(nameof(FillShapeContainer), 0.5F);
-        Invoke(nameof(CallSetAutoMove), 0.6f);
-    }
-
-    private void CallSetAutoMove()
-    {
-        StartCoroutine(GamePlay.Instance.SetAutoMove());
     }
 
     /// <summary>
@@ -158,6 +150,23 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return shapesFilled;
     }
 
+    public void FillShapesForHelp()
+    {
+        var activeShapeContainers = GetActiveShapeContainers();
+
+        // first shape info
+        var firstShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == 8).shapeBlock;
+        var firstShapeBlock = Instantiate(firstShapePrefab, activeShapeContainers[0], true);
+        PrepShapeForPlay(firstShapeBlock);
+
+        // first powerup info
+        var powerupShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == 10).shapeBlock;
+        var powerupShapeBlock = Instantiate(powerupShapePrefab, activeShapeContainers[1], true);
+        var powerupShapeInfo = powerupShapeBlock.GetComponent<ShapeInfo>();
+        powerupShapeInfo.ShapeID = (int) ShapeInfo.Powerups.Doubler;
+        PrepShapeForPlay(powerupShapeBlock);
+    }
+
     public List<ShapeInfo> GetPlayableShapes()
     {
         var activeShapeContainers = GetActiveShapeContainers();
@@ -172,11 +181,16 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public ShapeInfo AddRandomShapeToContainer(Transform shapeContainer)
     {
         var spawningShapeBlock = NextShapeBlock(shapeContainer);
-        var spawningShapeInfo = spawningShapeBlock.GetComponent<ShapeInfo>();
-        var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
-        var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
+        PrepShapeForPlay(spawningShapeBlock);
+        return spawningShapeBlock.GetComponent<ShapeInfo>();
+    }
 
-        spawningShapeBlock.transform.localScale = ShapeContainerLocalScale();
+    public void PrepShapeForPlay(GameObject shapeBlock)
+    {
+        var spawningShapeInfo = shapeBlock.GetComponent<ShapeInfo>();
+        var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
+        var spawningRectTransform = shapeBlock.GetComponent<RectTransform>();
+        shapeBlock.transform.localScale = ShapeContainerLocalScale();
         spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningRectTransform.sizeDelta = ShapeSizeDelta();
         spawningShapeInfo.CreateBlockList();
@@ -185,7 +199,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             spawningShapeInfo.ConvertToPowerup(spawningPowerupInfo);
 
         var colorSprite = NextColorSprite();
-        var blockImages = spawningShapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
+        var blockImages = shapeBlock.GetComponentsInChildren<Image>().Where(img => img.sprite != null);
         foreach (var blockImage in blockImages)
         {
             // just make sure that the Image parses to Int correctly so we only set block colors
@@ -197,10 +211,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         }
 
 #if HBDOTween
-        spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
+        shapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
 #endif
-
-        return spawningShapeBlock.GetComponent<ShapeInfo>();
     }
 
     public GameObject NextShapeBlock(Transform shapeContainer)
@@ -345,12 +357,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 inactivePanels.Add(child.gameObject);
 
         foreach (var panel in inactivePanels) panel.Activate();
-
-        // fill up the new containers
-        var originalKeepFilledUp = keepFilledAlways;
-        keepFilledAlways = true;
-        FillShapeContainer();
-        keepFilledAlways = originalKeepFilledUp;
     }
 
     public List<Transform> GetActiveShapeContainers()
