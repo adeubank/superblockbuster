@@ -175,7 +175,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (_isDraggingPlayableShape && eventData.dragging && highlightingBlocks.Count > 0)
         {
-            if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
@@ -197,7 +196,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
         {
-            if (isHelpOnScreen) GetComponent<InGameHelp>().StopHelp();
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
@@ -304,10 +302,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             });
         });
 
-        shapeSelectionArrow.SetActive(true);
-        shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
-        shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
-        currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
+        if (currentShape != null)
+        {
+            shapeSelectionArrow.SetActive(true);
+            shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
+            shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
+            currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
+        }
 
         _autoMoveLocked = false;
     }
@@ -1780,6 +1781,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var inGameHelp = gameObject.GetComponent<InGameHelp>();
         if (inGameHelp == null) inGameHelp = gameObject.AddComponent<InGameHelp>();
         inGameHelp.ShowBasicHelp();
+    }
+
+    /// <summary>
+    ///     Stop the basic help.
+    /// </summary>
+    public void StopBasicHelp()
+    {
+        var inGameHelp = gameObject.GetComponent<InGameHelp>();
+        if (inGameHelp == null)
+        {
+            Debug.LogWarning("Did not find an InGameHelp game object");
+            return;
+        }
+
+        inGameHelp.StopHelp();
+        BlockShapeSpawner.Instance.FillShapeContainer();
+        StartCoroutine(SetAutoMove());
     }
 
     #endregion

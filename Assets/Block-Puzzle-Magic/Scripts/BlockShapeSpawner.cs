@@ -110,6 +110,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     public bool FillShapeContainer()
     {
+        if (GamePlay.Instance.isHelpOnScreen) return false;
+
         var shapesFilled = false;
 
         ReorderShapes();
