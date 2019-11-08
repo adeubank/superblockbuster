@@ -105,6 +105,7 @@ public class HelpClassic : MonoBehaviour
         });
 
         tapHandImage.gameObject.Activate();
+        var unused = GamePlay.Instance.SetAutoMove();
 
         var middlePos = GamePlay.Instance.highlightingBlocks.Aggregate(Vector3.zero, (avgPos, b) => avgPos + b.gameObject.transform.position) / GamePlay.Instance.highlightingBlocks.Count;
         tapHandImage.position = (Vector2) middlePos - new Vector2(0, 0.6f);
