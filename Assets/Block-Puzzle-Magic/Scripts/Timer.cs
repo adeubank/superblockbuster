@@ -14,16 +14,18 @@ public class Timer : MonoBehaviour
 
     private void Start()
     {
+        SetTimeSlider(GetRemainingTime());
         if (!IsInvoking(nameof(ElapseTimer))) InvokeRepeating(nameof(ElapseTimer), timerRate, timerRate);
     }
 
-    private void ElapseTimer()
+    public void ElapseTimer()
     {
+        if (GamePlay.Instance.isHelpOnScreen) return;
         _timeRemaining -= timerRate;
         SetTimeSlider(_timeRemaining);
     }
 
-    private void SetTimeSlider(float timeRemaining)
+    public void SetTimeSlider(float timeRemaining)
     {
         if (timeRemaining <= Mathf.Epsilon)
         {

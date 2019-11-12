@@ -42,6 +42,7 @@
 
     <!--PowerupSelectScreen-->
     <string name="txt-powerup-select" text="SELECT"/>
+    <string name="txt-powerups" text="POWERUPS"/>
 
     <!--Pause-->
 
@@ -68,4 +69,5 @@
     <string name="txt-help-timed" text="Watchout the timer, break lines to increase time bar!" />
     <string name="txt-help-bomb" text="Bomb will blast when counter is over, Break bomb before its over!" />
     <string name="txt-help-advance" text="Play with these additional blocks!" />
+    <string name="txt-help-powerups" text="Powerups are blocks with special abilities. Each one has a unique talent."/>
 </Resources>

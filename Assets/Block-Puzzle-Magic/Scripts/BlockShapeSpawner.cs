@@ -16,6 +16,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
+    // third step in tutorial
+    public int firstHelpPowerupId = (int) ShapeInfo.Powerups.Doubler;
+
+    // first step in tutorial
+    public int firstHelpShapeId = 8;
+
     [HideInInspector] public bool isNextRoundSticksGaloreBlocks;
 
     [Tooltip(
@@ -23,6 +29,9 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public bool keepFilledAlways;
 
     [SerializeField] private PowerupList powerupList;
+
+    // second step in tutorial
+    public int secondHelpShapeId = 14;
 
     [SerializeField] private ShapeBlockList shapeBlockList;
 
@@ -39,6 +48,11 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     ///     Awake this instance.
     /// </summary>
     private void Awake()
+    {
+        SetActiveShapeBlocks();
+    }
+
+    private void SetActiveShapeBlocks()
     {
         ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
         ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
@@ -152,21 +166,38 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         return shapesFilled;
     }
 
-    public void FillShapesForHelp()
+    public void FillShapesForFirstStepHelp()
     {
         var activeShapeContainers = GetActiveShapeContainers();
 
-        // first shape info
-        var firstShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == 8).shapeBlock;
+        // first shape info, draggable help
+        var firstShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == firstHelpShapeId).shapeBlock;
         var firstShapeBlock = Instantiate(firstShapePrefab, activeShapeContainers[0], true);
         PrepShapeForPlay(firstShapeBlock);
+    }
 
+    public void FillShapesForSecondStepHelp()
+    {
+        var activeShapeContainers = GetActiveShapeContainers();
+
+        // 2nds shape info, tappable help
+        var secondShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == secondHelpShapeId).shapeBlock;
+        var secondShapeBlock = Instantiate(secondShapePrefab, activeShapeContainers[0], true);
+        PrepShapeForPlay(secondShapeBlock);
+    }
+
+    public void FillShapesForThirdStepHelp()
+    {
+        var activeShapeContainers = GetActiveShapeContainers();
         // first powerup info
         var powerupShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == 10).shapeBlock;
-        var powerupShapeBlock = Instantiate(powerupShapePrefab, activeShapeContainers[1], true);
+        var powerupShapeBlock = Instantiate(powerupShapePrefab, activeShapeContainers[0], true);
         var powerupShapeInfo = powerupShapeBlock.GetComponent<ShapeInfo>();
-        powerupShapeInfo.ShapeID = (int) ShapeInfo.Powerups.Doubler;
+        powerupShapeInfo.ShapeID = firstHelpPowerupId;
         PrepShapeForPlay(powerupShapeBlock);
+        // so that it spawns for first game
+        PowerupController.Instance.AddEquippedPowerupId(firstHelpPowerupId);
+        SetActiveShapeBlocks();
     }
 
     public List<ShapeInfo> GetPlayableShapes()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 #if HBDOTween
@@ -10,35 +11,24 @@ using DG.Tweening;
 /// <summary>
 ///     Help classic.
 /// </summary>
-public class HelpClassic : MonoBehaviour
+public class HelpClassic : Singleton<HelpClassic>
 {
     private readonly List<Canvas> _highlightedBlocks = new List<Canvas>();
-    private Sequence firstHandSequence;
+    private Sequence dragHandHelpSequence;
     private Vector2 firstPosition = Vector2.zero;
     private Canvas firstShapeCanvas;
     [SerializeField] private Transform handImage;
+    private GameObject powerupHelp;
+    private Sequence tapHandHelpSequence;
 
     [SerializeField] private Transform tapHandImage;
-    private Sequence tapHandSequence;
 
     /// <summary>
     ///     Start this instance.
     /// </summary>
     private void Start()
     {
-        Invoke("StartHelp", 1F);
-    }
-
-    private void OnDestroy()
-    {
-        _highlightedBlocks.ForEach(go =>
-        {
-            var c = go.GetComponent<Canvas>();
-            c.overrideSorting = false;
-            c.sortingOrder = 0;
-        });
-        tapHandSequence?.Kill();
-        firstShapeCanvas.sortingOrder = 0;
+        StartHelp();
     }
 
     /// <summary>
@@ -67,34 +57,35 @@ public class HelpClassic : MonoBehaviour
             firstPosition -= new Vector2(-0.2F, 0.4F);
             handImage.gameObject.SetActive(true);
             handImage.transform.position = firstPosition;
-            firstHandSequence = DOTween.Sequence();
-            firstHandSequence.Append(handImage.transform.DOMove(GamePlay.Instance.transform.Find("Game-Content").position, 1F).SetDelay(1));
-            firstHandSequence.Append(handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1));
-            firstHandSequence.SetLoops(-1, LoopType.Restart);
-            InvokeRepeating("CheckForDragComplete", 0.3f, 0.3f);
+            dragHandHelpSequence = DOTween.Sequence();
+            dragHandHelpSequence.Append(handImage.transform.DOMove(GamePlay.Instance.transform.Find("Game-Content").position, 1F).SetDelay(1));
+            dragHandHelpSequence.Append(handImage.transform.DOMove(firstPosition, 0.5F).SetDelay(1));
+            dragHandHelpSequence.SetLoops(-1, LoopType.Restart);
+            StartCoroutine(CheckForDragComplete());
         });
     }
 
-    private void CheckForDragComplete()
+    private void ResetHighlightedBlocks()
     {
-        var firstShape = BlockShapeSpawner.Instance.GetPlayableShapes()[0];
-        if (firstShape == null)
+        _highlightedBlocks.RemoveAll(go =>
         {
-            Debug.LogWarning("Did not find a first shape somehow");
-            GamePlay.Instance.StopBasicHelp();
-            return;
-        }
-
-        if (firstShape.ShapeID == (int) ShapeInfo.Powerups.Doubler)
-        {
-            firstHandSequence?.Kill();
-            handImage.gameObject.Deactivate();
-            ShowTappableHelp();
-            CancelInvoke("CheckForDragComplete");
-        }
+            var c = go.GetComponent<Canvas>();
+            c.overrideSorting = false;
+            c.sortingOrder = 0;
+            return true;
+        });
     }
 
-    private void ShowTappableHelp()
+    private IEnumerator CheckForDragComplete()
+    {
+        yield return new WaitUntil(ArePlayableShapesEmpty);
+        ResetHighlightedBlocks();
+        dragHandHelpSequence?.Kill();
+        handImage.gameObject.Deactivate();
+        StartCoroutine(ShowTappableHelp());
+    }
+
+    private void TrackHighlightedBlocks()
     {
         GamePlay.Instance.highlightingBlocks.ForEach(b =>
         {
@@ -103,10 +94,40 @@ public class HelpClassic : MonoBehaviour
             c.sortingOrder = 3;
             _highlightedBlocks.Add(c);
         });
+    }
 
+    private IEnumerator ShowTappableHelp()
+    {
+        BlockShapeSpawner.Instance.FillShapesForSecondStepHelp();
+        yield return new WaitUntil(() => !ArePlayableShapesEmpty());
+        yield return GamePlay.Instance.SetAutoMove();
+        ShowTapHandOverHighlightedBlocks();
+        StartCoroutine(CheckForTapHelpComplete());
+    }
+
+    private IEnumerator CheckForTapHelpComplete()
+    {
+        yield return new WaitUntil(ArePlayableShapesEmpty);
+        ResetHighlightedBlocks();
+        tapHandHelpSequence?.Kill();
+        tapHandImage.gameObject.Deactivate();
+        StartCoroutine(ShowPowerupHelp());
+    }
+
+    public IEnumerator ShowPowerupHelp()
+    {
+        BlockShapeSpawner.Instance.FillShapesForThirdStepHelp();
+        yield return new WaitUntil(() => !ArePlayableShapesEmpty());
+        yield return GamePlay.Instance.SetAutoMove();
+        ShowTapHandOverHighlightedBlocks();
+        powerupHelp = StackManager.Instance.SpawnUIScreen("Help-Powerups");
+        StartCoroutine(CheckForPowerupHelpPopupComplete());
+    }
+
+    private void ShowTapHandOverHighlightedBlocks()
+    {
+        TrackHighlightedBlocks();
         tapHandImage.gameObject.Activate();
-        var unused = GamePlay.Instance.SetAutoMove();
-
         var middlePos = GamePlay.Instance.highlightingBlocks.Aggregate(Vector3.zero, (avgPos, b) => avgPos + b.gameObject.transform.position) / GamePlay.Instance.highlightingBlocks.Count;
         tapHandImage.position = (Vector2) middlePos - new Vector2(0, 0.6f);
 
@@ -114,15 +135,24 @@ public class HelpClassic : MonoBehaviour
         var secondHandPosition = (Vector2) secondHandTransform.position;
         var secondFirstPos = secondHandPosition - new Vector2(0, 0.2f);
         var secondLastPos = secondHandPosition + new Vector2(0, 0.2f);
-        tapHandSequence = DOTween.Sequence();
-        tapHandSequence.Append(tapHandImage.transform.DOMove(secondFirstPos, 0.4F).SetDelay(0.4f));
-        tapHandSequence.Append(tapHandImage.transform.DOMove(secondLastPos, 0.4F).SetDelay(0.4f));
-        tapHandSequence.SetLoops(-1, LoopType.Yoyo);
-        InvokeRepeating("CheckForTapHelpComplete", 0.1f, 0.1f);
+        tapHandHelpSequence = DOTween.Sequence();
+        tapHandHelpSequence.Append(tapHandImage.transform.DOMove(secondFirstPos, 0.4F).SetDelay(0.4f));
+        tapHandHelpSequence.Append(tapHandImage.transform.DOMove(secondLastPos, 0.4F).SetDelay(0.4f));
+        tapHandHelpSequence.SetLoops(-1, LoopType.Yoyo);
     }
 
-    private void CheckForTapHelpComplete()
+    public IEnumerator CheckForPowerupHelpPopupComplete()
     {
-        if (BlockShapeSpawner.Instance.GetPlayableShapes().Count == 0) GamePlay.Instance.StopBasicHelp();
+        yield return new WaitUntil(() => powerupHelp == null);
+        yield return new WaitUntil(ArePlayableShapesEmpty);
+        ResetHighlightedBlocks();
+        tapHandHelpSequence?.Kill();
+        tapHandImage.gameObject.Deactivate();
+        GamePlay.Instance.StopBasicHelp();
+    }
+
+    private bool ArePlayableShapesEmpty()
+    {
+        return BlockShapeSpawner.Instance.GetPlayableShapes().Count == 0;
     }
 }

@@ -17,12 +17,4 @@ public class HelpPopup : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    /// <summary>
-    ///     Raises the destroy event.
-    /// </summary>
-    private void OnDestroy()
-    {
-        if (GamePlay.Instance != null) GamePlay.Instance.OnHelpPopupClosed();
-    }
 }

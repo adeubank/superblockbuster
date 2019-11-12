@@ -453,6 +453,16 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 224637197809397742, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 324.98828
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000013290675076, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 428.27734
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
 --- !u!1 &284330124
@@ -2450,7 +2460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a456c3403f3cdf348bfa60f35ec94e4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialCoinBalance: 1000
+  InitialCoinBalance: 10000
 --- !u!114 &1863145568
 MonoBehaviour:
   m_ObjectHideFlags: 0

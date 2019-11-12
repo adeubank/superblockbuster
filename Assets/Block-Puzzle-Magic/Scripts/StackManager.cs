@@ -31,12 +31,13 @@ public class StackManager : Singleton<StackManager>
 
     public GameObject SpawnUIScreen(string name)
     {
-        var thisScreen = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/" + name));
+        var thisScreen = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/" + name), GameController.Instance.UICanvas.transform, true);
         thisScreen.name = name;
-        thisScreen.transform.SetParent(GameController.Instance.UICanvas.transform);
+        thisScreen.transform.SetAsLastSibling();
         thisScreen.transform.localPosition = Vector3.zero;
         thisScreen.transform.localScale = Vector3.one;
         thisScreen.GetComponent<RectTransform>().sizeDelta = Vector3.zero;
+        thisScreen.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
         thisScreen.Activate();
         return thisScreen;
     }

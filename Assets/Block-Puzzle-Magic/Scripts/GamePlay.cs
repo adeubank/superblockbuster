@@ -240,18 +240,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (!IsBasicHelpShown())
         {
-            BlockShapeSpawner.Instance.FillShapesForHelp();
+            BlockShapeSpawner.Instance.FillShapesForFirstStepHelp();
             ShowBasicHelp();
         }
         else
         {
             BlockShapeSpawner.Instance.FillShapeContainer();
         }
-    }
-
-    private void Awake()
-    {
-        StartCoroutine(SetAutoMove());
     }
 
     private void OnDestroy()
@@ -1762,15 +1757,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool IsBasicHelpShown()
     {
         return PlayerPrefs.GetInt("isBasicHelpShown", 0) != 0;
-    }
-
-    /// <summary>
-    ///     Raises the help popup closed event.
-    /// </summary>
-    public void OnHelpPopupClosed()
-    {
-        if (GameController.gameMode == GameMode.TIMED) timeSlider.ResumeTimer();
-        ShowBasicHelp();
     }
 
     /// <summary>

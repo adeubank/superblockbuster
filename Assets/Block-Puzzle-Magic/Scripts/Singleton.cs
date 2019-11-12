@@ -14,6 +14,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
 
                 if (instance == null)
                 {
+                    Debug.Log("Singleton initialized a " + typeof(T));
                     var g = new GameObject("Controller");
                     instance = g.AddComponent<T>();
                     //g.hideFlags = HideFlags.HideInHierarchy;
