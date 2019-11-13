@@ -41,8 +41,9 @@
     <string name="txt-fail-content" text="Purchase Failed, Please try again." />
 
     <!--PowerupSelectScreen-->
-    <string name="txt-powerup-select" text="SELECT"/>
     <string name="txt-powerups" text="POWERUPS"/>
+    <string name="txt-powerups-menu-help" text="Powerups are blocks with special abilities. Each one has a unique talent.
+Use coins to unlock more powerups!"/>
 
     <!--Pause-->
 

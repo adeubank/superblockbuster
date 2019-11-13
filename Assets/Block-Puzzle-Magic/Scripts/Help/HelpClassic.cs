@@ -150,7 +150,7 @@ public class HelpClassic : Singleton<HelpClassic>
         ResetHighlightedBlocks();
         tapHandHelpSequence?.Kill();
         tapHandImage.gameObject.Deactivate();
-        StartCoroutine(GamePlay.Instance.StopBasicHelp());
+        GamePlay.Instance.StopBasicHelp();
     }
 
     private bool ArePlayableShapesEmpty()

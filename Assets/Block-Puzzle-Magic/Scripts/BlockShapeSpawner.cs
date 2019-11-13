@@ -165,6 +165,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         }
 
         GamePlay.Instance.CheckIfOutOfMoves();
+        StartCoroutine(GamePlay.Instance.SetAutoMove());
 
         return shapesFilled;
     }

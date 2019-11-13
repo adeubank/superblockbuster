@@ -1767,7 +1767,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Stop the basic help.
     /// </summary>
-    public IEnumerator StopBasicHelp()
+    public void StopBasicHelp()
     {
         var inGameHelp = gameObject.GetComponent<InGameHelp>();
         if (inGameHelp != null)
@@ -1779,8 +1779,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         PowerupController.Instance.LoadSavedPurchasedPowerups();
         PowerupController.Instance.LoadSavedEquippedPowerups();
         BlockShapeSpawner.Instance.FillShapeContainer();
-        yield return new WaitUntil(() => BlockShapeSpawner.Instance.GetPlayableShapes().Any());
-        yield return SetAutoMove();
     }
 
     #endregion

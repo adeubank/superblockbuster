@@ -6,9 +6,7 @@ using UnityEngine.UI;
 
 public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 {
-    private GameObject _helpGameObject;
     private Sequence _helpIconLoopSequence;
-    private bool _isHelpShown;
     private Sequence _showScrollableSequence;
 
     public GameObject emptySpacePrefab;
@@ -18,6 +16,9 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     public Transform powerupOptionsListTransform;
     public Transform powerupSelectedListTransform;
     public GameObject powerupSelectedPrefab;
+    public GameObject powerupsEquippedTxt;
+    public GameObject powerupsMenuHelpPrefab;
+    public GameObject powerupsNoneEquippedTxt;
 
     // Start is called before the first frame update
     private void Start()
@@ -34,7 +35,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void UpdateMenu()
     {
-        if (_isHelpShown) StopHelp();
+        StopHelp();
         UpdateAvailablePowerups();
         UpdateEquippedPowerups();
         SaveData();
@@ -42,17 +43,15 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void StopHelp()
     {
+        helpIcon.Deactivate();
+
         if (_showScrollableSequence != null && _showScrollableSequence.IsPlaying())
         {
             _showScrollableSequence.Kill(true);
             _showScrollableSequence = null;
         }
 
-        if (_helpIconLoopSequence != null && _helpIconLoopSequence.IsPlaying())
-        {
-            _helpIconLoopSequence.Kill(true);
-            _helpIconLoopSequence = null;
-        }
+        if (_helpIconLoopSequence != null && _helpIconLoopSequence.IsPlaying()) _helpIconLoopSequence.Pause();
     }
 
     private void SaveData()
@@ -99,6 +98,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     public void ActivatePowerupMenuHelp(bool force = true)
     {
+        _helpIconLoopSequence?.Pause();
         StartCoroutine(ShowPowerupMenuScrollableHelp(force));
     }
 
@@ -106,7 +106,8 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     {
         if (force || !PlayerPrefs.HasKey("powerup_menu_scrollable_help") || PlayerPrefs.GetInt("powerup_menu_scrollable_help") != 1)
         {
-            _isHelpShown = true;
+            var helpPopup = Instantiate(powerupsMenuHelpPrefab, transform);
+            yield return new WaitUntil(() => helpPopup == null);
             helpIcon.SetActive(true);
             yield return new WaitForEndOfFrame();
             // show view is scrollable
@@ -119,6 +120,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             _showScrollableSequence.Insert(2, DOTween.To(() => powerupMenuScrollView.value, value => powerupMenuScrollView.value = value, 1, 1.0f));
             _showScrollableSequence.AppendCallback(() =>
             {
+                helpIcon.Deactivate();
                 powerupMenuScrollView.value = 1;
                 StartCoroutine(ShowSelectPowerupHelp());
             });
@@ -134,25 +136,45 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private IEnumerator ShowSelectPowerupHelp()
     {
-        _isHelpShown = true;
+        if (PowerupController.Instance.equippedPowerupIds.Any()) yield break;
 
-        var firstOptionPosition = (Vector2) powerupOptionsListTransform.GetChild(1).transform.position - new Vector2(0, 70f);
+        // let unity catchup
+        yield return new WaitForEndOfFrame();
+
+        var firstOptionPosition = (Vector2) powerupOptionsListTransform.GetChild(1).transform.position - new Vector2(0, 40f);
         var secondOptionPosition = firstOptionPosition - new Vector2(0, 30f);
         helpIcon.transform.position = firstOptionPosition;
 
         helpIcon.SetActive(true);
         yield return new WaitForEndOfFrame();
 
-        _helpIconLoopSequence = DOTween.Sequence();
-        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(secondOptionPosition, 0.4F).SetDelay(0.2f));
-        _helpIconLoopSequence.Append(helpIcon.transform.DOMove(firstOptionPosition, 0.4F).SetDelay(0.2f));
-        _helpIconLoopSequence.SetLoops(-1, LoopType.Restart);
-        _helpIconLoopSequence.OnKill(() => helpIcon.SetActive(false));
+        if (_helpIconLoopSequence != null)
+        {
+            _helpIconLoopSequence.Restart();
+        }
+        else
+        {
+            _helpIconLoopSequence = DOTween.Sequence();
+            _helpIconLoopSequence.Append(helpIcon.transform.DOMove(secondOptionPosition, 0.4F).SetDelay(0.2f));
+            _helpIconLoopSequence.Append(helpIcon.transform.DOMove(firstOptionPosition, 0.4F).SetDelay(0.2f));
+            _helpIconLoopSequence.SetLoops(-1, LoopType.Restart);
+        }
     }
 
     private void UpdateEquippedPowerups()
     {
         Debug.Log("Initializing equipped powerups list " + PowerupController.Instance.equippedPowerupIds);
+
+        if (PowerupController.Instance.equippedPowerupIds.Any())
+        {
+            powerupsEquippedTxt.Activate();
+            powerupsNoneEquippedTxt.Deactivate();
+        }
+        else
+        {
+            powerupsEquippedTxt.Deactivate();
+            powerupsNoneEquippedTxt.Activate();
+        }
 
         // clean the list first
         foreach (Transform t in powerupSelectedListTransform)
