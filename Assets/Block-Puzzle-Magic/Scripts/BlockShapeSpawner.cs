@@ -16,9 +16,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [HideInInspector] public List<ShapeBlockSpawn> ActiveShapeBlocks;
 
-    // third step in tutorial
-    public int firstHelpPowerupId = (int) ShapeInfo.Powerups.Doubler;
-
     // first step in tutorial
     public int firstHelpShapeId = 8;
 
@@ -43,6 +40,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     [SerializeField] private Transform[] ShapeContainers;
     [HideInInspector] public int sticksGaloreColorId = -1;
+
+    // third step in tutorial
+    public int thirdHelpPowerupId = (int) ShapeInfo.Powerups.Doubler;
+
+    // third step in tutorial
+    public int thirdHelpShapeId = 4;
 
     /// <summary>
     ///     Awake this instance.
@@ -190,13 +193,13 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     {
         var activeShapeContainers = GetActiveShapeContainers();
         // first powerup info
-        var powerupShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == 10).shapeBlock;
+        var powerupShapePrefab = ActiveShapeBlocks.First(b => b.BlockID == thirdHelpShapeId).shapeBlock;
         var powerupShapeBlock = Instantiate(powerupShapePrefab, activeShapeContainers[0], true);
         var powerupShapeInfo = powerupShapeBlock.GetComponent<ShapeInfo>();
-        powerupShapeInfo.ShapeID = firstHelpPowerupId;
+        powerupShapeInfo.ShapeID = thirdHelpPowerupId;
         PrepShapeForPlay(powerupShapeBlock);
         // so that it spawns for first game
-        PowerupController.Instance.AddEquippedPowerupId(firstHelpPowerupId);
+        PowerupController.Instance.AddEquippedPowerupId(thirdHelpPowerupId);
         SetActiveShapeBlocks();
     }
 

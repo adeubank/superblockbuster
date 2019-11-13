@@ -17,8 +17,6 @@ public class MainScreen : MonoBehaviour
                 MarkFirstPlay();
                 PowerupController.Instance.LoadSavedPurchasedPowerups();
                 PowerupController.Instance.LoadSavedEquippedPowerups();
-                PowerupController.Instance.AddPurchasedPowerupId((int) ShapeInfo.Powerups.Doubler);
-                PowerupController.Instance.AddEquippedPowerupId((int) ShapeInfo.Powerups.Doubler);
                 AudioManager.Instance.PlayButtonClickSound();
                 GameController.gameMode = GameMode.TIMED;
                 StackManager.Instance.ActivateGamePlay();

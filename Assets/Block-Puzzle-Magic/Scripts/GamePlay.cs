@@ -239,14 +239,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #endregion
 
         if (!IsBasicHelpShown())
-        {
-            BlockShapeSpawner.Instance.FillShapesForFirstStepHelp();
             ShowBasicHelp();
-        }
         else
-        {
             BlockShapeSpawner.Instance.FillShapeContainer();
-        }
     }
 
     private void OnDestroy()
@@ -1772,18 +1767,20 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Stop the basic help.
     /// </summary>
-    public void StopBasicHelp()
+    public IEnumerator StopBasicHelp()
     {
         var inGameHelp = gameObject.GetComponent<InGameHelp>();
-        if (inGameHelp == null)
+        if (inGameHelp != null)
         {
             Debug.LogWarning("Did not find an InGameHelp game object");
-            return;
+            inGameHelp.StopHelp();
         }
 
-        inGameHelp.StopHelp();
+        PowerupController.Instance.LoadSavedPurchasedPowerups();
+        PowerupController.Instance.LoadSavedEquippedPowerups();
         BlockShapeSpawner.Instance.FillShapeContainer();
-        StartCoroutine(SetAutoMove());
+        yield return new WaitUntil(() => BlockShapeSpawner.Instance.GetPlayableShapes().Any());
+        yield return SetAutoMove();
     }
 
     #endregion

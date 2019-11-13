@@ -36,11 +36,13 @@ public class HelpClassic : Singleton<HelpClassic>
     /// </summary>
     private void StartHelp()
     {
-        ShowDraggableHelp();
+        StartCoroutine(ShowDraggableHelp());
     }
 
-    private void ShowDraggableHelp()
+    private IEnumerator ShowDraggableHelp()
     {
+        BlockShapeSpawner.Instance.FillShapesForFirstStepHelp();
+        yield return new WaitUntil(() => !ArePlayableShapesEmpty());
         InputManager.Instance.DisableTouch();
         var firstShape = BlockShapeSpawner.Instance.transform.GetChild(0).gameObject;
 
@@ -148,7 +150,7 @@ public class HelpClassic : Singleton<HelpClassic>
         ResetHighlightedBlocks();
         tapHandHelpSequence?.Kill();
         tapHandImage.gameObject.Deactivate();
-        GamePlay.Instance.StopBasicHelp();
+        StartCoroutine(GamePlay.Instance.StopBasicHelp());
     }
 
     private bool ArePlayableShapesEmpty()
