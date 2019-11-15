@@ -771,6 +771,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b613521c5afd540951df5a41f10780, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FortuneWheelPrefab: {fileID: 0}
 --- !u!1 &1000012004605402
 GameObject:
   m_ObjectHideFlags: 0

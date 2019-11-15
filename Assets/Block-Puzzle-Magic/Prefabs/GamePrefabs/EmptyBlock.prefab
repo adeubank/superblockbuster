@@ -278,6 +278,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80e7493026114de478b777cf9460d80e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bombExplosionPrefab: {fileID: 6965579965961116910, guid: 02537778a35594eeeac4d9fe5372e9cc,
+    type: 3}
   autoMoveHighlight: {fileID: 5873003762052189631}
   blockID: -1
   blockImage: {fileID: 0}

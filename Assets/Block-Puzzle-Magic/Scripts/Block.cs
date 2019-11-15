@@ -17,6 +17,7 @@ public class Block : MonoBehaviour, IComparable
 
     //Bomb blast counter, will keep reducing with each move.
     public int bombCounter;
+    public GameObject bombExplosionPrefab;
 
     public int colorId = -1;
 
@@ -279,11 +280,7 @@ public class Block : MonoBehaviour, IComparable
 
     public void ConvertToExplosion()
     {
-        var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.GetComponent<Renderer>().material.color = Color.red;
-        sphere.transform.position = transform.position;
-        sphere.transform.localScale = Vector3.zero;
-        sphere.transform.DOScale(Vector3.one * 1.25f, 0.4f).OnComplete(() => { Destroy(sphere); });
+        Instantiate(bombExplosionPrefab, transform);
     }
 
     public void ConvertToExplodingBlock()
