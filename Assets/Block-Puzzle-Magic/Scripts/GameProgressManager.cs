@@ -113,7 +113,7 @@ public class GameProgressManager : Singleton<GameProgressManager>
     /// <param name="pause">If set to <c>true</c> pause.</param>
     private void OnApplicationPause(bool pause)
     {
-        if (pause) SaveGame();
+//        if (pause) SaveGame();
     }
 
     /// <summary>

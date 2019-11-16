@@ -38,7 +38,7 @@ public class GameBoardGenerator : Singleton<GameBoardGenerator>
     private void Start()
     {
         ///checks if level needs to start from previos session or start new session.
-        previousSessionData = GetComponent<GameProgressManager>().GetPreviousSessionData();
+//        previousSessionData = GetComponent<GameProgressManager>().GetPreviousSessionData();
     }
 
     /// <summary>
