@@ -569,7 +569,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
-        shakeComponent.shakeDuration += 1.3f; // start the shake
+        shakeComponent.shakeDuration += 1f; // start the shake
 
         var quakeTweeners = _activeQuakePowerups.Aggregate(
             new List<int>(), (columnsToShake, nextQuakePowerup) =>
