@@ -2394,8 +2394,8 @@ GameObject:
   - component: {fileID: 5273291449028982828}
   - component: {fileID: 5269497043919080228}
   - component: {fileID: 5431825988851943838}
-  - component: {fileID: 5347529710845813468}
   - component: {fileID: 7059471776946166654}
+  - component: {fileID: 265321867646754707}
   m_Layer: 5
   m_Name: Powerup-Options
   m_TagString: Untagged
@@ -2449,29 +2449,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5347529710845813468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5347529710845813466}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: 30
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 1
 --- !u!114 &7059471776946166654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2486,6 +2463,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &265321867646754707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5347529710845813466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -2095666955, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 15
+    m_Right: 15
+    m_Top: 15
+    m_Bottom: 15
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 150, y: 150}
+  m_Spacing: {x: 15, y: 15}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &5347529710938962186
 GameObject:
   m_ObjectHideFlags: 0
@@ -2630,6 +2631,7 @@ MonoBehaviour:
   powerupSelectedPrefab: {fileID: 7398802485700208256, guid: 1a13063f6cfb60646a9fe99058a30a86,
     type: 3}
   powerupsEquippedTxt: {fileID: 6709295617444292893}
+  powerupsMenuHelpPrefab: {fileID: 0}
   powerupsNoneEquippedTxt: {fileID: 6367655201735101317}
 --- !u!1 &5347529711413331326
 GameObject:

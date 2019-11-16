@@ -9,7 +9,6 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
     private Sequence _helpIconLoopSequence;
     private Sequence _showScrollableSequence;
 
-    public GameObject emptySpacePrefab;
     public GameObject helpIcon;
     public Scrollbar powerupMenuScrollView;
     public GameObject powerupOptionPrefab;
@@ -69,24 +68,18 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
             Destroy(t.gameObject);
         }
 
-        // Add some empty space at the top of the list
-        Instantiate(emptySpacePrefab, powerupOptionsListTransform);
-
         PowerupOption firstPowerupOption = null;
         var equippedPowerupSpawns = PowerupController.Instance.equippedPowerupIds;
-        foreach (var powerupBlockSpawn in PowerupController.Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupOption.PriceForPowerup))
+        foreach (var powerupBlockSpawn in PowerupController.Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupPopup.PriceForPowerup))
         {
             var powerupOption = Instantiate(powerupOptionPrefab, powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
             if (firstPowerupOption == null) firstPowerupOption = powerupOption;
 
-            powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID),
-                PowerupController.Instance.purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
+//                      powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID), PowerupController.Instance.purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
+            powerupOption.SetPowerup(powerupBlockSpawn);
         }
-
-        // empty space at the bottom
-        Instantiate(emptySpacePrefab, powerupOptionsListTransform);
 
         Invoke("CheckPowerupMenuHelp", 1f);
     }
