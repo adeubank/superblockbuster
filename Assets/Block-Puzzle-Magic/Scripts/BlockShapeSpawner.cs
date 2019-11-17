@@ -57,9 +57,12 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     private void SetActiveShapeBlocks()
     {
-        ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
-        ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
-        ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));
+        if (shapeBlockList != null)
+        {
+            ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
+            ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
+            ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));    
+        }
     }
 
     /// <summary>
@@ -243,8 +246,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             var currentColorId = blockImage.sprite.name.TryParseInt(-1);
             if (currentColorId > 0)
                 blockImage.sprite = colorSprite;
-
-            // TODO may have to resize here as well
         }
 
 #if HBDOTween

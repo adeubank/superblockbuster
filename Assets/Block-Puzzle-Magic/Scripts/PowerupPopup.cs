@@ -1,44 +1,67 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PowerupPopup : MonoBehaviour
 {
-    public Image equippedIcon;
+    [SerializeField] private PowerupList _powerupList;
+    public Transform powerupIcon;
     [HideInInspector] public PowerupBlockSpawn powerup;
     [SerializeField] private Button powerupButton;
     public Text powerupDescription;
     public Text powerupName;
-    public Text powerupPrice;
+    public Text powerupPriceText;
+    public Text powerupEquipText;
+    public GameObject powerupCoinIcon;
+
+    public void Awake()
+    {
+        InputManager.Instance.EnableTouch();
+    }
 
     public void SetPowerup(PowerupBlockSpawn _powerup)
     {
-        // TODO compute these
-        var purchased = true;
-        var equipped = true;
-
         powerup = _powerup;
+        var purchased = PowerupController.Instance.purchasedPowerupIds.Contains(powerup.BlockID);
+        var equipped = PowerupController.Instance.equippedPowerupIds.Contains(powerup.BlockID);
 
-        //region update equippable status
-        equippedIcon.gameObject.SetActive(purchased);
-        equippedIcon.color = equipped ? Color.white : Color.clear;
-        //endregion
+        #region Create example powerup block
+        var powerupPrefab = _powerupList.powerupBlockSpawns.First(b => b.BlockID == powerup.BlockID).shapeBlock;
+        var powerupBlock = Instantiate(powerupPrefab, powerupIcon, true);
+        powerupBlock.GetComponent<Canvas>().sortingOrder = 11; // greater than popup for some reason
+        var newPowerupTransform = powerupBlock.GetComponent<RectTransform>();
+        newPowerupTransform.localPosition = Vector3.zero;
+        newPowerupTransform.localScale = Vector2.one;
+        newPowerupTransform.sizeDelta = new Vector2(100, 100);
+        foreach (RectTransform childTransform in newPowerupTransform)
+        {
+            if (childTransform == newPowerupTransform) continue;
+            childTransform.sizeDelta = new Vector2(100, 100);
+        }
+        #endregion
 
-        //region update pricing
-        powerupPrice.gameObject.SetActive(!purchased);
-        powerupPrice.text = PriceForPowerup(_powerup).ToString();
-        //endregion
+        #region update pricing
+        powerupEquipText.gameObject.SetActive(purchased);
+        powerupCoinIcon.SetActive(!purchased);
+        powerupPriceText.gameObject.SetActive(!purchased);
+        powerupPriceText.text = PriceForPowerup(_powerup).ToString();
+        #endregion
 
-        //region rebind event handlers
+        #region update powerup description
+        // todo write powerup descriptions
+        powerupDescription.text = "powerup description, 👍 updated via script";
+        #endregion
+
+        #region rebind event handlers
         powerupButton.onClick.RemoveAllListeners();
         if (equipped)
             powerupButton.onClick.AddListener(UnequipThisPowerup);
         else if (purchased)
             powerupButton.onClick.AddListener(EquipThisPowerup);
         else
-            // TODO implement buying powerups modal with demo video
             powerupButton.onClick.AddListener(BuyThisPowerup);
-        //endregion
+        #endregion
 
         var powerupNameSplit = _powerup.shapeBlock.name.Split('-');
         if (powerupNameSplit.Length == 3)
@@ -51,7 +74,7 @@ public class PowerupPopup : MonoBehaviour
     {
         switch (powerup.BlockID)
         {
-            // region tier 1 powerups
+            #region tier 1 powerups
             case (int) ShapeInfo.Powerups.Doubler:
                 return 100;
             case (int) ShapeInfo.Powerups.ColorCoder:
@@ -62,18 +85,18 @@ public class PowerupPopup : MonoBehaviour
                 return 200;
             case (int) ShapeInfo.Powerups.SticksGalore:
                 return 200;
-            //endregion
+            #endregion
 
-            // region tier 2 powerups
+            #region tier 2 powerups
             case (int) ShapeInfo.Powerups.Flood:
                 return 500;
             case (int) ShapeInfo.Powerups.Dandelion:
                 return 750;
             case (int) ShapeInfo.Powerups.Quake:
                 return 500;
-            //endregion
+            #endregion
 
-            // region tier 3 powerups
+            #region tier 3 powerups
             case (int) ShapeInfo.Powerups.Frenzy:
                 return 1500;
             case (int) ShapeInfo.Powerups.Storm:
@@ -82,7 +105,7 @@ public class PowerupPopup : MonoBehaviour
                 return 2000;
             case (int) ShapeInfo.Powerups.Avalanche:
                 return 2000;
-            //endregion
+            #endregion
 
             default:
                 throw new NotImplementedException("Price for _powerup is not implemented. " + powerup.BlockID);
@@ -101,6 +124,7 @@ public class PowerupPopup : MonoBehaviour
                 AudioManager.Instance.PlayButtonClickSound();
                 PowerupSelectMenu.Instance.AddPurchasedPowerupId(powerup);
                 EquipThisPowerup();
+                Destroy(gameObject);
             }
             else
             {
@@ -111,11 +135,19 @@ public class PowerupPopup : MonoBehaviour
 
     private void EquipThisPowerup()
     {
-        PowerupSelectMenu.Instance.AddEquippedPowerupId(powerup);
+        if (InputManager.Instance.canInput())
+        {
+            PowerupSelectMenu.Instance.AddEquippedPowerupId(powerup);
+            Destroy(gameObject);
+        }
     }
 
     private void UnequipThisPowerup()
     {
-        PowerupSelectMenu.Instance.RemoveEquippedPowerupId(powerup.BlockID);
+        if (InputManager.Instance.canInput())
+        {
+            PowerupSelectMenu.Instance.RemoveEquippedPowerupId(powerup.BlockID);
+            Destroy(gameObject);
+        }
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class InputManager : Singleton<InputManager>
 {
-    private static bool isTouchAvailable = true;
+    public static bool isTouchAvailable = true;
 
     public EventSystem eventSystem;
     //public static event Action<Vector2> OnTouchDownEvent;

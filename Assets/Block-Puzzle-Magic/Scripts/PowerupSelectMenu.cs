@@ -69,7 +69,6 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         }
 
         PowerupOption firstPowerupOption = null;
-        var equippedPowerupSpawns = PowerupController.Instance.equippedPowerupIds;
         foreach (var powerupBlockSpawn in PowerupController.Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupPopup.PriceForPowerup))
         {
             var powerupOption = Instantiate(powerupOptionPrefab, powerupOptionsListTransform)
@@ -77,7 +76,6 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
             if (firstPowerupOption == null) firstPowerupOption = powerupOption;
 
-//                      powerupOption.SetPowerup(powerupBlockSpawn, equippedPowerupSpawns.Contains(powerupBlockSpawn.BlockID), PowerupController.Instance.purchasedPowerupIds.Contains(powerupBlockSpawn.BlockID));
             powerupOption.SetPowerup(powerupBlockSpawn);
         }
 

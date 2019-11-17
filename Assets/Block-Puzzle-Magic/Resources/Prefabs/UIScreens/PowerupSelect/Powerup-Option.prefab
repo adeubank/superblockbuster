@@ -307,8 +307,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3696a050ee3324484b398ce703ffc848, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equippedIcon: {fileID: 0}
+  powerup:
+    BlockID: 0
+    shapeBlock: {fileID: 0}
+    spawnProbability: 1
+    powerupActivationSprite: {fileID: 0}
+    powerupBlockIcon: {fileID: 0}
+    powerupSfx: {fileID: 0}
   powerupButton: {fileID: 2808736313477973677}
   powerupIcon: {fileID: 2808736284167951249}
-  powerupName: {fileID: 0}
-  powerupPrice: {fileID: 0}
+  powerupPopupPrefab: {fileID: 4798138709700331549, guid: 9be5da67c6add8f46a07625205adab22,
+    type: 3}
