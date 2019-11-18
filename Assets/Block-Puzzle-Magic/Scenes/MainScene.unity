@@ -710,8 +710,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 403334065}
-  clickSound: {fileID: 8300000, guid: 9ee30e561d1439f469ddbc76c894dd40, type: 3}
   cancelSound: {fileID: 8300000, guid: a28b44336f208fe49b24789f01b600c4, type: 3}
+  clickSound: {fileID: 8300000, guid: 9ee30e561d1439f469ddbc76c894dd40, type: 3}
   gameOverSound: {fileID: 8300000, guid: fda345bcd90ae7947aa9482e71f9d1b9, type: 3}
   isMusicEnabled: 1
   isSoundEnabled: 1

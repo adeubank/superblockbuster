@@ -185,21 +185,24 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return;
         }
 
+        // check if we have a bullseye
         var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.transform.GetComponent<Block>();
-
-        // check if not a tap, but was dragging
-        if (clickedBlocked == null)
-        {
-            ResetCurrentShape();
-            return;
-        }
-
-        if (highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
+        if (clickedBlocked != null && highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
         {
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
 
+        // missed the blocks, check if tap landed in-between blocks
+        var worldPosition = Camera.main.ScreenToWorldPoint(eventData.position);
+        Debug.Log("Missed clicked block. Checking all blocks. eventData.position=" + eventData.position + " worldPosition=" + worldPosition);
+        if (highlightingBlocks.Any(block => Vector2.Distance(worldPosition, block.transform.position) <= 0.5f))
+        {
+            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            return;
+        }
+
+        // nope we missed, reset
         ResetCurrentShape();
     }
 
