@@ -17,6 +17,7 @@ public class PowerupSelected : MonoBehaviour
         powerupButton.enabled = true;
         powerupButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlayButtonClickSound();
             PowerupSelectMenu.Instance.RemoveEquippedPowerupId(_equippedPowerup.BlockID);
             SetNoPowerup();
             powerupButton.onClick.RemoveAllListeners();

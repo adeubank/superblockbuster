@@ -478,7 +478,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1973,6 +1973,7 @@ GameObject:
   - component: {fileID: 5433560328040596006}
   - component: {fileID: 5449404161156215126}
   - component: {fileID: 5449472427992825106}
+  - component: {fileID: 1137336956}
   m_Layer: 5
   m_Name: Coin-Balance
   m_TagString: Untagged
@@ -2081,6 +2082,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIColorTag: 
+--- !u!223 &1137336956
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5346786484032621968}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 15
+  m_TargetDisplay: 0
 --- !u!1 &5346801128312144480
 GameObject:
   m_ObjectHideFlags: 0
@@ -2420,7 +2442,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -0.000018665567}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 45}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5269497043919080228
 CanvasRenderer:
@@ -2478,9 +2500,9 @@ MonoBehaviour:
   m_Padding:
     m_Left: 15
     m_Right: 15
-    m_Top: 15
-    m_Bottom: 15
-  m_ChildAlignment: 0
+    m_Top: 30
+    m_Bottom: 30
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 150, y: 150}
@@ -2507,7 +2529,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5273291449605247878
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2620,8 +2642,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d52f7f7af0bbf477cbaf0e3aad06cd94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emptySpacePrefab: {fileID: 7759915513461289549, guid: 0f6ba654d984544eb9973b04a7fa3b28,
-    type: 3}
   helpIcon: {fileID: 6216901992780961508}
   powerupMenuScrollView: {fileID: 1534428260600200276}
   powerupOptionPrefab: {fileID: 2840695140443860139, guid: c586e29315ec04f8690059309e07e77d,
@@ -2631,7 +2651,8 @@ MonoBehaviour:
   powerupSelectedPrefab: {fileID: 7398802485700208256, guid: 1a13063f6cfb60646a9fe99058a30a86,
     type: 3}
   powerupsEquippedTxt: {fileID: 6709295617444292893}
-  powerupsMenuHelpPrefab: {fileID: 0}
+  powerupsMenuHelpPrefab: {fileID: 6785589835103191284, guid: 3ba0abc5f0539494bbee198e67814d89,
+    type: 3}
   powerupsNoneEquippedTxt: {fileID: 6367655201735101317}
 --- !u!1 &5347529711413331326
 GameObject:

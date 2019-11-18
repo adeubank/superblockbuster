@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PowerupPopup : MonoBehaviour
 {
     [SerializeField] private PowerupList _powerupList;
-    public Transform powerupIcon;
     [HideInInspector] public PowerupBlockSpawn powerup;
     [SerializeField] private Button powerupButton;
+    public GameObject powerupCoinIcon;
     public Text powerupDescription;
+    public Text powerupEquipText;
+    public Transform powerupIcon;
     public Text powerupName;
     public Text powerupPriceText;
-    public Text powerupEquipText;
-    public GameObject powerupCoinIcon;
 
     public void Awake()
     {
@@ -27,6 +28,7 @@ public class PowerupPopup : MonoBehaviour
         var equipped = PowerupController.Instance.equippedPowerupIds.Contains(powerup.BlockID);
 
         #region Create example powerup block
+
         var powerupPrefab = _powerupList.powerupBlockSpawns.First(b => b.BlockID == powerup.BlockID).shapeBlock;
         var powerupBlock = Instantiate(powerupPrefab, powerupIcon, true);
         powerupBlock.GetComponent<Canvas>().sortingOrder = 11; // greater than popup for some reason
@@ -39,21 +41,27 @@ public class PowerupPopup : MonoBehaviour
             if (childTransform == newPowerupTransform) continue;
             childTransform.sizeDelta = new Vector2(100, 100);
         }
+
         #endregion
 
         #region update pricing
+
         powerupEquipText.gameObject.SetActive(purchased);
         powerupCoinIcon.SetActive(!purchased);
         powerupPriceText.gameObject.SetActive(!purchased);
         powerupPriceText.text = PriceForPowerup(_powerup).ToString();
+
         #endregion
 
         #region update powerup description
+
         // todo write powerup descriptions
         powerupDescription.text = "powerup description, 👍 updated via script";
+
         #endregion
 
         #region rebind event handlers
+
         powerupButton.onClick.RemoveAllListeners();
         if (equipped)
             powerupButton.onClick.AddListener(UnequipThisPowerup);
@@ -61,6 +69,7 @@ public class PowerupPopup : MonoBehaviour
             powerupButton.onClick.AddListener(EquipThisPowerup);
         else
             powerupButton.onClick.AddListener(BuyThisPowerup);
+
         #endregion
 
         var powerupNameSplit = _powerup.shapeBlock.name.Split('-');
@@ -75,6 +84,7 @@ public class PowerupPopup : MonoBehaviour
         switch (powerup.BlockID)
         {
             #region tier 1 powerups
+
             case (int) ShapeInfo.Powerups.Doubler:
                 return 100;
             case (int) ShapeInfo.Powerups.ColorCoder:
@@ -85,18 +95,22 @@ public class PowerupPopup : MonoBehaviour
                 return 200;
             case (int) ShapeInfo.Powerups.SticksGalore:
                 return 200;
+
             #endregion
 
             #region tier 2 powerups
+
             case (int) ShapeInfo.Powerups.Flood:
                 return 500;
             case (int) ShapeInfo.Powerups.Dandelion:
                 return 750;
             case (int) ShapeInfo.Powerups.Quake:
                 return 500;
+
             #endregion
 
             #region tier 3 powerups
+
             case (int) ShapeInfo.Powerups.Frenzy:
                 return 1500;
             case (int) ShapeInfo.Powerups.Storm:
@@ -105,6 +119,7 @@ public class PowerupPopup : MonoBehaviour
                 return 2000;
             case (int) ShapeInfo.Powerups.Avalanche:
                 return 2000;
+
             #endregion
 
             default:
@@ -123,12 +138,17 @@ public class PowerupPopup : MonoBehaviour
             {
                 AudioManager.Instance.PlayButtonClickSound();
                 PowerupSelectMenu.Instance.AddPurchasedPowerupId(powerup);
-                EquipThisPowerup();
+                PowerupSelectMenu.Instance.AddEquippedPowerupId(powerup);
                 Destroy(gameObject);
             }
             else
             {
-                StackManager.Instance.shopScreen.Activate();
+                AudioManager.Instance.PlayButtonCancelSound();
+                var sequence = DOTween.Sequence();
+                sequence.Append(transform.DOLocalMoveX(15, 0.1f));
+                sequence.Append(transform.DOLocalMoveX(-15, 0.1f));
+                sequence.Append(transform.DOLocalMoveX(30, 0.1f));
+                sequence.Append(transform.DOLocalMoveX(0, 0.1f));
             }
         }
     }
@@ -137,6 +157,7 @@ public class PowerupPopup : MonoBehaviour
     {
         if (InputManager.Instance.canInput())
         {
+            AudioManager.Instance.PlayButtonClickSound();
             PowerupSelectMenu.Instance.AddEquippedPowerupId(powerup);
             Destroy(gameObject);
         }
@@ -146,6 +167,7 @@ public class PowerupPopup : MonoBehaviour
     {
         if (InputManager.Instance.canInput())
         {
+            AudioManager.Instance.PlayButtonClickSound();
             PowerupSelectMenu.Instance.RemoveEquippedPowerupId(powerup.BlockID);
             Destroy(gameObject);
         }

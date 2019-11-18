@@ -5,6 +5,7 @@ using UnityEngine;
 public class AudioManager : Singleton<AudioManager>
 {
     public AudioSource audioSource; //	Source of the audio
+    public AudioClip cancelSound; //  Plays this sound for cancel interactions.
     public AudioClip clickSound; //  Plays this sound on each button click.
     public AudioClip gameOverSound; //	This sound will play on loading gameover screen.
     [HideInInspector] public bool isMusicEnabled = true;
@@ -61,6 +62,11 @@ public class AudioManager : Singleton<AudioManager>
     public void PlayButtonClickSound()
     {
         if (Instance.isSoundEnabled && clickSound != null) audioSource.PlayOneShot(clickSound);
+    }
+
+    public void PlayButtonCancelSound()
+    {
+        if (Instance.isSoundEnabled && cancelSound != null) audioSource.PlayOneShot(cancelSound);
     }
 
     /// <summary>

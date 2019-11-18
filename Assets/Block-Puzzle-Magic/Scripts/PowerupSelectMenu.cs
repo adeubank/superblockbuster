@@ -71,6 +71,7 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
         PowerupOption firstPowerupOption = null;
         foreach (var powerupBlockSpawn in PowerupController.Instance.availablePowerups.powerupBlockSpawns.OrderBy(PowerupPopup.PriceForPowerup))
         {
+            if (PowerupController.Instance.equippedPowerupIds.Contains(powerupBlockSpawn.BlockID)) continue;
             var powerupOption = Instantiate(powerupOptionPrefab, powerupOptionsListTransform)
                 .GetComponent<PowerupOption>();
 
