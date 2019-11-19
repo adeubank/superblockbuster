@@ -193,17 +193,31 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return;
         }
 
-        // missed the blocks, check if tap landed in-between blocks
+        // missed the blocks, check if tap is close enough
         var worldPosition = Camera.main.ScreenToWorldPoint(eventData.position);
         Debug.Log("Missed clicked block. Checking all blocks. eventData.position=" + eventData.position + " worldPosition=" + worldPosition);
-        if (highlightingBlocks.Any(block => Vector2.Distance(worldPosition, block.transform.position) <= 0.5f))
+        if (highlightingBlocks.Any(block => Vector2.Distance(worldPosition, block.transform.position) <= 0.25f))
         {
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
 
-        // nope we missed, reset
-        ResetCurrentShape();
+        // missed blocks, find the closest block, then see if we can highlight it with current shape
+        if (currentShape != null)
+        {
+            var currentHighlightedBlocks = highlightingBlocks.ToList();
+            var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.25f, Vector2.zero));
+            raycastHit2Ds.Sort((raycastHit2D, otherRaycastHit2D) => Vector2.Distance(worldPosition, raycastHit2D.point).CompareTo(Vector2.Distance(worldPosition, otherRaycastHit2D.point)));
+            var canPlaceShapeHere = raycastHit2Ds.Any(hit2D =>
+            {
+                var nearbyBlock = hit2D.collider.gameObject.GetComponent<Block>();
+                if (nearbyBlock && CanPlaceShape(nearbyBlock.transform, currentShape)) return true;
+                return false;
+            });
+            if (canPlaceShapeHere) return;
+            highlightingBlocks = currentHighlightedBlocks;
+            SetHighLightImage(currentShape.blockImage);
+        }
     }
 
     #endregion
@@ -273,19 +287,39 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         Debug.Log("Setting auto move.");
         var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
+        ShapeInfo nextPlayableShape = null;
+
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse().Any(block =>
+        // find first block where we have a playable shape
+        blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse().First(block =>
         {
             foreach (var info in playableShapes)
-            {
-                currentShape = info;
-                if (CanPlaceShape(block.transform, currentShape)) return true;
-            }
+                if (CanPlaceShape(block.transform, info))
+                {
+                    nextPlayableShape = info;
+                    return true;
+                }
 
             return false;
         });
 
-        playableShapes.ForEach(info =>
+        if (nextPlayableShape == null)
+        {
+            Debug.Log("Automove did not find a playable shape");
+        }
+        else
+        {
+            currentShape = nextPlayableShape;
+            HighlightBlocksForAutoMove(nextPlayableShape);
+        }
+
+        _autoMoveLocked = false;
+    }
+
+    public void HighlightBlocksForAutoMove(ShapeInfo shapeInfo)
+    {
+        // reset the auto move highlight on shape inventory
+        BlockShapeSpawner.Instance.GetPlayableShapes().ForEach(info =>
         {
             info.ShapeBlocks.ForEach(shapeBlock =>
             {
@@ -295,15 +329,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             });
         });
 
-        if (currentShape != null)
-        {
-            shapeSelectionArrow.SetActive(true);
-            shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
-            shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
-            currentShape.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
-        }
-
-        _autoMoveLocked = false;
+        shapeSelectionArrow.SetActive(true);
+        shapeSelectionArrow.transform.SetParent(currentShape.transform.parent, false);
+        shapeSelectionArrow.transform.localPosition = new Vector3(0, 105);
+        shapeInfo.ShapeBlocks.ForEach(shapeBlock => { Instantiate(autoMoveHighlightImage, shapeBlock.block); });
     }
 
     /// <summary>
@@ -342,7 +371,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             if (!highlightingBlocks.Contains(checkingCell)) highlightingBlocks.Add(checkingCell);
         }
 
-        if (canPlaceShape) SetHighLightImage();
+        if (canPlaceShape) SetHighLightImage(shapeInfo.blockImage);
 
         return canPlaceShape;
     }
@@ -359,12 +388,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Sets the high light image.
     /// </summary>
-    private void SetHighLightImage()
+    /// <param name="shapeInfoBlockImage"></param>
+    private void SetHighLightImage(Sprite shapeInfoBlockImage)
     {
         foreach (var c in highlightingBlocks)
         {
             c.gameObject.tag = "Block/Highlighted";
-            c.SetHighlightImage(currentShape.blockImage);
+            c.SetHighlightImage(shapeInfoBlockImage);
         }
     }
 
