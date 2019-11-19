@@ -211,10 +211,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var canPlaceShapeHere = raycastHit2Ds.Any(hit2D =>
             {
                 var nearbyBlock = hit2D.collider.gameObject.GetComponent<Block>();
-                if (nearbyBlock && CanPlaceShape(nearbyBlock.transform, currentShape)) return true;
-                return false;
+                if (nearbyBlock == null) return false;
+                if (highlightingBlocks.Contains(nearbyBlock)) // jsut play it where the highlight is
+                {
+                    StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+                    return true;
+                }
+
+                if (CanPlaceShape(nearbyBlock.transform, currentShape)) return true; // if not, see if we can play it here
+                return false; // no idea where the tap is
             });
-            if (canPlaceShapeHere) return;
+            if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
             highlightingBlocks = currentHighlightedBlocks;
             SetHighLightImage(currentShape.blockImage);
         }
