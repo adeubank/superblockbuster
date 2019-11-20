@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Scripts;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
@@ -209,36 +210,35 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return;
         }
 
-        // missed the blocks, check if tap is close enough
-        var worldPosition = Camera.main.ScreenToWorldPoint(eventData.position);
-        Debug.Log("Missed clicked block. Checking all blocks. eventData.position=" + eventData.position + " worldPosition=" + worldPosition);
-        if (highlightingBlocks.Any(block => Vector2.Distance(worldPosition, block.transform.position) <= 0.25f))
-        {
-            Debug.Log("Missed the blocks, but tap is close enough, placing shape on board");
-            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
-            return;
-        }
-
         // missed blocks, find the closest block, then see if we can highlight it with current shape
         if (currentShape != null)
         {
-            var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.25f, Vector2.zero));
+            var worldPosition = Camera.main.ScreenToWorldPoint(eventData.position);
+            var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.3f, Vector2.zero));
+            // sort by closest to the tap
             raycastHit2Ds.Sort((raycastHit2D, otherRaycastHit2D) => Vector2.Distance(worldPosition, raycastHit2D.point).CompareTo(Vector2.Distance(worldPosition, otherRaycastHit2D.point)));
-            var canPlaceShapeHere = raycastHit2Ds.Any(hit2D =>
+            var nearbyBlocks = raycastHit2Ds.Select(hit2D => hit2D.collider.gameObject.GetComponent<Block>()).Where(b => b!=null).ToList();
+            var didTapHighlightedBlock = nearbyBlocks.Any(nearbyBlock =>
             {
-                var nearbyBlock = hit2D.collider.gameObject.GetComponent<Block>();
-                if (nearbyBlock == null) return false;
                 if (highlightingBlocks.Contains(nearbyBlock))
                 {
                     Debug.Log("Circle cast from tap is near highlighted blocks, placing shape on board");
                     StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
                     return true;
                 }
-
+                return false; // no idea where the tap is
+            });
+            if (didTapHighlightedBlock)
+            {
+                return; // no need to reset, assuming shape was placed
+            }
+            
+            var canPlaceShapeHere = nearbyBlocks.Any(nearbyBlock =>
+            {
                 // if not, see if we can play it here
                 if (CanPlaceShape(nearbyBlock.transform, currentShape))
                 {
-                    Debug.Log("Circle cast from tap is near playable blocks, placing shape on board");
+                    Debug.Log("Circle cast from tap is near playable blocks, highlighting on board");
                     return true; 
                 }
                 
@@ -254,7 +254,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             // made it to the end without tapping something meaningful, keep the same highlight
             highlightingBlocks = currentHighlightedBlocks;
-            SetHighLightImage(currentShape.blockImage);
+            SetHighLightImage(currentShape);
             HighlightBlocksForAutoMove(currentShape);
         }
 
@@ -391,29 +391,31 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public bool CanPlaceShape(Transform currentHittingBlock, ShapeInfo shapeInfo)
     {
         var currentCell = currentHittingBlock.GetComponent<Block>();
-        var currentRowID = currentCell.rowID;
-        var currentColumnID = currentCell.columnID;
-        var canPlaceShape = true;
-
+        var currentRowId = currentCell.rowID;
+        var currentColumnId = currentCell.columnID;
+        
         StopHighlighting();
 
-        foreach (var c in shapeInfo.ShapeBlocks)
+        var canPlaceShape = shapeInfo.ShapeBlocks.All(c =>
         {
+            
             var checkingCell = blockGrid.Find(o =>
-                o.rowID == currentRowID + c.rowID + shapeInfo.startOffsetX &&
-                o.columnID == currentColumnID + (c.columnID - shapeInfo.startOffsetY));
+                o.rowID == currentRowId + c.rowID + shapeInfo.startOffsetX &&
+                o.columnID == currentColumnId + (c.columnID - shapeInfo.startOffsetY));
 
             if (checkingCell == null || checkingCell != null && !shapeInfo.IsBandageShape() && checkingCell.isFilled)
             {
-                canPlaceShape = false;
                 highlightingBlocks.Clear();
-                break;
+                return false;
             }
 
             if (!highlightingBlocks.Contains(checkingCell)) highlightingBlocks.Add(checkingCell);
-        }
+        
 
-        if (canPlaceShape) SetHighLightImage(shapeInfo.blockImage);
+            return true;
+        });
+
+        if (canPlaceShape) SetHighLightImage(shapeInfo);
 
         return canPlaceShape;
     }
@@ -430,13 +432,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <summary>
     ///     Sets the high light image.
     /// </summary>
-    /// <param name="shapeInfoBlockImage"></param>
-    private void SetHighLightImage(Sprite shapeInfoBlockImage)
+    /// <param name="shapeInfo"></param>
+    private void SetHighLightImage(ShapeInfo shapeInfo)
     {
         foreach (var c in highlightingBlocks)
         {
             c.gameObject.tag = "Block/Highlighted";
-            c.SetHighlightImage(shapeInfoBlockImage);
+            c.SetHighlightImage(shapeInfo);
         }
     }
 
@@ -450,6 +452,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 c.gameObject.tag = "Untagged";
                 c.StopHighlighting();
+                // clear any previous highlights
+                c.ClearExtraChildren();
             }
 
         hittingBlock = null;

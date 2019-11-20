@@ -106,13 +106,19 @@ public class Block : MonoBehaviour, IComparable
     ///     Sets the highlight image.
     /// </summary>
     /// <param name="sprite">Sprite.</param>
-    public void SetHighlightImage(Sprite sprite)
+    public void SetHighlightImage(ShapeInfo shapeInfo)
     {
         if (blockImage.sprite)
             prevBlockImageSprite = blockImage.sprite;
-        blockImage.sprite = sprite;
+        blockImage.sprite = shapeInfo.blockImage;
         blockImage.color = new Color(1, 1, 1, 0.5F);
         autoMoveHighlight.SetActive(true);
+        
+        var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById(shapeInfo.ShapeID);
+        if (powerupInfo != null)
+        {
+            Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
+        }
     }
 
     /// <summary>
