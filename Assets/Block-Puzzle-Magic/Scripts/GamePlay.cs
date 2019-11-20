@@ -219,6 +219,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 }
 
                 if (CanPlaceShape(nearbyBlock.transform, currentShape)) return true; // if not, see if we can play it here
+
+                // check if tapped shape
+                var nearbyShape = hit2D.collider.gameObject.GetComponent<ShapeInfo>();
+                var canPlaceShape = BlocksForAutoMove().Any(b => CanPlaceShape(b.transform, nearbyShape));
+                if (nearbyShape != null && canPlaceShape)
+                {
+                    StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+                    return true;
+                }
+
                 return false; // no idea where the tap is
             });
             if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
@@ -295,10 +305,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Setting auto move.");
         var playableShapes = BlockShapeSpawner.Instance.GetPlayableShapes();
         ShapeInfo nextPlayableShape = null;
-
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
         // find first block where we have a playable shape
-        blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse().First(block =>
+        BlocksForAutoMove().Any(block =>
         {
             foreach (var info in playableShapes)
                 if (CanPlaceShape(block.transform, info))
@@ -321,6 +330,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         _autoMoveLocked = false;
+    }
+
+    private IEnumerable<Block> BlocksForAutoMove()
+    {
+        return blockGrid.Where(b => !b.isFilled).AsEnumerable().Reverse();
     }
 
     public void HighlightBlocksForAutoMove(ShapeInfo shapeInfo)
