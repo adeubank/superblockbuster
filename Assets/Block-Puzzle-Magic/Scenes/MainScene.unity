@@ -308,10 +308,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainScreen
       objectReference: {fileID: 0}
-    - target: {fileID: 1000010891534562, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 224000012262434084, guid: 208e7060f68a82148a126bdcf73e6574,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -417,12 +413,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114000011566650644, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: FortuneWheelPrefab
-      value: 
-      objectReference: {fileID: 1000012391514778, guid: 187e711c2b2a743798d4833b1c4787e3,
-        type: 3}
     - target: {fileID: 8112690277982579942, guid: 208e7060f68a82148a126bdcf73e6574,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -452,51 +442,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224637197809397742, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 324.98828
-      objectReference: {fileID: 0}
-    - target: {fileID: 224000013290675076, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 428.27734
-      objectReference: {fileID: 0}
-    - target: {fileID: 6561436529242668334, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 2449077391160456546, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 2239967411415871209, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 4329977480328987453, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 5274747197280732076, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 4065444242037592946, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 467264116957085088, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.01
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
