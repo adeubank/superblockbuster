@@ -148,6 +148,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (clickedObject.transform.childCount <= 0) return;
 
         _isDraggingPlayableShape = true;
+        ResetCurrentShape();
         currentShape = clickedObject.GetComponent<ShapeInfo>();
         var pos = Camera.main.ScreenToWorldPoint(eventData.position);
         Transform transform1;
@@ -184,11 +185,26 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ResetCurrentShape();
             return;
         }
+        
+        // track current highlighted blocks
+        // since the state may need to be reset later
+        var currentHighlightedBlocks = highlightingBlocks.ToList();
+
+        // check if tapping a shape
+        var clickedShape = eventData.pointerCurrentRaycast.gameObject.GetComponent<ShapeInfo>();
+        if (clickedShape != null && currentShape == clickedShape && BlocksForAutoMove().Any(b => CanPlaceShape(b.transform, currentShape)))
+        {
+            Debug.Log("Tapped shape, setting highlight image on board");
+            currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapeContainerLocalScale();
+            HighlightBlocksForAutoMove(currentShape);
+            return;
+        }
 
         // check if we have a bullseye
-        var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.transform.GetComponent<Block>();
+        var clickedBlocked = eventData.pointerCurrentRaycast.gameObject.GetComponent<Block>();
         if (clickedBlocked != null && highlightingBlocks.Count > 0 && highlightingBlocks.Contains(clickedBlocked))
         {
+            Debug.Log("Bullseye, tapped highlighted blocks, placing shape on board");
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
@@ -198,6 +214,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Missed clicked block. Checking all blocks. eventData.position=" + eventData.position + " worldPosition=" + worldPosition);
         if (highlightingBlocks.Any(block => Vector2.Distance(worldPosition, block.transform.position) <= 0.25f))
         {
+            Debug.Log("Missed the blocks, but tap is close enough, placing shape on board");
             StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
             return;
         }
@@ -205,36 +222,43 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         // missed blocks, find the closest block, then see if we can highlight it with current shape
         if (currentShape != null)
         {
-            var currentHighlightedBlocks = highlightingBlocks.ToList();
             var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.25f, Vector2.zero));
             raycastHit2Ds.Sort((raycastHit2D, otherRaycastHit2D) => Vector2.Distance(worldPosition, raycastHit2D.point).CompareTo(Vector2.Distance(worldPosition, otherRaycastHit2D.point)));
             var canPlaceShapeHere = raycastHit2Ds.Any(hit2D =>
             {
                 var nearbyBlock = hit2D.collider.gameObject.GetComponent<Block>();
                 if (nearbyBlock == null) return false;
-                if (highlightingBlocks.Contains(nearbyBlock)) // jsut play it where the highlight is
+                if (highlightingBlocks.Contains(nearbyBlock))
                 {
+                    Debug.Log("Circle cast from tap is near highlighted blocks, placing shape on board");
                     StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
                     return true;
                 }
 
-                if (CanPlaceShape(nearbyBlock.transform, currentShape)) return true; // if not, see if we can play it here
-
-                // check if tapped shape
-                var nearbyShape = hit2D.collider.gameObject.GetComponent<ShapeInfo>();
-                var canPlaceShape = BlocksForAutoMove().Any(b => CanPlaceShape(b.transform, nearbyShape));
-                if (nearbyShape != null && canPlaceShape)
+                // if not, see if we can play it here
+                if (CanPlaceShape(nearbyBlock.transform, currentShape))
                 {
-                    StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
-                    return true;
+                    Debug.Log("Circle cast from tap is near playable blocks, placing shape on board");
+                    return true; 
                 }
-
+                
                 return false; // no idea where the tap is
             });
-            if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
+            if (canPlaceShapeHere)
+            {
+                return; // no need to reset, assuming shape was placed
+            }
+        }
+
+        if (currentShape != null)
+        {
+            // made it to the end without tapping something meaningful, keep the same highlight
             highlightingBlocks = currentHighlightedBlocks;
             SetHighLightImage(currentShape.blockImage);
+            HighlightBlocksForAutoMove(currentShape);
         }
+
+        StartCoroutine(SetAutoMove());
     }
 
     #endregion
@@ -243,15 +267,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (_isDraggingPlayableShape && currentShape != null)
         {
-#if HBDOTween
             currentShape.transform.DOLocalMove(Vector3.zero, 0.5F);
             currentShape.transform.DOScale(BlockShapeSpawner.Instance.ShapeContainerLocalScale(), 0.5F);
-#endif
             currentShape = null;
             AudioManager.Instance.PlaySound(blockNotPlacedSound);
         }
-
-        StartCoroutine(SetAutoMove());
     }
 
 
@@ -288,6 +308,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Starting auto move. _autoMoveLocked=" + _autoMoveLocked);
 
         if (_autoMoveLocked) yield break;
+        if (currentShape != null) yield break;
 
         _autoMoveLocked = true;
 
