@@ -13,7 +13,7 @@ public class PowerupSelected : MonoBehaviour
         _equippedPowerup =
             PowerupController.Instance.availablePowerups.powerupBlockSpawns.Find(powerup =>
                 powerup.BlockID == equippedPowerupId);
-        powerupImage.sprite = _equippedPowerup.powerupBlockIcon.GetComponent<Image>().sprite;
+        powerupImage.sprite = _equippedPowerup.powerupActivationSprite.GetComponent<Image>().sprite;
         powerupButton.enabled = true;
         powerupButton.onClick.AddListener(() =>
         {

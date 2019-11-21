@@ -11,7 +11,7 @@ public class PowerupOption : MonoBehaviour
     public void SetPowerup(PowerupBlockSpawn _powerup)
     {
         powerup = _powerup;
-        powerupIcon.sprite = _powerup.powerupBlockIcon.GetComponent<Image>().sprite;
+        powerupIcon.sprite = _powerup.powerupActivationSprite.GetComponent<Image>().sprite;
         //region rebind event handlers
         powerupButton.onClick.RemoveAllListeners();
         powerupButton.onClick.AddListener(OpenPowerupModal);

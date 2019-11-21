@@ -111,7 +111,7 @@ MonoBehaviour:
       type: 3}
     powerupBlockIcon: {fileID: 7825638497991642644, guid: 3dfa46a5bd9d26e4395973e7159e9716,
       type: 3}
-    powerupSfx: {fileID: 8300000, guid: 307c6210eefec514abfcbb35cd965a98, type: 3}
+    powerupSfx: {fileID: 8300000, guid: be20cc58b7f9af543ae0996cd3fdf3e6, type: 3}
   - BlockID: 1011
     shapeBlock: {fileID: 2457418089751939684, guid: c9b86c11d63732846a1f871b2ee819df,
       type: 3}
@@ -120,4 +120,4 @@ MonoBehaviour:
       type: 3}
     powerupBlockIcon: {fileID: 8793108114745435912, guid: dbcdc267c9129584e91b1fdfab190b27,
       type: 3}
-    powerupSfx: {fileID: 8300000, guid: 6a234785ea559d14ab5a7a674c0f9d25, type: 3}
+    powerupSfx: {fileID: 8300000, guid: fc43669de21a20a4f8b466d372af139e, type: 3}
