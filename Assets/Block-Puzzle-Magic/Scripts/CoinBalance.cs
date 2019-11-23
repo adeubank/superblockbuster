@@ -6,13 +6,9 @@ public class CoinBalance : MonoBehaviour
 {
     public Text txtCoinBalance;
 
-    /// <summary>
-    ///     Raises the enable event.
-    /// </summary>
-    private void OnEnable()
+    private void Start()
     {
         CurrencyManager.OnCoinBalanceUpdated += OnCoinBalanceUpdated;
-
         var coinBalance = CurrencyManager.Instance.GetCoinBalance();
         OnCoinBalanceUpdated(coinBalance);
     }
@@ -49,10 +45,15 @@ public class CoinBalance : MonoBehaviour
         for (var index = 1; index < 50; index++)
         {
             oldBalance += IterationSize;
-            txtCoinBalance.text = string.Format("{0:#,#.}", oldBalance);
+            SetTextCoinBalance(oldBalance);
             yield return new WaitForEndOfFrame();
         }
 
+        SetTextCoinBalance(coinBalance);
+    }
+
+    private void SetTextCoinBalance(int coinBalance)
+    {
         txtCoinBalance.text = string.Format("{0:#,#.}", coinBalance);
     }
 }

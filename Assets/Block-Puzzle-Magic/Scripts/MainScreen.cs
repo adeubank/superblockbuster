@@ -8,10 +8,12 @@ public class MainScreen : MonoBehaviour
     public void Start()
     {
         IronSourceEvents.onRewardedVideoAvailabilityChangedEvent += RewardedVideoAvailabilityChangedEvent;
+        InvokeRepeating(nameof(RefreshAds), 0, 60);
     }
 
     private void OnEnable()
     {
+        CancelInvoke(nameof(RefreshAds));
         InvokeRepeating(nameof(RefreshAds), 0, 60);
     }
 
