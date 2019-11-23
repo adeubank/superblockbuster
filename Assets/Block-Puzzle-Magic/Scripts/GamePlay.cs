@@ -298,7 +298,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (!RemoteConfigController.Instance.CanShowAd()) return;
 
-        if (!IronSource.Agent.isInterstitialPlacementCapped(GameOver.IronSourcePlacementName)) IronSourceInterstitialController.LoadInterstitial();
+        IronSourceInterstitialController.LoadInterstitial();
 
         if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
     }
@@ -1610,6 +1610,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
+        AnalyticsEvent.GameOver();
         GameController.IncrementGamesPlayed();
 
         //region compute a variable coin reward based on the score

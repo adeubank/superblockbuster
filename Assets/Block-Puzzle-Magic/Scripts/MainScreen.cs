@@ -3,8 +3,6 @@
 public class MainScreen : MonoBehaviour
 {
     private const string PrefsFirstPlay = "isFirstPlay";
-    private bool _bannerShown;
-
     public GameObject showRewardedVideoButton;
 
     public void Start()
@@ -14,7 +12,7 @@ public class MainScreen : MonoBehaviour
 
     private void OnEnable()
     {
-        InvokeRepeating(nameof(RefreshAds), 0, 120);
+        InvokeRepeating(nameof(RefreshAds), 0, 60);
     }
 
     private void OnDisable()
@@ -31,17 +29,12 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        if (!IronSource.Agent.isBannerPlacementCapped(name) && !_bannerShown)
-        {
-            IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
-            _bannerShown = true;
-        }
+        if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
     }
 
     private void HideBannerAd()
     {
         IronSource.Agent.hideBanner();
-        _bannerShown = false;
     }
 
     private void CheckIfRewardedVideoIsAvailable()

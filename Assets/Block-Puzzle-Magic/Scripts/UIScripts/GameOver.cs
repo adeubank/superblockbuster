@@ -14,7 +14,8 @@ public class GameOver : MonoBehaviour
     {
         Debug.Log("Game over screen awake!");
 
-        if (RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isInterstitialPlacementCapped(IronSourcePlacementName)) IronSource.Agent.showInterstitial(IronSourcePlacementName);
+        if (RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isInterstitialPlacementCapped(IronSourcePlacementName) && IronSource.Agent.isInterstitialReady())
+            IronSource.Agent.showInterstitial(IronSourcePlacementName);
 
         InputManager.Instance.EnableTouch();
     }
