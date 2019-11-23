@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Scripts;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
@@ -186,7 +185,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ResetCurrentShape();
             return;
         }
-        
+
         // track current highlighted blocks
         // since the state may need to be reset later
         var currentHighlightedBlocks = highlightingBlocks.ToList();
@@ -217,7 +216,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.3f, Vector2.zero));
             // sort by closest to the tap
             raycastHit2Ds.Sort((raycastHit2D, otherRaycastHit2D) => Vector2.Distance(worldPosition, raycastHit2D.point).CompareTo(Vector2.Distance(worldPosition, otherRaycastHit2D.point)));
-            var nearbyBlocks = raycastHit2Ds.Select(hit2D => hit2D.collider.gameObject.GetComponent<Block>()).Where(b => b!=null).ToList();
+            var nearbyBlocks = raycastHit2Ds.Select(hit2D => hit2D.collider.gameObject.GetComponent<Block>()).Where(b => b != null).ToList();
             var didTapHighlightedBlock = nearbyBlocks.Any(nearbyBlock =>
             {
                 if (highlightingBlocks.Contains(nearbyBlock))
@@ -226,28 +225,23 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
                     return true;
                 }
+
                 return false; // no idea where the tap is
             });
-            if (didTapHighlightedBlock)
-            {
-                return; // no need to reset, assuming shape was placed
-            }
-            
+            if (didTapHighlightedBlock) return; // no need to reset, assuming shape was placed
+
             var canPlaceShapeHere = nearbyBlocks.Any(nearbyBlock =>
             {
                 // if not, see if we can play it here
                 if (CanPlaceShape(nearbyBlock.transform, currentShape))
                 {
                     Debug.Log("Circle cast from tap is near playable blocks, highlighting on board");
-                    return true; 
+                    return true;
                 }
-                
+
                 return false; // no idea where the tap is
             });
-            if (canPlaceShapeHere)
-            {
-                return; // no need to reset, assuming shape was placed
-            }
+            if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
         }
 
         if (currentShape != null)
@@ -277,6 +271,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void Start()
     {
+        InitAds();
+
         AnalyticsEvent.GameStart();
 
         //Generate board from GameBoardGenerator Script Component.
@@ -298,8 +294,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             BlockShapeSpawner.Instance.FillShapeContainer();
     }
 
+    private void InitAds()
+    {
+        if (!RemoteConfigController.Instance.CanShowAd()) return;
+
+        if (!IronSource.Agent.isInterstitialPlacementCapped(GameOver.IronSourcePlacementName)) IronSourceInterstitialController.LoadInterstitial();
+
+        if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
+    }
+
     private void OnDestroy()
     {
+        IronSource.Agent.hideBanner();
         DOTween.CompleteAll();
     }
 
@@ -393,12 +399,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var currentCell = currentHittingBlock.GetComponent<Block>();
         var currentRowId = currentCell.rowID;
         var currentColumnId = currentCell.columnID;
-        
+
         StopHighlighting();
 
         var canPlaceShape = shapeInfo.ShapeBlocks.All(c =>
         {
-            
             var checkingCell = blockGrid.Find(o =>
                 o.rowID == currentRowId + c.rowID + shapeInfo.startOffsetX &&
                 o.columnID == currentColumnId + (c.columnID - shapeInfo.startOffsetY));
@@ -410,7 +415,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             }
 
             if (!highlightingBlocks.Contains(checkingCell)) highlightingBlocks.Add(checkingCell);
-        
+
 
             return true;
         });
@@ -1605,6 +1610,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public void OnGameOver()
     {
+        GameController.IncrementGamesPlayed();
+
         //region compute a variable coin reward based on the score
         var currentScore = ScoreManager.Instance.Score;
         var coinReward = 50;

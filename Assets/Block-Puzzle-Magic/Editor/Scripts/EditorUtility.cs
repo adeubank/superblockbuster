@@ -5,12 +5,6 @@ using UnityEngine;
 
 public class EditorUtility : MonoBehaviour
 {
-    [MenuItem("SuperBlockBuster/Plugin Setup/Check Setup", false, 1)]
-    private static void SetUp()
-    {
-        DependencyChecker.OpenWelcomeWindow();
-    }
-
     [MenuItem("SuperBlockBuster/Plugin Setup/Setup IAP Catalog", false, 2)]
     private static void SetUpIAPCatalog()
     {

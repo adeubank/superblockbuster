@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
 {
+    public const string IronSourcePlacementName = "GameOver";
+
     [SerializeField] private Text txtBestScore;
     [SerializeField] private Text txtCoinReward;
 
@@ -11,6 +13,9 @@ public class GameOver : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("Game over screen awake!");
+
+        if (RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isInterstitialPlacementCapped(IronSourcePlacementName)) IronSource.Agent.showInterstitial(IronSourcePlacementName);
+
         InputManager.Instance.EnableTouch();
     }
 

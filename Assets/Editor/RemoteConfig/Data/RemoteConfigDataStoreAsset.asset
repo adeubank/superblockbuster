@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
+  m_Name: RemoteConfigDataStoreAsset
+  m_EditorClassIdentifier: 
+  rsKeyList:
+  - metadata:
+      entityId: 5a56e02a-c370-43b0-8411-7631dc8b4a86
+    rs:
+      key: gamesPerAd
+      type: int
+      value: 3
+  - metadata:
+      entityId: 6a70c89e-e6c2-4cd6-a00c-544b0a954da1
+    rs:
+      key: adsEnabled
+      type: bool
+      value: true
+  rsLastCachedKeyList:
+  - metadata:
+      entityId: 5a56e02a-c370-43b0-8411-7631dc8b4a86
+    rs:
+      key: gamesPerAd
+      type: int
+      value: 3
+  - metadata:
+      entityId: 6a70c89e-e6c2-4cd6-a00c-544b0a954da1
+    rs:
+      key: adsEnabled
+      type: bool
+      value: true
+  configId: d0b3418b-941c-4617-a9f3-cac64427dfdb
+  currentEnvironmentId: 44aa530f-8188-4721-a87a-a4db85fc0c60
+  environments:
+  - id: b0324093-06c8-4d79-804f-0814f8ef976a
+    appId: 
+    name: Release (Default)
+    description: 
+    createdAt: 2019-11-22T22:37:59Z
+    updatedAt: 2019-11-22T22:37:59Z
+  - id: 44aa530f-8188-4721-a87a-a4db85fc0c60
+    appId: 
+    name: Development
+    description: 
+    createdAt: 2019-11-22T22:37:59Z
+    updatedAt: 2019-11-22T22:37:59Z
+  rulesList: []
+  lastCachedRulesList: []
+  addedRulesIDs: []
+  updatedRulesIDs: []
+  deletedRulesIDs: []

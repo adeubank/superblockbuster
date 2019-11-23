@@ -39,4 +39,20 @@ public class GameController : Singleton<GameController>
 		Application.Quit ();
 #endif
     }
+
+    #region Games played
+
+    private const string PrefsGamesPlayed = "GamesPlayed";
+
+    public static int GamesPlayed()
+    {
+        return PlayerPrefs.GetInt(PrefsGamesPlayed, 0);
+    }
+
+    public static void IncrementGamesPlayed()
+    {
+        PlayerPrefs.SetInt(PrefsGamesPlayed, GamesPlayed() + 1);
+    }
+
+    #endregion
 }
