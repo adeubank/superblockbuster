@@ -80,7 +80,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (!InputManager.isTouchAvailable) return;
         if (HoldingNewBlocks()) return;
 
         Debug.Log("On begin drag");
@@ -103,7 +102,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnDrag(PointerEventData eventData)
     {
-        if (!InputManager.Instance.canInput(0.1f)) return;
         if (HoldingNewBlocks()) return;
 
         Debug.Log("On drag");
@@ -144,7 +142,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!InputManager.Instance.canInput(0.1f)) return;
         _isDraggingPlayableShape = false;
         if (HoldingNewBlocks()) return;
 
@@ -157,7 +154,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (clickedObject.transform.childCount <= 0) return;
 
         _isDraggingPlayableShape = true;
-        ResetCurrentShape();
         currentShape = clickedObject.GetComponent<ShapeInfo>();
         var pos = Camera.main.ScreenToWorldPoint(eventData.position);
         Transform transform1;
@@ -497,6 +493,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     public IEnumerator PlaceBlockCheckBoardStatus()
     {
+        timeSlider.PauseTimer();
         HoldNewBlocks(true);
         MoveCount += 1;
 
@@ -540,6 +537,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         HoldNewBlocks(false);
         yield return SetAutoMove();
+        timeSlider.ResumeTimer();
     }
 
     private IEnumerator PrepPowerupsBeforeClearing()
@@ -1067,7 +1065,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield break;
         }
 
-        timeSlider.PauseTimer();
         var comboMultiplier = 0;
 
         do
@@ -1100,8 +1097,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             comboMultiplier += 1;
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
-
-        timeSlider.ResumeTimer();
     }
 
     private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns, bool activatePowerups = true)
@@ -1453,15 +1448,19 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region hold play
 
         HoldNewBlocks(true);
+        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
         timeSlider.PauseTimer();
 
         #endregion
 
         #region notify users of out of moves
 
+        timeSlider.PauseTimer();
         AudioManager.Instance.PlaySound(outOfMoveSound);
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
         yield return GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES);
+        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
+        timeSlider.PauseTimer();
 
         #endregion
 
@@ -1542,32 +1541,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             breakingRows.Concat(breakingColums).SelectMany(b => b).ToList().ForEach(b => b.isFilled = true);
             yield return BreakAllCompletedLines(-1, false);
         }
-
-        #region bomb mode
-
-        if ((GameController.gameMode == GameMode.BLAST || GameController.gameMode == GameMode.CHALLENGE) &&
-            GamePlayUI.Instance.currentGameOverReson == GameOverReason.BOMB_COUNTER_ZERO)
-        {
-            var bombBlocks = blockGrid.FindAll(o => o.isBomb);
-            foreach (var block in bombBlocks)
-            {
-                if (block.bombCounter <= 1) block.SetCounter(block.bombCounter + 4);
-                block.DecreaseCounter();
-            }
-        }
-
-        #endregion
-
-        #region time mode
-
-        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-            if (GamePlayUI.Instance.currentGameOverReson == GameOverReason.TIME_OVER)
-            {
-                timeSlider.AddSeconds(30);
-                timeSlider.ResumeTimer();
-            }
-
-        #endregion
     }
 
     /// <summary>

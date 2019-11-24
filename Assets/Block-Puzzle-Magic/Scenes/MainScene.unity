@@ -456,6 +456,51 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8891836975837879502, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -28.277344
+      objectReference: {fileID: 0}
+    - target: {fileID: 1099192790, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 321.72266
+      objectReference: {fileID: 0}
+    - target: {fileID: 224637197809397742, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 324.98828
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000013290675076, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 428.27734
+      objectReference: {fileID: 0}
+    - target: {fileID: 8112690277982579942, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 269.22266
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013995110920, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b52d0e33b54f16f408e457bd32da58c6,
+        type: 3}
+    - target: {fileID: 114000013995110920, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013995110920, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013995110920, guid: 208e7060f68a82148a126bdcf73e6574,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
 --- !u!1 &284330124

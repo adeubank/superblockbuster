@@ -61,7 +61,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         {
             ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
             ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
-            ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));    
+            ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));
         }
     }
 
@@ -231,7 +231,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var spawningPowerupInfo = FindPowerupById(spawningShapeInfo.ShapeID);
         var spawningRectTransform = shapeBlock.GetComponent<RectTransform>();
         shapeBlock.transform.localScale = ShapeContainerLocalScale();
-        spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningRectTransform.sizeDelta = ShapeSizeDelta();
         spawningShapeInfo.CreateBlockList();
 
@@ -248,9 +247,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                 blockImage.sprite = colorSprite;
         }
 
-#if HBDOTween
-        shapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
-#endif
+        shapeBlock.transform.localPosition = Vector3.zero;
     }
 
     public GameObject NextShapeBlock(Transform shapeContainer)
@@ -361,9 +358,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
                     var emptyContainer = EmptyShapes[0];
                     shapeContainer.GetChild(0).SetParent(emptyContainer);
                     EmptyShapes.RemoveAt(0);
-#if HBDOTween
-                    emptyContainer.GetChild(0).DOLocalMove(Vector3.zero, 0.3F);
-#endif
+                    emptyContainer.GetChild(0).transform.localPosition = Vector3.zero;
                     EmptyShapes.Add(shapeContainer);
                 }
             }
