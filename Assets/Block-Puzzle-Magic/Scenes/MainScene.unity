@@ -2416,8 +2416,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   availablePowerups: {fileID: 11400000, guid: 61c7f36f6ab881049acaf5054d1893b1, type: 2}
-  equippedPowerupIds: f2030000f3030000
-  purchasedPowerupIds: f2030000f3030000
+  equippedPowerupIds: f2030000f3030000ea030000
+  purchasedPowerupIds: f2030000f3030000ea030000
 --- !u!1 &1597385685
 GameObject:
   m_ObjectHideFlags: 0

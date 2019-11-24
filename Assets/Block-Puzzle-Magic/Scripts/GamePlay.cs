@@ -80,7 +80,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!InputManager.isTouchAvailable) return;
         if (HoldingNewBlocks()) return;
+
+        Debug.Log("On begin drag");
 
         if (_isDraggingPlayableShape && currentShape != null)
         {
@@ -100,7 +103,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnDrag(PointerEventData eventData)
     {
+        if (!InputManager.Instance.canInput(0.1f)) return;
         if (HoldingNewBlocks()) return;
+
+        Debug.Log("On drag");
 
         if (_isDraggingPlayableShape && currentShape != null)
         {
@@ -138,8 +144,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (!InputManager.Instance.canInput(0.1f)) return;
         _isDraggingPlayableShape = false;
         if (HoldingNewBlocks()) return;
+
+        Debug.Log("On pointer down");
 
         if (eventData.pointerCurrentRaycast.gameObject == null) return;
 
@@ -167,7 +176,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="eventData">Event data.</param>
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (!InputManager.Instance.canInput(0.1f)) return;
         if (HoldingNewBlocks()) return;
+
+        Debug.Log("On pointer up");
+
         if (currentShape == null)
         {
             ResetCurrentShape();
