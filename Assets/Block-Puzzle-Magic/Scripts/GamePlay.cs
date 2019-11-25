@@ -183,9 +183,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return;
         }
 
-        if (_isDraggingPlayableShape && eventData.dragging && highlightingBlocks.Count > 0)
+        if (_isDraggingPlayableShape && eventData.dragging)
         {
-            StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            if (highlightingBlocks.Count > 0)
+                StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            else
+                ResetCurrentShape();
             return;
         }
 
@@ -916,7 +919,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         _isFrenzyPowerupRunning = true;
 
         const int frenzyOffscreenOffset = 10;
-        const float blockTweenDuration = 0.4f;
+        const float blockTweenDuration = 0.1f;
         var emptyBottomBlocks = blockGrid
             .Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
         var frenzySequence = DOTween.Sequence();
@@ -1678,8 +1681,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
             {
                 if (analyzedBlocks.Contains(surroundingBlock)) continue;
-
-                analyzedBlocks.Add(surroundingBlock);
 
                 if (!surroundingBlock.isFilled)
                 {
