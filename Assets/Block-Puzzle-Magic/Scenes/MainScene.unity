@@ -2710,6 +2710,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a456c3403f3cdf348bfa60f35ec94e4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinGainSound: {fileID: 8300000, guid: 752a25235314d7549ad98013b2ec66ee, type: 3}
   InitialCoinBalance: 5000
 --- !u!114 &1863145568
 MonoBehaviour:

@@ -76,4 +76,10 @@ public class EditorUtility : MonoBehaviour
         PlayerPrefs.SetInt("isBasicHelpShown", 0);
         GamePlay.Instance.ShowBasicHelp();
     }
+
+    [MenuItem("SuperBlockBuster/Add 50 coins")]
+    private static void AddFiftyCoins()
+    {
+        CurrencyManager.Instance.AddCoinBalance(50);
+    }
 }

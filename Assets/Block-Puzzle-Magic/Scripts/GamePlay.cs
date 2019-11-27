@@ -204,11 +204,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // check if tapping a shape
         var clickedShape = eventData.pointerCurrentRaycast.gameObject.GetComponent<ShapeInfo>();
-        if (clickedShape != null && currentShape == clickedShape && BlocksForAutoMove().Any(b => CanPlaceShape(b.transform, currentShape)))
+        if (clickedShape != null)
         {
-            Debug.Log("Tapped shape, setting highlight image on board");
+            Debug.Log("Tapped shape");
+            ResetCurrentShape();
+            currentShape = clickedShape;
             currentShape.transform.localScale = BlockShapeSpawner.Instance.ShapeContainerLocalScale();
-            HighlightBlocksForAutoMove(currentShape);
+
+            if (currentShape == clickedShape && BlocksForAutoMove().Any(b => CanPlaceShape(b.transform, currentShape))) HighlightBlocksForAutoMove(currentShape);
             return;
         }
 

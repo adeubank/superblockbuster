@@ -8,9 +8,13 @@ public class CoinBalance : MonoBehaviour
 
     private void Start()
     {
-        CurrencyManager.OnCoinBalanceUpdated += OnCoinBalanceUpdated;
         var coinBalance = CurrencyManager.Instance.GetCoinBalance();
         OnCoinBalanceUpdated(coinBalance);
+    }
+
+    private void OnEnable()
+    {
+        CurrencyManager.OnCoinBalanceUpdated += OnCoinBalanceUpdated;
     }
 
     /// <summary>

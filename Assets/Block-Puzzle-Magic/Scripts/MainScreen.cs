@@ -48,7 +48,7 @@ public class MainScreen : MonoBehaviour
     private void RewardedVideoAvailabilityChangedEvent(bool canShowAd)
     {
         Debug.Log("unity-script: I got RewardedVideoAvailabilityChangedEvent, value = " + canShowAd);
-        if (canShowAd && RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
+        if (canShowAd && RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
             EnableRewardVideoButton();
         else
             DisableRewardVideoButton();

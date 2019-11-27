@@ -5,6 +5,7 @@ public class CurrencyManager : Singleton<CurrencyManager>
 {
     private int coinBalance;
 
+    public AudioClip coinGainSound;
     public int InitialCoinBalance = 1000;
     public static event Action<int> OnCoinBalanceUpdated;
 
@@ -33,6 +34,7 @@ public class CurrencyManager : Singleton<CurrencyManager>
     {
         coinBalance += coinBalanceToIncrease;
         PlayerPrefs.SetInt("coinBalance", coinBalance);
+        AudioManager.Instance.PlaySound(coinGainSound);
 
         if (OnCoinBalanceUpdated != null) OnCoinBalanceUpdated.Invoke(coinBalance);
     }
