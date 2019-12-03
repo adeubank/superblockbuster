@@ -311,7 +311,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void InitAds()
     {
-        if (!RemoteConfigController.Instance.CanShowAd()) return;
+        if (!RemoteConfigController.Instance.CanShowAd() || GameController.GamesPlayed() < 1) return;
 
         IronSourceInterstitialController.LoadInterstitial();
 
