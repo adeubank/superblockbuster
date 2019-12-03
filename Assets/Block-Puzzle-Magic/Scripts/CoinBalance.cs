@@ -1,19 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CoinBalance : MonoBehaviour
 {
+    private float _lastKnownCoinBalance;
     public Text txtCoinBalance;
-
-    private void Start()
-    {
-        var coinBalance = CurrencyManager.Instance.GetCoinBalance();
-        OnCoinBalanceUpdated(coinBalance);
-    }
-
+    
     private void OnEnable()
     {
+        var coinBalance = CurrencyManager.Instance.GetCoinBalance();
+
+        if (Math.Abs(_lastKnownCoinBalance - coinBalance) > Mathf.Epsilon)
+        {
+            OnCoinBalanceUpdated(coinBalance);
+            StartCoroutine(SetCoinBalance(coinBalance));
+        }
+        
         CurrencyManager.OnCoinBalanceUpdated += OnCoinBalanceUpdated;
     }
 
@@ -31,6 +35,7 @@ public class CoinBalance : MonoBehaviour
     /// <param name="coinBalance">Coin balance.</param>
     private void OnCoinBalanceUpdated(int coinBalance)
     {
+        _lastKnownCoinBalance = coinBalance;
         StartCoroutine(SetCoinBalance(coinBalance));
     }
 

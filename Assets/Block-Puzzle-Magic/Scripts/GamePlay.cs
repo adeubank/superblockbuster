@@ -228,7 +228,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (currentShape != null)
         {
             var worldPosition = Camera.main.ScreenToWorldPoint(eventData.position);
-            var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.3f, Vector2.zero));
+            var raycastHit2Ds = new List<RaycastHit2D>(Physics2D.CircleCastAll(worldPosition, 0.1f, Vector2.zero));
             // sort by closest to the tap
             raycastHit2Ds.Sort((raycastHit2D, otherRaycastHit2D) => Vector2.Distance(worldPosition, raycastHit2D.point).CompareTo(Vector2.Distance(worldPosition, otherRaycastHit2D.point)));
             var nearbyBlocks = raycastHit2Ds.Select(hit2D => hit2D.collider.gameObject.GetComponent<Block>()).Where(b => b != null).ToList();

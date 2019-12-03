@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    private float _timeRemaining = 90.0F;
+    [SerializeField] private float timeRemaining = 90.0F;
     [SerializeField] private Image imageProgress;
 
-    [SerializeField] private int MaxTimeCounter = 90;
+    [SerializeField] private int maxTimeCounter = 90;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;
@@ -21,8 +21,8 @@ public class Timer : MonoBehaviour
     public void ElapseTimer()
     {
         if (GamePlay.Instance.isHelpOnScreen) return;
-        _timeRemaining -= timerRate;
-        SetTimeSlider(_timeRemaining);
+        timeRemaining -= timerRate;
+        SetTimeSlider(timeRemaining);
     }
 
     public void SetTimeSlider(float timeRemaining)
@@ -33,10 +33,10 @@ public class Timer : MonoBehaviour
             GamePlayUI.Instance.ShowRescue(GameOverReason.TIME_OVER);
         }
 
-        var sliderValue = timeRemaining / MaxTimeCounter;
+        var sliderValue = timeRemaining / maxTimeCounter;
         imageProgress.fillAmount = sliderValue;
-        var minutesRemaining = ((int) _timeRemaining / 60).ToString("F0");
-        var secondsRemaining = ((int) _timeRemaining % 60).ToString("F0");
+        var minutesRemaining = ((int) this.timeRemaining / 60).ToString("F0");
+        var secondsRemaining = ((int) this.timeRemaining % 60).ToString("F0");
         txtTimeRemaining.text = minutesRemaining + ":" +
                                 secondsRemaining.PadLeft(Math.Min(secondsRemaining.Length + 1, 2), '0');
     }
@@ -50,8 +50,8 @@ public class Timer : MonoBehaviour
 
     public void AddSeconds(int secondsToAdd)
     {
-        _timeRemaining += secondsToAdd;
-        _timeRemaining = Mathf.Clamp(_timeRemaining, 0, MaxTimeCounter);
+        timeRemaining += secondsToAdd;
+        timeRemaining = Mathf.Clamp(timeRemaining, 0, maxTimeCounter);
     }
 
     public void PauseTimer()
@@ -66,17 +66,17 @@ public class Timer : MonoBehaviour
 
     public int GetRemainingTime()
     {
-        return (int) _timeRemaining;
+        return (int) timeRemaining;
     }
 
     public void SetTime(int timeSeconds)
     {
-        _timeRemaining = timeSeconds;
+        timeRemaining = timeSeconds;
     }
 
     public void ActivateLagPowerup()
     {
-        Debug.Log("Activating Lag Powerup! _timeRemaining=" + _timeRemaining);
+        Debug.Log("Activating Lag Powerup! _timeRemaining=" + timeRemaining);
         AddSeconds(10);
     }
 }
