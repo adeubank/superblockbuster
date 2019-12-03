@@ -32,6 +32,8 @@ public class IronSourceAppController : MonoBehaviour
         Debug.Log("unity-script: IronSource.Agent.init");
         IronSource.Agent.init(AppKey, IronSourceAdUnits.REWARDED_VIDEO, IronSourceAdUnits.INTERSTITIAL, IronSourceAdUnits.BANNER);
 
+        IronSource.Agent.shouldTrackNetworkState(true);
+
         //Set User ID For Server To Server Integration
         //// IronSource.Agent.setUserId ("UserId");
     }
