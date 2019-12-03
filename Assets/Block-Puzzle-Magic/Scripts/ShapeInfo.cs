@@ -116,7 +116,7 @@ public class ShapeInfo : MonoBehaviour
 
                 Debug.Log("Played Bandage Powerup");
                 var randomBandageBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
-                StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(randomBandageBlock.blockID,
+                StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite((int) Powerups.Bandage,
                     randomBandageBlock.moveID, randomBandageBlock, true));
 
                 break;

@@ -151,15 +151,10 @@ public class Block : MonoBehaviour, IComparable
         blockImage.sprite = sprite;
         blockImage.color = new Color(1, 1, 1, 1);
         colorId = sprite.name.TryParseInt();
-
-        // don't just replace the block info if it was filled
-        if (!isFilled)
-        {
-            blockID = _blockID;
-            moveID = moveCount;
-            isFilled = true;
-            isExploding = false;
-        }
+        blockID = _blockID;
+        moveID = moveCount;
+        isFilled = true;
+        isExploding = false;
     }
 
     /// <summary>

@@ -652,7 +652,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                       powerupBlock);
 
             if (removePowerup)
-                blockGrid.Where(b => b.moveID == moveId && b.blockID == powerupId).ToList().ForEach(b => { b.RemovePowerup(); });
+                blockGrid.Where(b => b.moveID == moveId).ToList().ForEach(b => { b.RemovePowerup(); });
             Destroy(powerupActivationSprite);
         });
 
