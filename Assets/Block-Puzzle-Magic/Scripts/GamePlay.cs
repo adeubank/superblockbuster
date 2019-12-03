@@ -1002,7 +1002,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (!block) return false;
 
-        return block.isFilled;
+        return block.isFilled || block.isExploding;
     }
 
     /// <summary>
@@ -1105,10 +1105,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
     }
 
-    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns, bool activatePowerups = true)
+    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
     {
         if (comboMultiplier > 0 && placingShapeBlockCount > 0) AudioManager.Instance.PlaySound(comboSound);
 
+        var shouldActivatePowerups = placingShapeBlockCount > 0;
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count + comboMultiplier;
         var totalBreakingRowBlocks =
             breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
@@ -1174,7 +1175,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     AudioManager.Instance.PlaySound(lineClearSounds.Last());
                 }
             });
-            allLineBreaksSequence.Join(BreakThisLine(line, activatePowerups));
+            allLineBreaksSequence.Join(BreakThisLine(line, shouldActivatePowerups));
         }
 
         if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * multiplier);
@@ -1192,6 +1193,37 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Cleared these move IDs: " + string.Join(", ", clearedMoveIds) + " and block IDs: " +
                   string.Join(", ", clearedBlockIds));
 
+        
+        #region clearing was exploding blocks
+
+        // remove still exploding blocks and reset them
+        var wasExplodingBlocks = blockGrid.Where(b => b.isExploding).ToList();
+        if (wasExplodingBlocks.Any())
+        {
+            var blocksExploded = wasExplodingBlocks.Count(b => b.isFilled);
+            var wasExplodingBlocksSequence = DOTween.Sequence();
+            foreach (var wasExplodingBlock in wasExplodingBlocks)
+            {
+                Debug.Log("Removing the isExploding flag from block. " + wasExplodingBlock);
+                if (wasExplodingBlock.isFilled)
+                {
+                    PrepBlockForBreak(wasExplodingBlocksSequence, shouldActivatePowerups, wasExplodingBlock);
+                    wasExplodingBlocksSequence.Join( wasExplodingBlock.ClearBlock(true));    
+                }
+                else
+                {
+                    wasExplodingBlock.isExploding = false;
+                }
+            }
+
+            if (blocksExploded > 0 && placingShapeBlockCount > 0)
+                ScoreManager.Instance.AddScore(blocksExploded * 500);
+
+            yield return wasExplodingBlocksSequence.WaitForCompletion();
+        }
+
+        #endregion
+
         yield return ActivateQuakePowerup();
 
         yield return ActivateStormPowerup();
@@ -1199,18 +1231,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return ActivateFrenzyPowerup();
 
         yield return ActivateAvalanchePowerup();
-
-        #region clearing was exploding blocks
-
-        // remove still exploding blocks and reset them
-        foreach (var wasExplodingBlock in blockGrid.Where(b => b.isExploding))
-        {
-            Debug.Log("Removing the isExploding flag from block. " + wasExplodingBlock);
-            wasExplodingBlock.isFilled = false;
-            wasExplodingBlock.isExploding = false;
-        }
-
-        #endregion
 
         // do some cleanup, since there are still bugs
         foreach (var block in blockGrid.Where(b => b.blockID == -1 && !b.isDandelionSeed))
@@ -1229,13 +1249,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// </summary>
     /// <returns>The all completed lines.</returns>
     /// <param name="placingShapeBlockCount">Placing shape block count.</param>
-    /// <param name="activatePowerups">Flag whether to call powerup code or not</param>
-    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount, bool activatePowerups = true)
+    private IEnumerator BreakAllCompletedLines(int placingShapeBlockCount)
     {
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
-        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns, activatePowerups);
+        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns);
     }
 
     /// <summary>
@@ -1244,7 +1263,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <returns>The this line.</returns>
     /// <param name="breakingLine">Breaking line.</param>
     /// <param name="activatePowerups">Flag whether to call powerup code or not</param>
-    private Sequence BreakThisLine(List<Block> breakingLine, bool activatePowerups = true)
+    private Sequence BreakThisLine(List<Block> breakingLine, bool activatePowerups)
     {
         Debug.Log("Breaking this line: " + string.Join(", ", breakingLine));
 
@@ -1252,62 +1271,72 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         foreach (var b in breakingLine)
         {
-            var maybeNewPowerup = new PowerupActivation(b);
-            var shouldActivatePowerup = activatePowerups && ShouldActivatePowerup(maybeNewPowerup, b);
-
-            if (b.isDandelionPowerup && shouldActivatePowerup)
-            {
-                b.isDandelionPowerup = false;
-                lineBreakSequence.Join(HandleDandelionPowerup(b));
-            }
-
-            if (b.isBombPowerup)
-                blockGrid.Where(other => other.moveID == b.moveID).ToList().ForEach(other =>
-                {
-                    other.isBombPowerup = false;
-                    Debug.Log("Cleared a bomb powerup! Detonating this block! " + other);
-                    other.ConvertToExplosion();
-                });
-
-            if (b.isSticksGalorePowerup && shouldActivatePowerup)
-            {
-                b.isSticksGalorePowerup = false;
-                Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + b);
-                BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
-                BlockShapeSpawner.Instance.sticksGaloreColorId = b.colorId;
-            }
-
-            if (b.isLagPowerup && shouldActivatePowerup)
-            {
-                b.isLagPowerup = false;
-                Debug.Log("Cleared a Lag powerup! Time is slower!  " + b);
-                timeSlider.ActivateLagPowerup();
-            }
-
-            if (b.isStormPowerup && shouldActivatePowerup)
-            {
-                b.isStormPowerup = false;
-                Debug.Log("Cleared a Storm powerup! Randomly clearing rows!  " + b);
-                _spawnStormBlocks += 1;
-            }
-
-            if (b.isFrenzyPowerup && shouldActivatePowerup)
-            {
-                b.isFrenzyPowerup = false;
-                Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + b);
-                _shouldActivateFrenzy = true;
-            }
-
-            if (b.isAvalanchePowerup && shouldActivatePowerup)
-            {
-                Debug.Log("Cleared an Avalanche powerup! Filling bottom rows once all clear!  " + b);
-                _spawnAvalancheBlocks += 1;
-            }
+            PrepBlockForBreak(lineBreakSequence, activatePowerups, b);
 
             lineBreakSequence.Join(b.ClearBlock(true));
         }
 
         return lineBreakSequence;
+    }
+
+    private void PrepBlockForBreak(Sequence tweenSequence, bool activatePowerups, Block block)
+    {
+        var maybeNewPowerup = new PowerupActivation(block);
+        var shouldActivatePowerup = ShouldActivatePowerup(maybeNewPowerup, block);
+
+        if (!activatePowerups || !shouldActivatePowerup)
+        {
+            return;
+        }
+        
+        if (block.isDandelionPowerup)
+        {
+            block.isDandelionPowerup = false;
+            tweenSequence.Join(HandleDandelionPowerup(block));
+        }
+
+        if (block.isBombPowerup)
+            blockGrid.Where(other => other.moveID == block.moveID).ToList().ForEach(other =>
+            {
+                other.isBombPowerup = false;
+                Debug.Log("Cleared a bomb powerup! Detonating this block! " + other);
+                other.ConvertToExplosion();
+            });
+
+        if (block.isSticksGalorePowerup)
+        {
+            block.isSticksGalorePowerup = false;
+            Debug.Log("Cleared a sticks galore powerup! Next round are stick shapes. " + block);
+            BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks = true;
+            BlockShapeSpawner.Instance.sticksGaloreColorId = block.colorId;
+        }
+
+        if (block.isLagPowerup)
+        {
+            block.isLagPowerup = false;
+            Debug.Log("Cleared a Lag powerup! Time is slower!  " + block);
+            timeSlider.ActivateLagPowerup();
+        }
+
+        if (block.isStormPowerup)
+        {
+            block.isStormPowerup = false;
+            Debug.Log("Cleared a Storm powerup! Randomly clearing rows!  " + block);
+            _spawnStormBlocks += 1;
+        }
+
+        if (block.isFrenzyPowerup)
+        {
+            block.isFrenzyPowerup = false;
+            Debug.Log("Cleared a Frenzy powerup! Filling bottom rows once all clear!  " + block);
+            _shouldActivateFrenzy = true;
+        }
+
+        if (block.isAvalanchePowerup)
+        {
+            Debug.Log("Cleared an Avalanche powerup! Filling bottom rows once all clear!  " + block);
+            _spawnAvalancheBlocks += 1;
+        }
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
@@ -1545,7 +1574,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 breakingRows.Add(GetEntireRowForRescue(rowIndex));
 
             breakingRows.Concat(breakingColums).SelectMany(b => b).ToList().ForEach(b => b.isFilled = true);
-            yield return BreakAllCompletedLines(-1, false);
+            yield return BreakAllCompletedLines(-1);
         }
     }
 
@@ -1667,13 +1696,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void PrepDetonatingBombBlockPowerups(IEnumerable<Block> bombBlocks)
     {
-        var analyzedBlocks = new List<Block>();
+        var analyzedBlocks = new HashSet<Block>();
         var bombPowerups = new Stack<Block>(bombBlocks);
 
         while (bombPowerups.Any())
         {
             var bombPowerup = bombPowerups.Pop();
 
+            bombPowerup.ConvertToExplodingBlock();
             if (analyzedBlocks.Contains(bombPowerup)) continue;
 
             analyzedBlocks.Add(bombPowerup);
@@ -1684,15 +1714,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
             {
                 if (analyzedBlocks.Contains(surroundingBlock)) continue;
-
-                if (!surroundingBlock.isFilled)
-                {
-                    Debug.Log("Prepping this block for exploding. rowId=" + surroundingBlock.rowID + " columnId=" +
-                              surroundingBlock.columnID);
-
-                    surroundingBlock.ConvertToExplodingBlock();
-                }
-
+                surroundingBlock.ConvertToExplodingBlock();
                 if (surroundingBlock.isBombPowerup) bombPowerups.Push(surroundingBlock);
             }
         }

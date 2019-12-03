@@ -26,6 +26,8 @@ public class ScoreManager : Singleton<ScoreManager>
         var oldScore = Score;
         Score += scoreToAdd;
 
+        Debug.Log("Add score! " + scoreToAdd);
+        
         StartCoroutine(SetScore(oldScore, Score));
 
         if (doAnimate)

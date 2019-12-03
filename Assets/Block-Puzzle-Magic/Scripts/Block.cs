@@ -286,7 +286,6 @@ public class Block : MonoBehaviour, IComparable
 
     public void ConvertToExplodingBlock()
     {
-        isFilled = true;
         isExploding = true;
     }
 
