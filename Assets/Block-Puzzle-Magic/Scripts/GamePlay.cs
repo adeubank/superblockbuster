@@ -1193,7 +1193,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         Debug.Log("Cleared these move IDs: " + string.Join(", ", clearedMoveIds) + " and block IDs: " +
                   string.Join(", ", clearedBlockIds));
 
-        
+
         #region clearing was exploding blocks
 
         // remove still exploding blocks and reset them
@@ -1208,7 +1208,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 if (wasExplodingBlock.isFilled)
                 {
                     PrepBlockForBreak(wasExplodingBlocksSequence, shouldActivatePowerups, wasExplodingBlock);
-                    wasExplodingBlocksSequence.Join( wasExplodingBlock.ClearBlock(true));    
+                    wasExplodingBlocksSequence.Join(wasExplodingBlock.ClearBlock(true));
                 }
                 else
                 {
@@ -1284,11 +1284,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var maybeNewPowerup = new PowerupActivation(block);
         var shouldActivatePowerup = ShouldActivatePowerup(maybeNewPowerup, block);
 
-        if (!activatePowerups || !shouldActivatePowerup)
-        {
-            return;
-        }
-        
+        if (!activatePowerups || !shouldActivatePowerup) return;
+
         if (block.isDandelionPowerup)
         {
             block.isDandelionPowerup = false;
@@ -1703,17 +1700,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         {
             var bombPowerup = bombPowerups.Pop();
 
-            bombPowerup.ConvertToExplodingBlock();
-            if (analyzedBlocks.Contains(bombPowerup)) continue;
-
-            analyzedBlocks.Add(bombPowerup);
-
-            Debug.Log("Found bomb block. Prepping surrounding blocks. rowId=" + bombPowerup.rowID + " columnId=" +
-                      bombPowerup.columnID);
-
-            foreach (var surroundingBlock in SurroundingBlocks(bombPowerup))
+            foreach (var surroundingBlock in SurroundingBlocks(bombPowerup, true))
             {
                 if (analyzedBlocks.Contains(surroundingBlock)) continue;
+
+                Debug.Log("Exploding block. " + surroundingBlock);
+
+                analyzedBlocks.Add(surroundingBlock);
                 surroundingBlock.ConvertToExplodingBlock();
                 if (surroundingBlock.isBombPowerup) bombPowerups.Push(surroundingBlock);
             }
@@ -1722,9 +1715,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     #endregion
 
-    public IEnumerable<Block> SurroundingBlocks(Block centerBlock)
+    public IEnumerable<Block> SurroundingBlocks(Block centerBlock, bool includeCenterBlock = false)
     {
-        return SurroundingBlocksInRadius(centerBlock, 1, false);
+        return SurroundingBlocksInRadius(centerBlock, 1, includeCenterBlock);
     }
 
     public IEnumerable<Block> SurroundingBlocksInRadius(Block centerBlock, int radius, bool includeCenterBlock)

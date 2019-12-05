@@ -113,12 +113,9 @@ public class Block : MonoBehaviour, IComparable
         blockImage.sprite = shapeInfo.blockImage;
         blockImage.color = new Color(1, 1, 1, 0.5F);
         autoMoveHighlight.SetActive(true);
-        
+
         var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById(shapeInfo.ShapeID);
-        if (powerupInfo != null)
-        {
-            Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
-        }
+        if (powerupInfo != null) Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
     }
 
     /// <summary>
@@ -394,7 +391,6 @@ public class Block : MonoBehaviour, IComparable
         isBombPowerup = false;
         isDandelionPowerup = false;
         isDoublePoints = false;
-        isExploding = false;
         isSticksGalorePowerup = false;
         isColorCoderPowerup = false;
         isLagPowerup = false;
