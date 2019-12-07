@@ -1490,9 +1490,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         timeSlider.PauseTimer();
         AudioManager.Instance.PlaySound(outOfMoveSound);
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
-        yield return GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES);
-        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
-        timeSlider.PauseTimer();
+        StartCoroutine(GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES));
 
         #endregion
 
