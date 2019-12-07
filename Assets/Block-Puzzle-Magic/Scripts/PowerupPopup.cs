@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class PowerupPopup : MonoBehaviour
 {
+    private const string LOCALE_POWERUP_DESC_PREFIX = "powerup-desc-";
+
     [SerializeField] private PowerupList _powerupList;
     [HideInInspector] public PowerupBlockSpawn powerup;
     [SerializeField] private Button powerupButton;
@@ -55,8 +57,11 @@ public class PowerupPopup : MonoBehaviour
 
         #region update powerup description
 
-        // todo write powerup descriptions
-        powerupDescription.text = "powerup description, 👍 updated via script";
+        var localizedText = LocalizationManager.Instance.GetLocalizedTextForTag(LOCALE_POWERUP_DESC_PREFIX + powerup.BlockID);
+        if (string.IsNullOrEmpty(localizedText))
+            powerupDescription.gameObject.Deactivate();
+        else
+            powerupDescription.text = localizedText;
 
         #endregion
 

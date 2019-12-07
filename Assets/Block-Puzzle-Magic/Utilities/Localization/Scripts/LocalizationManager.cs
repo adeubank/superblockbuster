@@ -67,6 +67,8 @@ public class LocalizationManager : Singleton<LocalizationManager>
             if (ele != null) return ele.Attribute("text").Value;
         }
 
+        Debug.Log("LocalizationManager did not find localization for tag " + tag);
+
         return null;
     }
 
