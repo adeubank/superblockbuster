@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class GamePlayUI : Singleton<GamePlayUI>
 {
     [SerializeField] private GameObject alertWindow;
-    [SerializeField] private Image backLayer;
 
     public GameOverReason currentGameOverReson;
     [SerializeField] private Image imgAlert;
@@ -76,9 +75,6 @@ public class GamePlayUI : Singleton<GamePlayUI>
         switch (reason)
         {
             case GameOverReason.OUT_OF_MOVES:
-                backLayer.gameObject.SetActive(false);
-                imgAlert.gameObject.SetActive(true);
-                txtAlertText.gameObject.SetActive(false);
                 txtAlertText.SetLocalizedTextForTag("txt-out-moves");
                 break;
             case GameOverReason.BOMB_COUNTER_ZERO:
@@ -97,7 +93,6 @@ public class GamePlayUI : Singleton<GamePlayUI>
         alertWindow.SetActive(false);
         txtAlertText.gameObject.SetActive(true);
         imgAlert.gameObject.SetActive(false);
-        backLayer.gameObject.SetActive(true);
     }
 }
 

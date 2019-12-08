@@ -60,6 +60,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private int MaxAllowedVideoWatchRescue;
 
     [HideInInspector] public int MoveCount;
+    [SerializeField] private GameObject outOfMovePrefab;
 
     [SerializeField] private AudioClip outOfMoveSound;
 
@@ -71,6 +72,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+
 
     #region IBeginDragHandler implementation
 
@@ -1487,23 +1489,28 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         #region notify users of out of moves
 
-        timeSlider.PauseTimer();
-        AudioManager.Instance.PlaySound(outOfMoveSound);
         GamePlayUI.Instance.currentGameOverReson = GameOverReason.OUT_OF_MOVES;
-        StartCoroutine(GamePlayUI.Instance.DisplayAlert(GameOverReason.OUT_OF_MOVES));
+        var outOfMovesGameObject = Instantiate(outOfMovePrefab, transform.position + new Vector3(0, 1000, 0), Quaternion.identity, transform);
+        yield return new WaitForFixedUpdate(); // let unity catch up
+        var outOfMovesAlertSequence = DOTween.Sequence();
+        outOfMovesAlertSequence.AppendCallback(() => { AudioManager.Instance.PlaySound(outOfMoveSound); });
+        outOfMovesAlertSequence.Join(outOfMovesGameObject.transform.DOLocalMove(new Vector3(0, 254, 0), 0.8f));
+        outOfMovesAlertSequence.AppendCallback(() =>
+        {
+            var minusScore = -1 * (float) ScoreManager.Instance.Score / 4;
+            ScoreManager.Instance.AddScore((int) minusScore);
+        });
+        outOfMovesAlertSequence.AppendInterval(3f);
+        outOfMovesAlertSequence.Append(outOfMovesGameObject.transform.DOLocalMove(new Vector3(0, 1000, 0), 0.4f));
+        outOfMovesAlertSequence.AppendCallback(() => { Destroy(outOfMovesGameObject); });
 
         #endregion
+
+        yield return new WaitForSeconds(0.8f);
 
         #region clean up the board for them
 
         yield return ExecuteRescue();
-
-        #endregion
-
-        #region dock their score
-
-        var minusScore = -1 * (float) ScoreManager.Instance.Score / 4;
-        ScoreManager.Instance.AddScore((int) minusScore);
 
         #endregion
 
