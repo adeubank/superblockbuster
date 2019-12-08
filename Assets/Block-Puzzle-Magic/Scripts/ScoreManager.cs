@@ -46,17 +46,19 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         var scoreTextAlertGameObject = Instantiate(scoreTextAlertPrefab, transform, false);
         var scoreTextAlert = scoreTextAlertGameObject.GetComponent<ScoreTextAlert>();
-        scoreTextAlert.transform.position = position;
+        var baseDelay = 0.1f;
 
         if (newScore >= 0)
         {
+            scoreTextAlert.transform.position = position;
             scoreTextAlert.scoreText.text = "+" + newScore;
         }
         else
         {
             var transform1 = txtScore.transform;
             var position1 = transform1.position;
-            scoreTextAlert.transform.position = position1 - new Vector3(0, -1, position1.z);
+            var newPosition = new Vector3(position1.x, position1.y - 1, 0);
+            scoreTextAlert.transform.position = newPosition;
             scoreTextAlert.scoreText.text = newScore.ToString();
         }
 
@@ -72,8 +74,12 @@ public class ScoreManager : Singleton<ScoreManager>
         yield return new WaitForFixedUpdate();
 
         var scoreTextAlertSequence = DOTween.Sequence();
-        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(position.x, position.y + 1, 0), 0.8f));
-        scoreTextAlertSequence.Join(scoreTextAlert.scoreText.DOFade(0, 0.8f));
+        if (newScore >= 0)
+            scoreTextAlertSequence.AppendInterval(baseDelay);
+        else
+            scoreTextAlertSequence.AppendInterval(baseDelay * 8);
+        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(scoreTextAlert.transform.position.x, position.y + 3, 0), baseDelay * 8));
+        scoreTextAlertSequence.Join(scoreTextAlert.scoreText.DOFade(0, baseDelay * 8));
         scoreTextAlertSequence.AppendCallback(() => { Destroy(scoreTextAlert.gameObject); });
     }
 

@@ -1482,6 +1482,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region hold play
 
         HoldNewBlocks(true);
+        StopHighlighting();
+        currentShape = null;
         timeSlider.PauseTimer();
 
         #endregion
@@ -1516,6 +1518,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region let it sink in
 
         yield return new WaitForSecondsRealtime(1);
+        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
 
         #endregion
 
