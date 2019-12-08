@@ -38,20 +38,27 @@ public class ScoreManager : Singleton<ScoreManager>
         {
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            AddScoreAlert(scoreToAdd, mousePos);
+            StartCoroutine(AddScoreAlert(scoreToAdd, mousePos));
         }
     }
 
-    private void AddScoreAlert(int newScore, Vector3 position)
+    private IEnumerator AddScoreAlert(int newScore, Vector3 position)
     {
         var scoreTextAlertGameObject = Instantiate(scoreTextAlertPrefab, transform, false);
         var scoreTextAlert = scoreTextAlertGameObject.GetComponent<ScoreTextAlert>();
         scoreTextAlert.transform.position = position;
 
         if (newScore >= 0)
+        {
             scoreTextAlert.scoreText.text = "+" + newScore;
+        }
         else
+        {
+            var transform1 = txtScore.transform;
+            var position1 = transform1.position;
+            scoreTextAlert.transform.position = position1 - new Vector3(0, -1, position1.z);
             scoreTextAlert.scoreText.text = newScore.ToString();
+        }
 
         if (newScore >= 10_000)
             scoreTextAlert.scoreText.color = highScoreColor;
@@ -61,6 +68,8 @@ public class ScoreManager : Singleton<ScoreManager>
             scoreTextAlert.scoreText.color = lowScoreColor;
         else
             scoreTextAlert.scoreText.color = minusScoreColor;
+
+        yield return new WaitForFixedUpdate();
 
         var scoreTextAlertSequence = DOTween.Sequence();
         scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(position.x, position.y + 1, 0), 0.8f));

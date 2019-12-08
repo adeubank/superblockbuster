@@ -62,6 +62,17 @@ public class EditorUtility : MonoBehaviour
         GamePlay.Instance.OnUnableToPlaceShape();
     }
 
+    [MenuItem("SuperBlockBuster/Add Minus Score")]
+    private static void AddMinusScore()
+    {
+        ScoreManager.Instance.AddScore(-100);
+    }
+
+    [MenuItem("SuperBlockBuster/Add Plus Score")]
+    private static void AddPlusScore()
+    {
+        ScoreManager.Instance.AddScore(100);
+    }
 
     [MenuItem("SuperBlockBuster/Init Powerups Menu Options")]
     private static void InitMenuOptions()
