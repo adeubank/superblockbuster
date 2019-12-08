@@ -1209,7 +1209,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 Debug.Log("Removing the isExploding flag from block. " + wasExplodingBlock);
                 if (wasExplodingBlock.isFilled)
                 {
-                    PrepBlockForBreak(wasExplodingBlocksSequence, shouldActivatePowerups, wasExplodingBlock);
+                    PrepBlockForBreak(wasExplodingBlocksSequence, wasExplodingBlock);
                     wasExplodingBlocksSequence.Join(wasExplodingBlock.ClearBlock(true));
                 }
                 else
@@ -1273,7 +1273,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         foreach (var b in breakingLine)
         {
-            PrepBlockForBreak(lineBreakSequence, activatePowerups, b);
+            if (activatePowerups)
+                PrepBlockForBreak(lineBreakSequence, b);
 
             lineBreakSequence.Join(b.ClearBlock(true));
         }
@@ -1281,12 +1282,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         return lineBreakSequence;
     }
 
-    private void PrepBlockForBreak(Sequence tweenSequence, bool activatePowerups, Block block)
+    private void PrepBlockForBreak(Sequence tweenSequence, Block block)
     {
         var maybeNewPowerup = new PowerupActivation(block);
         var shouldActivatePowerup = ShouldActivatePowerup(maybeNewPowerup, block);
 
-        if (!activatePowerups || !shouldActivatePowerup) return;
+        if (!shouldActivatePowerup) return;
 
         if (block.isDandelionPowerup)
         {
