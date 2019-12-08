@@ -92,7 +92,6 @@ public class GamePlayUI : Singleton<GamePlayUI>
         yield return new WaitForSeconds(5F);
         alertWindow.SetActive(false);
         txtAlertText.gameObject.SetActive(true);
-        imgAlert.gameObject.SetActive(false);
     }
 }
 

@@ -1482,7 +1482,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         #region hold play
 
         HoldNewBlocks(true);
-        yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
         timeSlider.PauseTimer();
 
         #endregion
