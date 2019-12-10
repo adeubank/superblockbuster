@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class IronSourceUtils
-{
+    {
     private const string ERROR_CODE = "error_code";
     private const string ERROR_DESCRIPTION = "error_description";
     private const string INSTANCE_ID_KEY = "instanceId";

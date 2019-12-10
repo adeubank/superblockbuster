@@ -2,144 +2,133 @@
 
 public interface IronSourceIAgent
 {
-    //******************* Base API *******************//
+	//******************* Base API *******************//
 
-    void onApplicationPause(bool pause);
+	void onApplicationPause (bool pause);
 
-    void setAge(int age);
+	void setAge (int age);
 
-    void setGender(string gender);
+	void setGender (string gender);
 
-    void setMediationSegment(string segment);
+	void setMediationSegment (string segment);
 
-    string getAdvertiserId();
+	string getAdvertiserId ();
 
-    void validateIntegration();
+	void validateIntegration ();
 
-    void shouldTrackNetworkState(bool track);
+	void shouldTrackNetworkState (bool track);
 
-    bool setDynamicUserId(string dynamicUserId);
+	bool setDynamicUserId (string dynamicUserId);
 
-    void setAdaptersDebug(bool enabled);
+	void setAdaptersDebug(bool enabled);
 
-    //******************* SDK Init *******************//
+	//******************* SDK Init *******************//
 
-    void setUserId(string userId);
+	void setUserId (string userId);
 
-    void init(string appKey);
+	void init (string appKey);
 
-    void init(string appKey, params string[] adUnits);
+	void init (string appKey, params string[] adUnits);
 
-    void initISDemandOnly(string appKey, params string[] adUnits);
+	void initISDemandOnly (string appKey, params string[] adUnits);
 
-    //******************* RewardedVideo API *******************//
+	//******************* RewardedVideo API *******************//
 
-    void showRewardedVideo();
+	void showRewardedVideo ();
 
-    void showRewardedVideo(string placementName);
+	void showRewardedVideo (string placementName);
 
-    bool isRewardedVideoAvailable();
+	bool isRewardedVideoAvailable ();
+	
+	bool isRewardedVideoPlacementCapped (string placementName);
 
-    bool isRewardedVideoPlacementCapped(string placementName);
-
-    IronSourcePlacement getPlacementInfo(string name);
-
-    void setRewardedVideoServerParams(Dictionary<string, string> parameters);
+	IronSourcePlacement getPlacementInfo (string name);
+	
+	void setRewardedVideoServerParams(Dictionary<string, string> parameters);
 
     void clearRewardedVideoServerParams();
 
     //******************* RewardedVideo DemandOnly API *******************//
 
-    void showISDemandOnlyRewardedVideo(string instanceId);
+	void showISDemandOnlyRewardedVideo (string instanceId);
 
-    void loadISDemandOnlyRewardedVideo(string instanceId);
+	void loadISDemandOnlyRewardedVideo (string instanceId);
 
-    bool isISDemandOnlyRewardedVideoAvailable(string instanceId);
+	bool isISDemandOnlyRewardedVideoAvailable (string instanceId);
+    
+	//******************* Interstitial API *******************//
 
-    //******************* Interstitial API *******************//
+	void loadInterstitial ();
 
-    void loadInterstitial();
+	void showInterstitial ();
 
-    void showInterstitial();
+	void showInterstitial (string placementName);
 
-    void showInterstitial(string placementName);
+	bool isInterstitialReady ();
 
-    bool isInterstitialReady();
+	bool isInterstitialPlacementCapped (string placementName);
 
-    bool isInterstitialPlacementCapped(string placementName);
+	//******************* Interstitial DemandOnly API *******************//
 
-    //******************* Interstitial DemandOnly API *******************//
+	void loadISDemandOnlyInterstitial (string instanceId);
 
-    void loadISDemandOnlyInterstitial(string instanceId);
+	void showISDemandOnlyInterstitial (string instanceId);
 
-    void showISDemandOnlyInterstitial(string instanceId);
+	bool isISDemandOnlyInterstitialReady (string instanceId);
 
-    bool isISDemandOnlyInterstitialReady(string instanceId);
+	//******************* Offerwall API *******************//
 
-    //******************* Offerwall API *******************//
+	void showOfferwall ();
 
-    void showOfferwall();
+	void showOfferwall (string placementName);
 
-    void showOfferwall(string placementName);
+	bool isOfferwallAvailable ();
 
-    bool isOfferwallAvailable();
+	void getOfferwallCredits ();
 
-    void getOfferwallCredits();
+	//******************* Banner API *******************//
+	
+	void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position);
 
-    //******************* Banner API *******************//
+	void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position, string placementName);
 
-    void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position);
+	void destroyBanner();
 
-    void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position, string placementName);
+	void displayBanner();
 
-    void destroyBanner();
+	void hideBanner();
 
-    void displayBanner();
+	bool isBannerPlacementCapped(string placementName);
 
-    void hideBanner();
+	void setSegment(IronSourceSegment segment);
 
-    bool isBannerPlacementCapped(string placementName);
-
-    void setSegment(IronSourceSegment segment);
-
-    void setConsent(bool consent);
+	void setConsent(bool consent);
 }
 
 public static class IronSourceAdUnits
 {
-    public static string REWARDED_VIDEO
-    {
-        get { return "rewardedvideo"; }
-    }
+	public static string REWARDED_VIDEO { get { return "rewardedvideo"; } }
 
-    public static string INTERSTITIAL
-    {
-        get { return "interstitial"; }
-    }
+	public static string INTERSTITIAL { get { return "interstitial"; } }
 
-    public static string OFFERWALL
-    {
-        get { return "offerwall"; }
-    }
+	public static string OFFERWALL { get { return "offerwall"; } } 
 
-    public static string BANNER
-    {
-        get { return "banner"; }
-    }
+	public static string BANNER { get { return "banner"; } } 
 }
 
 public class IronSourceBannerSize
 {
+    private int width;
+    private int height;
+    private string description;
+
     public static IronSourceBannerSize BANNER = new IronSourceBannerSize("BANNER");
     public static IronSourceBannerSize LARGE = new IronSourceBannerSize("LARGE");
     public static IronSourceBannerSize RECTANGLE = new IronSourceBannerSize("RECTANGLE");
     public static IronSourceBannerSize SMART = new IronSourceBannerSize("SMART");
-    private string description;
-    private int height;
-    private int width;
 
-    private IronSourceBannerSize()
-    {
+    private IronSourceBannerSize() {
+
     }
 
     public IronSourceBannerSize(int width, int height)
@@ -156,24 +145,13 @@ public class IronSourceBannerSize
         this.height = 0;
     }
 
-    public string Description
-    {
-        get { return description; }
-    }
-
-    public int Width
-    {
-        get { return width; }
-    }
-
-    public int Height
-    {
-        get { return height; }
-    }
+    public string Description { get { return description; } }
+    public int Width { get { return width; } }
+    public int Height { get { return height; } }
 };
 
 public enum IronSourceBannerPosition
 {
-    TOP = 1,
-    BOTTOM = 2
+	TOP = 1,
+	BOTTOM = 2
 };

@@ -1,31 +1,35 @@
+
+using System;
+
 public class IronSourceError
 {
-    private int code;
-    private string description;
+	private string description;
+	private int code;
 
-    public IronSourceError(int errorCode, string errorDescription)
-    {
-        code = errorCode;
-        description = errorDescription;
-    }
+	public int getErrorCode ()
+	{
+		return code;
+	}
 
-    public int getErrorCode()
-    {
-        return code;
-    }
+	public string getDescription ()
+	{
+		return description;
+	}
 
-    public string getDescription()
-    {
-        return description;
-    }
+	public int getCode ()
+	{
+		return code;
+	}
 
-    public int getCode()
-    {
-        return code;
-    }
+	public IronSourceError (int errorCode, string errorDescription)
+	{
+		code = errorCode;
+		description = errorDescription;
+	}
 
-    public override string ToString()
-    {
-        return code + " : " + description;
-    }
+	public override string ToString ()
+	{
+		return code + " : " + description;
+	}
 }
+
