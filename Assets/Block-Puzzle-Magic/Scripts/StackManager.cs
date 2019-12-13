@@ -51,12 +51,12 @@ public class StackManager : Singleton<StackManager>
     {
         if (!GamePlayActive())
         {
-            gamePlayScreen = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay"));
+            gamePlayScreen = (GameObject) Instantiate(Resources.Load("Prefabs/UIScreens/GamePlay"), GameController.Instance.UICanvas.transform, true);
             gamePlayScreen.name = "GamePlay";
-            gamePlayScreen.transform.SetParent(GameController.Instance.UICanvas.transform);
             gamePlayScreen.transform.localPosition = Vector3.zero;
             gamePlayScreen.transform.localScale = Vector3.one;
             gamePlayScreen.GetComponent<RectTransform>().sizeDelta = Vector3.zero;
+            gamePlayScreen.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
             gamePlayScreen.Activate();
         }
     }
