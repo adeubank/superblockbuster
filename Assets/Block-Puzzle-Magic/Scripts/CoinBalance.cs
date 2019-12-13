@@ -15,7 +15,6 @@ public class CoinBalance : MonoBehaviour
         if (Math.Abs(_lastKnownCoinBalance - coinBalance) > Mathf.Epsilon)
         {
             OnCoinBalanceUpdated(coinBalance);
-            StartCoroutine(SetCoinBalance(coinBalance));
         }
         
         CurrencyManager.OnCoinBalanceUpdated += OnCoinBalanceUpdated;
