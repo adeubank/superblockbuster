@@ -351,10 +351,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MainScreen
       objectReference: {fileID: 0}
-    - target: {fileID: 1000010891534562, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 224000012262434084, guid: 208e7060f68a82148a126bdcf73e6574,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -459,30 +455,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8891836975837879502, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: -25.277344
-      objectReference: {fileID: 0}
-    - target: {fileID: 1099192790, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 321.72266
-      objectReference: {fileID: 0}
-    - target: {fileID: 224637197809397742, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 324.98828
-      objectReference: {fileID: 0}
-    - target: {fileID: 224000013290675076, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 428.27734
-      objectReference: {fileID: 0}
-    - target: {fileID: 8112690277982579942, guid: 208e7060f68a82148a126bdcf73e6574,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 269.22266
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 208e7060f68a82148a126bdcf73e6574, type: 3}
@@ -2694,7 +2666,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinGainSound: {fileID: 0}
-  InitialCoinBalance: 5000
+  InitialCoinBalance: 1000
 --- !u!114 &1863145568
 MonoBehaviour:
   m_ObjectHideFlags: 0
