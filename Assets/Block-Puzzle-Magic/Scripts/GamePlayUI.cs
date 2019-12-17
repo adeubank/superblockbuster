@@ -89,7 +89,7 @@ public class GamePlayUI : Singleton<GamePlayUI>
         }
 
         alertWindow.SetActive(true);
-        yield return new WaitForSeconds(5F);
+        yield return new WaitForSeconds(2F);
         alertWindow.SetActive(false);
         txtAlertText.gameObject.SetActive(true);
     }

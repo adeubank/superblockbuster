@@ -39,7 +39,7 @@ public class PopupAnimation : MonoBehaviour
     /// </summary>
     public void OnWindowAdded()
     {
-        Invoke("ShowStartAnimation", 0F);
+        ShowStartAnimation();
     }
 
     /// <summary>
