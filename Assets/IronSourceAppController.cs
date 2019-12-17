@@ -18,18 +18,22 @@ public class IronSourceAppController : MonoBehaviour
             return;
         }
 
-        Debug.Log("unity-script: IronSourceAppController Start called");
+        if (Debug.isDebugBuild)
+        {
+            Debug.Log("unity-script: IronSourceAppController Start called");
 
-        var id = IronSource.Agent.getAdvertiserId();
-        Debug.Log("unity-script: IronSource.Agent.getAdvertiserId : " + id);
+            var id = IronSource.Agent.getAdvertiserId();
+            Debug.Log("unity-script: IronSource.Agent.getAdvertiserId : " + id);
 
-        Debug.Log("unity-script: IronSource.Agent.validateIntegration");
-        IronSource.Agent.validateIntegration();
+            Debug.Log("unity-script: IronSource.Agent.validateIntegration");
+            IronSource.Agent.validateIntegration();
 
-        Debug.Log("unity-script: unity version" + IronSource.unityVersion());
+            Debug.Log("unity-script: unity version" + IronSource.unityVersion());
 
-        // SDK init
-        Debug.Log("unity-script: IronSource.Agent.init");
+            // SDK init
+            Debug.Log("unity-script: IronSource.Agent.init");
+        }
+
         IronSource.Agent.init(AppKey, IronSourceAdUnits.REWARDED_VIDEO, IronSourceAdUnits.INTERSTITIAL, IronSourceAdUnits.BANNER);
 
         IronSource.Agent.shouldTrackNetworkState(true);
