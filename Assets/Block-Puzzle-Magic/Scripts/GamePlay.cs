@@ -1178,11 +1178,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 if (soundsToPlay.Any())
                 {
                     var soundToPlay = soundsToPlay.Dequeue();
-                    AudioManager.Instance.PlaySound(soundToPlay);
+                    if (placingShapeBlockCount > 0)
+                        AudioManager.Instance.PlaySound(soundToPlay);
                 }
                 else
                 {
-                    AudioManager.Instance.PlaySound(lineClearSounds.Last());
+                    if (placingShapeBlockCount > 0)
+                        AudioManager.Instance.PlaySound(lineClearSounds.Last());
                 }
             });
             allLineBreaksSequence.Join(BreakThisLine(line, shouldActivatePowerups));
