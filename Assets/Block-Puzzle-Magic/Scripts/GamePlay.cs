@@ -182,21 +182,29 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (currentShape == null)
         {
             ResetCurrentShape();
+            StartCoroutine(SetAutoMove());
             return;
         }
 
         if (_isDraggingPlayableShape && eventData.dragging)
         {
             if (highlightingBlocks.Count > 0)
+            {
                 StartCoroutine(nameof(PlaceBlockCheckBoardStatus));
+            }
             else
+            {
                 ResetCurrentShape();
+                StartCoroutine(SetAutoMove());
+            }
+
             return;
         }
 
         if (eventData.pointerCurrentRaycast.gameObject == null)
         {
             ResetCurrentShape();
+            StartCoroutine(SetAutoMove());
             return;
         }
 
