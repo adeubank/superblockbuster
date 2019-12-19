@@ -18,7 +18,7 @@ MonoBehaviour:
     rs:
       key: adsEnabled
       type: bool
-      value: true
+      value: False
   - metadata:
       entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
     rs:
@@ -31,7 +31,7 @@ MonoBehaviour:
     rs:
       key: adsEnabled
       type: bool
-      value: true
+      value: False
   - metadata:
       entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
     rs:
@@ -39,7 +39,7 @@ MonoBehaviour:
       type: int
       value: 3
   configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
-  currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
+  currentEnvironmentId: 44aa530f-8188-4721-a87a-a4db85fc0c60
   environments:
   - id: b0324093-06c8-4d79-804f-0814f8ef976a
     appId: 
