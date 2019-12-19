@@ -14,32 +14,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rsKeyList:
   - metadata:
-      entityId: c7afbc2e-7cab-4fd9-8165-e4fca6181ef4
+      entityId: 4771fd35-730e-4dbc-bbbd-a68c265c4d7e
     rs:
       key: adsEnabled
       type: bool
-      value: False
+      value: True
   - metadata:
-      entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
+      entityId: e4ac32ff-a434-4646-8d3a-c2c52f2fbaa9
     rs:
       key: gamesPerAd
       type: int
       value: 3
   rsLastCachedKeyList:
   - metadata:
-      entityId: c7afbc2e-7cab-4fd9-8165-e4fca6181ef4
+      entityId: 4771fd35-730e-4dbc-bbbd-a68c265c4d7e
     rs:
       key: adsEnabled
       type: bool
-      value: False
+      value: True
   - metadata:
-      entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
+      entityId: e4ac32ff-a434-4646-8d3a-c2c52f2fbaa9
     rs:
       key: gamesPerAd
       type: int
       value: 3
   configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
-  currentEnvironmentId: 44aa530f-8188-4721-a87a-a4db85fc0c60
+  currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
   environments:
   - id: b0324093-06c8-4d79-804f-0814f8ef976a
     appId: 

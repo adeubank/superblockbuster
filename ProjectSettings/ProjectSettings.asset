@@ -248,11 +248,11 @@ PlayerSettings:
   clonedFromGUID: 97a4185a5f7e2654296dd4c58385b8d4
   templatePackageId: 
   templateDefaultScene: 
-  AndroidTargetArchitectures: 1
+  AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: 
-  AndroidKeyaliasName: 
+  AndroidKeystoreName: C:/Users/allen/sgg/UnitySuperTilePuzzle/superblockbuster.keystore
+  AndroidKeyaliasName: superblockbuster
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 1
   AndroidIsGame: 1
@@ -715,7 +715,8 @@ PlayerSettings:
     13: HBIAP;HBDOTween
     14: HBIAP;HBDOTween
   platformArchitecture: {}
-  scriptingBackend: {}
+  scriptingBackend:
+    Android: 1
   il2cppCompilerConfiguration: {}
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
