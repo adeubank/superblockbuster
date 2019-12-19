@@ -29,13 +29,11 @@ public class IronSourceAppController : MonoBehaviour
             IronSource.Agent.validateIntegration();
 
             Debug.Log("unity-script: unity version" + IronSource.unityVersion());
-
-            // SDK init
-            Debug.Log("unity-script: IronSource.Agent.init");
         }
 
+        // SDK init
+        Debug.Log("unity-script: IronSource.Agent.init");
         IronSource.Agent.init(AppKey, IronSourceAdUnits.REWARDED_VIDEO, IronSourceAdUnits.INTERSTITIAL, IronSourceAdUnits.BANNER);
-
         IronSource.Agent.shouldTrackNetworkState(true);
 
         //Set User ID For Server To Server Integration
