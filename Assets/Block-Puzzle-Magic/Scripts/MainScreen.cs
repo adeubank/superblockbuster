@@ -36,27 +36,28 @@ public class MainScreen : MonoBehaviour
 
     private void HideBannerAd()
     {
+        Debug.Log("Hiding MainScreen banner");
         IronSource.Agent.hideBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable()
     {
         Debug.Log("unity-script: Checking if rewarded video ad is available");
-        IronSource.Agent.isRewardedVideoAvailable();
-    }
-
-    private void RewardedVideoAvailabilityChangedEvent(bool canShowAd)
-    {
-        Debug.Log("unity-script: I got RewardedVideoAvailabilityChangedEvent, value = " + canShowAd);
-        if (canShowAd && RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
+        if (IronSource.Agent.isRewardedVideoAvailable())
             EnableRewardVideoButton();
         else
             DisableRewardVideoButton();
     }
 
+    private void RewardedVideoAvailabilityChangedEvent(bool canShowAd)
+    {
+        Debug.Log("unity-script: I got RewardedVideoAvailabilityChangedEvent, value = " + canShowAd);
+    }
+
     private void EnableRewardVideoButton()
     {
-        showRewardedVideoButton.Activate();
+        if (RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
+            showRewardedVideoButton.Activate();
     }
 
     private void DisableRewardVideoButton()
