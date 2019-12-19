@@ -14,32 +14,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rsKeyList:
   - metadata:
-      entityId: 5a56e02a-c370-43b0-8411-7631dc8b4a86
-    rs:
-      key: gamesPerAd
-      type: int
-      value: 3
-  - metadata:
-      entityId: 6a70c89e-e6c2-4cd6-a00c-544b0a954da1
+      entityId: c7afbc2e-7cab-4fd9-8165-e4fca6181ef4
     rs:
       key: adsEnabled
       type: bool
       value: true
+  - metadata:
+      entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
+    rs:
+      key: gamesPerAd
+      type: int
+      value: 3
   rsLastCachedKeyList:
   - metadata:
-      entityId: 5a56e02a-c370-43b0-8411-7631dc8b4a86
-    rs:
-      key: gamesPerAd
-      type: int
-      value: 3
-  - metadata:
-      entityId: 6a70c89e-e6c2-4cd6-a00c-544b0a954da1
+      entityId: c7afbc2e-7cab-4fd9-8165-e4fca6181ef4
     rs:
       key: adsEnabled
       type: bool
       value: true
-  configId: d0b3418b-941c-4617-a9f3-cac64427dfdb
-  currentEnvironmentId: 44aa530f-8188-4721-a87a-a4db85fc0c60
+  - metadata:
+      entityId: 8e47ba34-7039-4752-879b-227fc8eaa746
+    rs:
+      key: gamesPerAd
+      type: int
+      value: 3
+  configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
+  currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
   environments:
   - id: b0324093-06c8-4d79-804f-0814f8ef976a
     appId: 

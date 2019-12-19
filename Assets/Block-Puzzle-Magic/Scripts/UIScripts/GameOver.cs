@@ -5,6 +5,8 @@ public class GameOver : MonoBehaviour
 {
     public const string IronSourcePlacementName = "GameOver";
 
+    [SerializeField] private Button btnReplay;
+
     [SerializeField] private Text txtBestScore;
     [SerializeField] private Text txtCoinReward;
 
@@ -13,6 +15,8 @@ public class GameOver : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("Game over screen awake!");
+
+        btnReplay.gameObject.SetActive(GameController.GamesPlayed() > 1);
 
         if (RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isInterstitialPlacementCapped(IronSourcePlacementName) && IronSource.Agent.isInterstitialReady())
             IronSource.Agent.showInterstitial(IronSourcePlacementName);

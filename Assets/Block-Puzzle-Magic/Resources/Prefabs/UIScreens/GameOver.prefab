@@ -246,6 +246,7 @@ MonoBehaviour:
   txtBestScore: {fileID: 114216029917767490}
   txtCoinReward: {fileID: 114731236710726964}
   txtScore: {fileID: 114329678800830446}
+  btnReplay: {fileID: 114085334036197306}
 --- !u!223 &223749287637630394
 Canvas:
   m_ObjectHideFlags: 0

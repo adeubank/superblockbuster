@@ -3037,21 +3037,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114822193437006918, guid: 5ea145a326ac83842a4a05466df30153,
-        type: 3}
-      propertyPath: AnimateOnLoad
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114822193437006918, guid: 5ea145a326ac83842a4a05466df30153,
-        type: 3}
-      propertyPath: AnimateOnDestroy
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 114822193437006918, guid: 5ea145a326ac83842a4a05466df30153,
-        type: 3}
-      propertyPath: UseBackgroundFadeEffect
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5ea145a326ac83842a4a05466df30153, type: 3}
 --- !u!1 &2057389771 stripped
