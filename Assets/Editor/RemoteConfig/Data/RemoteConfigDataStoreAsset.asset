@@ -14,26 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rsKeyList:
   - metadata:
-      entityId: 4771fd35-730e-4dbc-bbbd-a68c265c4d7e
+      entityId: b47b466a-8b7e-407d-8943-bb4f732fe72a
     rs:
       key: adsEnabled
       type: bool
-      value: True
+      value: false
   - metadata:
-      entityId: e4ac32ff-a434-4646-8d3a-c2c52f2fbaa9
+      entityId: 39c52f16-0fce-43b8-af1c-47374530c984
     rs:
       key: gamesPerAd
       type: int
       value: 3
   rsLastCachedKeyList:
   - metadata:
-      entityId: 4771fd35-730e-4dbc-bbbd-a68c265c4d7e
+      entityId: b47b466a-8b7e-407d-8943-bb4f732fe72a
     rs:
       key: adsEnabled
       type: bool
-      value: True
+      value: false
   - metadata:
-      entityId: e4ac32ff-a434-4646-8d3a-c2c52f2fbaa9
+      entityId: 39c52f16-0fce-43b8-af1c-47374530c984
     rs:
       key: gamesPerAd
       type: int
