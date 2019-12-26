@@ -323,14 +323,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (!RemoteConfigController.Instance.CanShowAd() || GameController.GamesPlayed() < 1) return;
 
-        IronSourceInterstitialController.LoadInterstitial();
-
-        if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
+        // TODO Implement game over full screen
+        // IronSourceInterstitialController.LoadInterstitial();
+        //
+        // if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
     }
 
     private void OnDestroy()
     {
-        IronSource.Agent.hideBanner();
+        // TODO Implement game play banner
+        // IronSource.Agent.hideBanner();
         DOTween.CompleteAll();
     }
 

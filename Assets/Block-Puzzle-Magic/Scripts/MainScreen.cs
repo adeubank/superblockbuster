@@ -7,7 +7,8 @@ public class MainScreen : MonoBehaviour
 
     public void Start()
     {
-        IronSourceEvents.onRewardedVideoAvailabilityChangedEvent += RewardedVideoAvailabilityChangedEvent;
+        // TODO implement main screen reward video
+        // IronSourceEvents.onRewardedVideoAvailabilityChangedEvent += RewardedVideoAvailabilityChangedEvent;
         InvokeRepeating(nameof(RefreshAds), 0, 60);
     }
 
@@ -31,22 +32,25 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
+        // TODO Implement main screen banner
+        // if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
     }
 
     private void HideBannerAd()
     {
         Debug.Log("Hiding MainScreen banner");
-        IronSource.Agent.hideBanner();
+        // TODO Implement main screen banner
+        // IronSource.Agent.hideBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable()
     {
         Debug.Log("unity-script: Checking if rewarded video ad is available");
-        if (IronSource.Agent.isRewardedVideoAvailable())
-            EnableRewardVideoButton();
-        else
-            DisableRewardVideoButton();
+        // TODO implement main screen reward video
+        // if (IronSource.Agent.isRewardedVideoAvailable())
+        //     EnableRewardVideoButton();
+        // else
+        //     DisableRewardVideoButton();
     }
 
     private void RewardedVideoAvailabilityChangedEvent(bool canShowAd)
@@ -56,8 +60,9 @@ public class MainScreen : MonoBehaviour
 
     private void EnableRewardVideoButton()
     {
-        if (RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
-            showRewardedVideoButton.Activate();
+        // TODO implement main screen reward video
+        // if (RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
+        //     showRewardedVideoButton.Activate();
     }
 
     private void DisableRewardVideoButton()
@@ -68,15 +73,16 @@ public class MainScreen : MonoBehaviour
     public void RewardedVideoButtonClicked()
     {
         Debug.Log("unity-script: ShowRewardedVideoButtonClicked");
-        if (IronSource.Agent.isRewardedVideoAvailable())
-        {
-            IronSource.Agent.showRewardedVideo(name);
-        }
-        else
-        {
-            DisableRewardVideoButton();
-            Debug.Log("unity-script: IronSource.Agent.isRewardedVideoAvailable - False");
-        }
+        // TODO implement main screen reward video
+        // if (IronSource.Agent.isRewardedVideoAvailable())
+        // {
+        //     IronSource.Agent.showRewardedVideo(name);
+        // }
+        // else
+        // {
+        //     DisableRewardVideoButton();
+        //     Debug.Log("unity-script: IronSource.Agent.isRewardedVideoAvailable - False");
+        // }
     }
 
     /// <summary>
