@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-public class EditorUtility : MonoBehaviour
+public class CustomEditorUtility : MonoBehaviour
 {
     [MenuItem("SuperBlockBuster/Plugin Setup/Setup IAP Catalog", false, 2)]
     private static void SetUpIAPCatalog()

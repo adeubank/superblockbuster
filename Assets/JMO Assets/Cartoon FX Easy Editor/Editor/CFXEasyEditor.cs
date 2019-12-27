@@ -1315,7 +1315,7 @@ public class CFXEasyEditor : EditorWindow
             if (psSerial.FindProperty("ShapeModule.type").intValue == 6)
                 //Unity 4+ : changing the Transform scale will affect the shape Mesh
                 ps.transform.localScale = ps.transform.localScale * ScalingValue;
-//				EditorUtility.SetDirty(ps.transform);
+        EditorUtility.SetDirty(ps.transform);
 
         //Apply Modified Properties
         psSerial.ApplyModifiedProperties();
