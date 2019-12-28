@@ -8,7 +8,6 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
 
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
-    public int gamesPerAd;
 
     private void Awake()
     {
@@ -33,9 +32,8 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 break;
             case ConfigOrigin.Remote:
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
-                gamesPerAd = ConfigManager.appConfig.GetInt("gamesPerAd");
                 assignmentId = ConfigManager.appConfig.assignmentID;
-                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled + " gamesPerAd=" + gamesPerAd);
+                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled);
                 break;
         }
     }
