@@ -46,5 +46,11 @@ public class AdController : Singleton<AdController>
         // Create a 320x50 banner at the bottom of the screen.
         Debug.Log("unity-script: Showing banner ad");
         bannerView = new BannerView(BannerAdUnitId(), AdSize.Banner, AdPosition.Bottom);
+        // Create an empty ad request.
+        AdRequest request = new AdRequest.Builder()
+          // .AddTestDevice("2077ef9a63d2b398840261c8221a0c9b")
+          .Build();
+        // Load the banner with the request.
+        bannerView.LoadAd(request);
     }
 }

@@ -32,8 +32,7 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        // TODO Implement main screen banner
-        // if (!IronSource.Agent.isBannerPlacementCapped(name)) IronSource.Agent.loadBanner(IronSourceBannerSize.BANNER, IronSourceBannerPosition.BOTTOM, name);
+        AdController.Instance.ShowBanner();
     }
 
     private void HideBannerAd()
