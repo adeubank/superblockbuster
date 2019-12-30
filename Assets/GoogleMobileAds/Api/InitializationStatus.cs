@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using GoogleMobileAds.Common;
+using System.Collections.Generic;
 
 namespace GoogleMobileAds.Api
 {
     public class InitializationStatus
     {
-        private readonly IInitializationStatusClient client;
+        private IInitializationStatusClient client;
 
         internal InitializationStatus(IInitializationStatusClient client)
         {

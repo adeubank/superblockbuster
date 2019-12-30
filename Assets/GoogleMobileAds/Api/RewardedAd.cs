@@ -13,47 +13,66 @@
 // limitations under the License.
 
 using System;
+
 using GoogleMobileAds.Common;
 
 namespace GoogleMobileAds.Api
 {
     public class RewardedAd
     {
-        private readonly IRewardedAdClient client;
+        private IRewardedAdClient client;
 
         public RewardedAd(string adUnitId)
         {
-            client = GoogleMobileAdsClientFactory.BuildRewardedAdClient();
+            this.client = GoogleMobileAdsClientFactory.BuildRewardedAdClient();
             client.CreateRewardedAd(adUnitId);
 
-            client.OnAdLoaded += (sender, args) =>
+            this.client.OnAdLoaded += (sender, args) =>
             {
-                if (OnAdLoaded != null) OnAdLoaded(this, args);
+                if (this.OnAdLoaded != null)
+                {
+                    this.OnAdLoaded(this, args);
+                }
             };
 
-            client.OnAdFailedToLoad += (sender, args) =>
+            this.client.OnAdFailedToLoad += (sender, args) =>
             {
-                if (OnAdFailedToLoad != null) OnAdFailedToLoad(this, args);
+                if (this.OnAdFailedToLoad != null)
+                {
+                    this.OnAdFailedToLoad(this, args);
+                }
             };
 
-            client.OnAdFailedToShow += (sender, args) =>
+            this.client.OnAdFailedToShow += (sender, args) =>
             {
-                if (OnAdFailedToShow != null) OnAdFailedToShow(this, args);
+                if (this.OnAdFailedToShow != null)
+                {
+                    this.OnAdFailedToShow(this, args);
+                }
             };
 
-            client.OnAdOpening += (sender, args) =>
+            this.client.OnAdOpening += (sender, args) =>
             {
-                if (OnAdOpening != null) OnAdOpening(this, args);
+                if (this.OnAdOpening != null)
+                {
+                    this.OnAdOpening(this, args);
+                }
             };
 
-            client.OnAdClosed += (sender, args) =>
+            this.client.OnAdClosed += (sender, args) =>
             {
-                if (OnAdClosed != null) OnAdClosed(this, args);
+                if (this.OnAdClosed != null)
+                {
+                    this.OnAdClosed(this, args);
+                }
             };
 
-            client.OnUserEarnedReward += (sender, args) =>
+            this.client.OnUserEarnedReward += (sender, args) =>
             {
-                if (OnUserEarnedReward != null) OnUserEarnedReward(this, args);
+                if (this.OnUserEarnedReward != null)
+                {
+                    this.OnUserEarnedReward(this, args);
+                }
             };
         }
 
@@ -94,10 +113,19 @@ namespace GoogleMobileAds.Api
             client.SetServerSideVerificationOptions(serverSideVerificationOptions);
         }
 
+        // Returns the reward item for the loaded rewarded ad.
+        public Reward GetRewardItem()
+        {
+            if (client.IsLoaded()) {
+              return client.GetRewardItem();
+            }
+            return null;
+        }
+
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return client.MediationAdapterClassName();
+            return this.client.MediationAdapterClassName();
         }
     }
 }

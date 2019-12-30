@@ -15,6 +15,7 @@
 #if UNITY_ANDROID
 
 using System;
+
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
 using UnityEngine;
@@ -23,14 +24,14 @@ namespace GoogleMobileAds.Android
 {
     public class InterstitialClient : AndroidJavaProxy, IInterstitialClient
     {
-        private readonly AndroidJavaObject interstitial;
+        private AndroidJavaObject interstitial;
 
         public InterstitialClient() : base(Utils.UnityAdListenerClassName)
         {
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
-                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            interstitial = new AndroidJavaObject(
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
+                    playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            this.interstitial = new AndroidJavaObject(
                 Utils.InterstitialClassName, activity, this);
         }
 
@@ -49,37 +50,37 @@ namespace GoogleMobileAds.Android
         // Creates an interstitial ad.
         public void CreateInterstitialAd(string adUnitId)
         {
-            interstitial.Call("create", adUnitId);
+            this.interstitial.Call("create", adUnitId);
         }
 
         // Loads an ad.
         public void LoadAd(AdRequest request)
         {
-            interstitial.Call("loadAd", Utils.GetAdRequestJavaObject(request));
+            this.interstitial.Call("loadAd", Utils.GetAdRequestJavaObject(request));
         }
 
         // Checks if interstitial has loaded.
         public bool IsLoaded()
         {
-            return interstitial.Call<bool>("isLoaded");
+            return this.interstitial.Call<bool>("isLoaded");
         }
 
         // Presents the interstitial ad on the screen.
         public void ShowInterstitial()
         {
-            interstitial.Call("show");
+            this.interstitial.Call("show");
         }
 
         // Destroys the interstitial ad.
         public void DestroyInterstitial()
         {
-            interstitial.Call("destroy");
+            this.interstitial.Call("destroy");
         }
 
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return interstitial.Call<string>("getMediationAdapterClassName");
+            return this.interstitial.Call<string>("getMediationAdapterClassName");
         }
 
         #endregion
@@ -88,34 +89,46 @@ namespace GoogleMobileAds.Android
 
         public void onAdLoaded()
         {
-            if (OnAdLoaded != null) OnAdLoaded(this, EventArgs.Empty);
+            if (this.OnAdLoaded != null)
+            {
+                this.OnAdLoaded(this, EventArgs.Empty);
+            }
         }
 
         public void onAdFailedToLoad(string errorReason)
         {
-            if (OnAdFailedToLoad != null)
+            if (this.OnAdFailedToLoad != null)
             {
-                var args = new AdFailedToLoadEventArgs
+                AdFailedToLoadEventArgs args = new AdFailedToLoadEventArgs()
                 {
                     Message = errorReason
                 };
-                OnAdFailedToLoad(this, args);
+                this.OnAdFailedToLoad(this, args);
             }
         }
 
         public void onAdOpened()
         {
-            if (OnAdOpening != null) OnAdOpening(this, EventArgs.Empty);
+            if (this.OnAdOpening != null)
+            {
+                this.OnAdOpening(this, EventArgs.Empty);
+            }
         }
 
         public void onAdClosed()
         {
-            if (OnAdClosed != null) OnAdClosed(this, EventArgs.Empty);
+            if (this.OnAdClosed != null)
+            {
+                this.OnAdClosed(this, EventArgs.Empty);
+            }
         }
 
         public void onAdLeftApplication()
         {
-            if (OnAdLeavingApplication != null) OnAdLeavingApplication(this, EventArgs.Empty);
+            if (this.OnAdLeavingApplication != null)
+            {
+                this.OnAdLeavingApplication(this, EventArgs.Empty);
+            }
         }
 
         #endregion

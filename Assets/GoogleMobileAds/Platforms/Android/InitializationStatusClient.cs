@@ -14,57 +14,64 @@
 
 #if UNITY_ANDROID
 
-using System.Collections.Generic;
+using UnityEngine;
+
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace GoogleMobileAds.Android
 {
     internal class InitializationStatusClient : IInitializationStatusClient
     {
-        private readonly AndroidJavaObject statusMap;
         private AndroidJavaObject status;
+        private AndroidJavaObject statusMap;
 
         public InitializationStatusClient(AndroidJavaObject status)
         {
             this.status = status;
-            statusMap = status.Call<AndroidJavaObject>("getAdapterStatusMap");
+            this.statusMap = status.Call<AndroidJavaObject>("getAdapterStatusMap");
         }
 
         public AdapterStatus getAdapterStatusForClassName(string className)
         {
-            var map = statusMap;
-            var adapterStatus = map.Call<AndroidJavaObject>("get", className);
+            AndroidJavaObject map = this.statusMap;
+            AndroidJavaObject adapterStatus = map.Call<AndroidJavaObject>("get", className);
 
-            if (adapterStatus == null) return null;
+            if (adapterStatus == null)
+            {
+                return null;
+            }
 
-            var description = adapterStatus.Call<string>("getDescription");
-            var latency = adapterStatus.Call<int>("getLatency");
-            var state = new AndroidJavaClass(Utils.UnityAdapterStatusEnumName);
-            var readyEnum = state.GetStatic<AndroidJavaObject>("READY");
-            var adapterLoadState = adapterStatus.Call<AndroidJavaObject>("getInitializationState");
-            var adapterState =
+            string description = adapterStatus.Call<string>("getDescription");
+            int latency = adapterStatus.Call<int>("getLatency");
+            AndroidJavaClass state = new AndroidJavaClass(Utils.UnityAdapterStatusEnumName);
+            AndroidJavaObject readyEnum = state.GetStatic<AndroidJavaObject>("READY");
+            AndroidJavaObject adapterLoadState = adapterStatus.Call<AndroidJavaObject>("getInitializationState");
+            AdapterState adapterState =
                 adapterLoadState.Call<bool>("equals", readyEnum) ? AdapterState.Ready : AdapterState.NotReady;
             return new AdapterStatus(adapterState, description, latency);
         }
 
         public Dictionary<string, AdapterStatus> getAdapterStatusMap()
         {
-            var map = new Dictionary<string, AdapterStatus>();
-            var keys = getKeys();
-            foreach (var key in keys) map.Add(key, getAdapterStatusForClassName(key));
+            Dictionary<string, AdapterStatus> map = new Dictionary<string, AdapterStatus>();
+            string[] keys = getKeys();
+            foreach(string key in keys)
+            {
+                map.Add(key, getAdapterStatusForClassName(key));
+            }
             return map;
         }
 
         private string[] getKeys()
         {
-            var map = statusMap;
-            var keySet = map.Call<AndroidJavaObject>("keySet");
-            var arrayClass = new AndroidJavaClass("java.lang.reflect.Array");
-            var arrayObject = arrayClass.CallStatic<AndroidJavaObject>("newInstance",
-                new AndroidJavaClass("java.lang.String"),
-                map.Call<int>("size"));
+            AndroidJavaObject map = this.statusMap;
+            AndroidJavaObject keySet = map.Call<AndroidJavaObject>("keySet");
+            AndroidJavaClass arrayClass = new AndroidJavaClass("java.lang.reflect.Array");
+            AndroidJavaObject arrayObject = arrayClass.CallStatic<AndroidJavaObject>("newInstance",
+                                            new AndroidJavaClass("java.lang.String"),
+                                            map.Call<int>("size"));
             return keySet.Call<string[]>("toArray", arrayObject);
         }
     }

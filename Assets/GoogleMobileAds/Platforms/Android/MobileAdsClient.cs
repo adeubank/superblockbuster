@@ -15,28 +15,35 @@
 #if UNITY_ANDROID
 
 using System;
+using UnityEngine;
+
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
-using UnityEngine;
 
 namespace GoogleMobileAds.Android
 {
     public class MobileAdsClient : AndroidJavaProxy, IMobileAdsClient
     {
+        private static MobileAdsClient instance = new MobileAdsClient();
+
         private Action<InitializationStatus> initCompleteAction;
 
-        private MobileAdsClient() : base(Utils.OnInitializationCompleteListenerClassName)
-        {
-        }
+        private MobileAdsClient() : base(Utils.OnInitializationCompleteListenerClassName) { }
 
-        public static MobileAdsClient Instance { get; } = new MobileAdsClient();
+        public static MobileAdsClient Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
 
         public void Initialize(string appId)
         {
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
-                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            var mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
+                    playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaClass mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
             mobileAdsClass.CallStatic("initialize", activity, appId);
         }
 
@@ -44,22 +51,22 @@ namespace GoogleMobileAds.Android
         {
             this.initCompleteAction = initCompleteAction;
 
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
-                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            var mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
+                    playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaClass mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
             mobileAdsClass.CallStatic("initialize", activity, this);
         }
 
         public void SetApplicationVolume(float volume)
         {
-            var mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
+            AndroidJavaClass mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
             mobileAdsClass.CallStatic("setAppVolume", volume);
         }
 
         public void SetApplicationMuted(bool muted)
         {
-            var mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
+            AndroidJavaClass mobileAdsClass = new AndroidJavaClass(Utils.MobileAdsClassName);
             mobileAdsClass.CallStatic("setAppMuted", muted);
         }
 
@@ -70,12 +77,17 @@ namespace GoogleMobileAds.Android
 
         public float GetDeviceScale()
         {
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
-                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            var resources = activity.Call<AndroidJavaObject>("getResources");
-            var metrics = resources.Call<AndroidJavaObject>("getDisplayMetrics");
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
+                    playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            AndroidJavaObject resources = activity.Call<AndroidJavaObject>("getResources");
+            AndroidJavaObject metrics = resources.Call<AndroidJavaObject>("getDisplayMetrics");
             return metrics.Get<float>("density");
+        }
+
+        public int GetDeviceSafeWidth()
+        {
+          return Utils.GetScreenWidth();
         }
 
         #region Callbacks from OnInitializationCompleteListener.
@@ -84,12 +96,13 @@ namespace GoogleMobileAds.Android
         {
             if (initCompleteAction != null)
             {
-                var status = new InitializationStatus(new InitializationStatusClient(initStatus));
+                InitializationStatus status = new InitializationStatus(new InitializationStatusClient(initStatus));
                 initCompleteAction(status);
             }
         }
 
         #endregion
+
     }
 }
 

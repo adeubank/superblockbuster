@@ -14,6 +14,8 @@
 
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+
 using GoogleMobileAds.Common;
 
 namespace GoogleMobileAds.Api
@@ -25,81 +27,93 @@ namespace GoogleMobileAds.Api
 
     public class AdLoader
     {
-        private readonly IAdLoaderClient adLoaderClient;
+        private IAdLoaderClient adLoaderClient;
 
         private AdLoader(Builder builder)
         {
-            AdUnitId = string.Copy(builder.AdUnitId);
-            CustomNativeTemplateClickHandlers =
-                new Dictionary<string, Action<CustomNativeTemplateAd, string>>(
+            this.AdUnitId = string.Copy(builder.AdUnitId);
+            this.CustomNativeTemplateClickHandlers =
+                    new Dictionary<string, Action<CustomNativeTemplateAd, string>>(
                     builder.CustomNativeTemplateClickHandlers);
-            TemplateIds = new HashSet<string>(builder.TemplateIds);
-            AdTypes = new HashSet<NativeAdType>(builder.AdTypes);
-            adLoaderClient = GoogleMobileAdsClientFactory.BuildAdLoaderClient(this);
+            this.TemplateIds = new HashSet<string>(builder.TemplateIds);
+            this.AdTypes = new HashSet<NativeAdType>(builder.AdTypes);
+            this.adLoaderClient = GoogleMobileAdsClientFactory.BuildAdLoaderClient(this);
 
             Utils.CheckInitialization();
 
-            adLoaderClient.OnCustomNativeTemplateAdLoaded +=
-                delegate(object sender, CustomNativeEventArgs args) { OnCustomNativeTemplateAdLoaded(this, args); };
-            adLoaderClient.OnAdFailedToLoad += delegate(
+            this.adLoaderClient.OnCustomNativeTemplateAdLoaded +=
+                    delegate (object sender, CustomNativeEventArgs args)
+            {
+                this.OnCustomNativeTemplateAdLoaded(this, args);
+            };
+            this.adLoaderClient.OnAdFailedToLoad += delegate (
                 object sender, AdFailedToLoadEventArgs args)
             {
-                if (OnAdFailedToLoad != null) OnAdFailedToLoad(this, args);
+                if (this.OnAdFailedToLoad != null)
+                {
+                    this.OnAdFailedToLoad(this, args);
+                }
             };
         }
-
-        public Dictionary<string, Action<CustomNativeTemplateAd, string>>
-            CustomNativeTemplateClickHandlers { get; }
-
-        public string AdUnitId { get; }
-
-        public HashSet<NativeAdType> AdTypes { get; }
-
-        public HashSet<string> TemplateIds { get; }
 
         public event EventHandler<AdFailedToLoadEventArgs> OnAdFailedToLoad;
 
         public event EventHandler<CustomNativeEventArgs> OnCustomNativeTemplateAdLoaded;
 
+        public Dictionary<string, Action<CustomNativeTemplateAd, string>>
+                CustomNativeTemplateClickHandlers
+        {
+            get; private set;
+        }
+
+        public string AdUnitId { get; private set; }
+
+        public HashSet<NativeAdType> AdTypes { get; private set; }
+
+        public HashSet<string> TemplateIds { get; private set; }
+
         public void LoadAd(AdRequest request)
         {
-            adLoaderClient.LoadAd(request);
+            this.adLoaderClient.LoadAd(request);
         }
 
         public class Builder
         {
             public Builder(string adUnitId)
             {
-                AdUnitId = adUnitId;
-                AdTypes = new HashSet<NativeAdType>();
-                TemplateIds = new HashSet<string>();
-                CustomNativeTemplateClickHandlers =
-                    new Dictionary<string, Action<CustomNativeTemplateAd, string>>();
+                this.AdUnitId = adUnitId;
+                this.AdTypes = new HashSet<NativeAdType>();
+                this.TemplateIds = new HashSet<string>();
+                this.CustomNativeTemplateClickHandlers =
+                        new Dictionary<string, Action<CustomNativeTemplateAd, string>>();
             }
 
-            internal string AdUnitId { get; }
+            internal string AdUnitId { get; private set; }
 
-            internal HashSet<NativeAdType> AdTypes { get; }
+            internal HashSet<NativeAdType> AdTypes { get; private set; }
 
-            internal HashSet<string> TemplateIds { get; }
+            internal HashSet<string> TemplateIds { get; private set; }
 
             internal Dictionary<string, Action<CustomNativeTemplateAd, string>>
-                CustomNativeTemplateClickHandlers { get; }
+                    CustomNativeTemplateClickHandlers
+            {
+                get; private set;
+            }
 
             public Builder ForCustomNativeAd(string templateId)
             {
-                TemplateIds.Add(templateId);
-                AdTypes.Add(NativeAdType.CustomTemplate);
+                this.TemplateIds.Add(templateId);
+                this.AdTypes.Add(NativeAdType.CustomTemplate);
                 return this;
             }
 
             public Builder ForCustomNativeAd(
-                string templateId,
-                Action<CustomNativeTemplateAd, string> callback)
+                    string templateId,
+                    Action<CustomNativeTemplateAd, string> callback)
             {
-                TemplateIds.Add(templateId);
-                CustomNativeTemplateClickHandlers[templateId] = callback;
-                AdTypes.Add(NativeAdType.CustomTemplate);
+                this.TemplateIds.Add(templateId);
+                this.CustomNativeTemplateClickHandlers[templateId] = callback;
+                this.AdTypes.Add(NativeAdType.CustomTemplate);
                 return this;
             }
 

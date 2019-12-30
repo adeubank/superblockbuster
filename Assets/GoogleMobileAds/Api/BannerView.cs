@@ -13,18 +13,19 @@
 // limitations under the License.
 
 using System;
+
 using GoogleMobileAds.Common;
 
 namespace GoogleMobileAds.Api
 {
     public class BannerView
     {
-        private readonly IBannerClient client;
+        private IBannerClient client;
 
         // Creates a BannerView and adds it to the view hierarchy.
         public BannerView(string adUnitId, AdSize adSize, AdPosition position)
         {
-            client = GoogleMobileAdsClientFactory.BuildBannerClient();
+            this.client = GoogleMobileAdsClientFactory.BuildBannerClient();
             client.CreateBannerView(adUnitId, adSize, position);
 
             ConfigureBannerEvents();
@@ -33,7 +34,7 @@ namespace GoogleMobileAds.Api
         // Creates a BannerView with a custom position.
         public BannerView(string adUnitId, AdSize adSize, int x, int y)
         {
-            client = GoogleMobileAdsClientFactory.BuildBannerClient();
+            this.client = GoogleMobileAdsClientFactory.BuildBannerClient();
             client.CreateBannerView(adUnitId, adSize, x, y);
 
             ConfigureBannerEvents();
@@ -100,36 +101,51 @@ namespace GoogleMobileAds.Api
 
         private void ConfigureBannerEvents()
         {
-            client.OnAdLoaded += (sender, args) =>
+            this.client.OnAdLoaded += (sender, args) =>
             {
-                if (OnAdLoaded != null) OnAdLoaded(this, args);
+                if (this.OnAdLoaded != null)
+                {
+                    this.OnAdLoaded(this, args);
+                }
             };
 
-            client.OnAdFailedToLoad += (sender, args) =>
+            this.client.OnAdFailedToLoad += (sender, args) =>
             {
-                if (OnAdFailedToLoad != null) OnAdFailedToLoad(this, args);
+                if (this.OnAdFailedToLoad != null)
+                {
+                    this.OnAdFailedToLoad(this, args);
+                }
             };
 
-            client.OnAdOpening += (sender, args) =>
+            this.client.OnAdOpening += (sender, args) =>
             {
-                if (OnAdOpening != null) OnAdOpening(this, args);
+                if (this.OnAdOpening != null)
+                {
+                    this.OnAdOpening(this, args);
+                }
             };
 
-            client.OnAdClosed += (sender, args) =>
+            this.client.OnAdClosed += (sender, args) =>
             {
-                if (OnAdClosed != null) OnAdClosed(this, args);
+                if (this.OnAdClosed != null)
+                {
+                    this.OnAdClosed(this, args);
+                }
             };
 
-            client.OnAdLeavingApplication += (sender, args) =>
+            this.client.OnAdLeavingApplication += (sender, args) =>
             {
-                if (OnAdLeavingApplication != null) OnAdLeavingApplication(this, args);
+                if (this.OnAdLeavingApplication != null)
+                {
+                    this.OnAdLeavingApplication(this, args);
+                }
             };
         }
 
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return client.MediationAdapterClassName();
+            return this.client.MediationAdapterClassName();
         }
     }
 }

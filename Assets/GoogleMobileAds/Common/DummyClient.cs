@@ -14,18 +14,42 @@
 
 using System;
 using System.Reflection;
+
 using GoogleMobileAds.Api;
 using UnityEngine;
 
 namespace GoogleMobileAds.Common
 {
     public class DummyClient : IBannerClient, IInterstitialClient, IRewardBasedVideoAdClient,
-        IAdLoaderClient, IMobileAdsClient
+            IAdLoaderClient, IMobileAdsClient
     {
         public DummyClient()
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
+
+        // Disable warnings for unused dummy ad events.
+#pragma warning disable 67
+
+        public event EventHandler<EventArgs> OnAdLoaded;
+
+        public event EventHandler<AdFailedToLoadEventArgs> OnAdFailedToLoad;
+
+        public event EventHandler<EventArgs> OnAdOpening;
+
+        public event EventHandler<EventArgs> OnAdStarted;
+
+        public event EventHandler<EventArgs> OnAdClosed;
+
+        public event EventHandler<Reward> OnAdRewarded;
+
+        public event EventHandler<EventArgs> OnAdLeavingApplication;
+
+        public event EventHandler<EventArgs> OnAdCompleted;
+
+        public event EventHandler<CustomNativeEventArgs> OnCustomNativeTemplateAdLoaded;
+
+#pragma warning restore 67
 
         public string UserId
         {
@@ -35,7 +59,47 @@ namespace GoogleMobileAds.Common
                 return "UserId";
             }
 
-            set => Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            set
+            {
+                Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            }
+        }
+
+        public void Initialize(string appId)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void Initialize(Action<InitializationStatus> initCompleteAction)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void SetApplicationMuted(bool muted)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void SetApplicationVolume(float volume)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void SetiOSAppPauseOnBackground(bool pause)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public float GetDeviceScale()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return 0;
+        }
+
+        public int GetDeviceSafeWidth()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return 0;
         }
 
         public void CreateBannerView(string adUnitId, AdSize adSize, AdPosition position)
@@ -90,12 +154,6 @@ namespace GoogleMobileAds.Common
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
 
-        public string MediationAdapterClassName()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-            return null;
-        }
-
         public void CreateInterstitialAd(string adUnitId)
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
@@ -117,37 +175,6 @@ namespace GoogleMobileAds.Common
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
 
-        public void Initialize(string appId)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void Initialize(Action<InitializationStatus> initCompleteAction)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void SetApplicationMuted(bool muted)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void SetApplicationVolume(float volume)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void SetiOSAppPauseOnBackground(bool pause)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public float GetDeviceScale()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-            return 0;
-        }
-
         public void CreateRewardBasedVideoAd()
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
@@ -163,12 +190,12 @@ namespace GoogleMobileAds.Common
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
 
-        public void ShowRewardBasedVideoAd()
+        public void DestroyRewardBasedVideoAd()
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
 
-        public void DestroyRewardBasedVideoAd()
+        public void ShowRewardBasedVideoAd()
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
@@ -188,27 +215,11 @@ namespace GoogleMobileAds.Common
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
 
-        // Disable warnings for unused dummy ad events.
-#pragma warning disable 67
+        public string MediationAdapterClassName()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return null;
+        }
 
-        public event EventHandler<EventArgs> OnAdLoaded;
-
-        public event EventHandler<AdFailedToLoadEventArgs> OnAdFailedToLoad;
-
-        public event EventHandler<EventArgs> OnAdOpening;
-
-        public event EventHandler<EventArgs> OnAdStarted;
-
-        public event EventHandler<EventArgs> OnAdClosed;
-
-        public event EventHandler<Reward> OnAdRewarded;
-
-        public event EventHandler<EventArgs> OnAdLeavingApplication;
-
-        public event EventHandler<EventArgs> OnAdCompleted;
-
-        public event EventHandler<CustomNativeEventArgs> OnCustomNativeTemplateAdLoaded;
-
-#pragma warning restore 67
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+
 using GoogleMobileAds.Api;
 
 namespace GoogleMobileAds.Common
@@ -21,19 +22,14 @@ namespace GoogleMobileAds.Common
     {
         // Ad event fired when the rewarded ad has been received.
         event EventHandler<EventArgs> OnAdLoaded;
-
         // Ad event fired when the rewarded ad has failed to load.
         event EventHandler<AdErrorEventArgs> OnAdFailedToLoad;
-
         // Ad event fired when the rewarded ad has failed to show.
         event EventHandler<AdErrorEventArgs> OnAdFailedToShow;
-
         // Ad event fired when the rewarded ad is opened.
         event EventHandler<EventArgs> OnAdOpening;
-
         // Ad event fired when the rewarded ad has rewarded the user.
         event EventHandler<Reward> OnUserEarnedReward;
-
         // Ad event fired when the rewarded ad is closed.
         event EventHandler<EventArgs> OnAdClosed;
 
@@ -48,6 +44,9 @@ namespace GoogleMobileAds.Common
 
         // Returns the mediation adapter class name.
         string MediationAdapterClassName();
+
+        // Returns the reward item for the loaded rewarded ad.
+        Reward GetRewardItem();
 
         // Shows the rewarded ad on the screen.
         void Show();

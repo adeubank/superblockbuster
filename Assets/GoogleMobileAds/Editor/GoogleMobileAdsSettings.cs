@@ -1,8 +1,14 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+
 using UnityEditor;
 using UnityEngine;
 
 namespace GoogleMobileAds.Editor
 {
+
     internal class GoogleMobileAdsSettings : ScriptableObject
     {
         private const string MobileAdsSettingsDir = "Assets/GoogleMobileAds";
@@ -14,49 +20,84 @@ namespace GoogleMobileAds.Editor
 
         private static GoogleMobileAdsSettings instance;
 
-        [SerializeField] private string adMobAndroidAppId = string.Empty;
+        [SerializeField]
+        private bool isAdManagerEnabled = false;
 
-        [SerializeField] private string adMobIOSAppId = string.Empty;
+        [SerializeField]
+        private bool isAdMobEnabled = false;
 
-        [SerializeField] private bool delayAppMeasurementInit;
+        [SerializeField]
+        private string adMobAndroidAppId = string.Empty;
 
-        [SerializeField] private bool isAdManagerEnabled;
+        [SerializeField]
+        private string adMobIOSAppId = string.Empty;
 
-        [SerializeField] private bool isAdMobEnabled;
+        [SerializeField]
+        private bool delayAppMeasurementInit = false;
 
         public bool IsAdManagerEnabled
         {
-            get => Instance.isAdManagerEnabled;
+            get
+            {
+                return Instance.isAdManagerEnabled;
+            }
 
-            set => Instance.isAdManagerEnabled = value;
+            set
+            {
+                Instance.isAdManagerEnabled = value;
+            }
         }
 
         public bool IsAdMobEnabled
         {
-            get => Instance.isAdMobEnabled;
+            get
+            {
+                return Instance.isAdMobEnabled;
+            }
 
-            set => Instance.isAdMobEnabled = value;
+            set
+            {
+                Instance.isAdMobEnabled = value;
+            }
         }
 
         public string AdMobAndroidAppId
         {
-            get => Instance.adMobAndroidAppId;
+            get
+            {
+                return Instance.adMobAndroidAppId;
+            }
 
-            set => Instance.adMobAndroidAppId = value;
+            set
+            {
+                Instance.adMobAndroidAppId = value;
+            }
         }
 
         public string AdMobIOSAppId
         {
-            get => Instance.adMobIOSAppId;
+            get
+            {
+                return Instance.adMobIOSAppId;
+            }
 
-            set => Instance.adMobIOSAppId = value;
+            set
+            {
+                Instance.adMobIOSAppId = value;
+            }
         }
 
         public bool DelayAppMeasurementInit
         {
-            get => Instance.delayAppMeasurementInit;
+            get
+            {
+                return Instance.delayAppMeasurementInit;
+            }
 
-            set => Instance.delayAppMeasurementInit = value;
+            set
+            {
+                Instance.delayAppMeasurementInit = value;
+            }
         }
 
         public static GoogleMobileAdsSettings Instance
@@ -65,18 +106,20 @@ namespace GoogleMobileAds.Editor
             {
                 if (instance == null)
                 {
-                    if (!AssetDatabase.IsValidFolder(MobileAdsSettingsResDir)) AssetDatabase.CreateFolder(MobileAdsSettingsDir, "Resources");
+                    if (!AssetDatabase.IsValidFolder(MobileAdsSettingsResDir))
+                    {
+                        AssetDatabase.CreateFolder(MobileAdsSettingsDir, "Resources");
+                    }
 
                     instance = (GoogleMobileAdsSettings) AssetDatabase.LoadAssetAtPath(
                         MobileAdsSettingsFile, typeof(GoogleMobileAdsSettings));
 
                     if (instance == null)
                     {
-                        instance = CreateInstance<GoogleMobileAdsSettings>();
+                        instance = ScriptableObject.CreateInstance<GoogleMobileAdsSettings>();
                         AssetDatabase.CreateAsset(instance, MobileAdsSettingsFile);
                     }
                 }
-
                 return instance;
             }
         }

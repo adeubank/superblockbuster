@@ -124,6 +124,18 @@ float GADUDeviceScale() {
   return UIScreen.mainScreen.scale;
 }
 
+/// Returns the safe width of the device.
+int GADUDeviceSafeWidth() {
+  CGRect screenBounds = [UIScreen mainScreen].bounds;
+  if (GADUIsOperatingSystemAtLeastVersion(11)) {
+    CGRect safeFrame = [UIApplication sharedApplication].keyWindow.safeAreaLayoutGuide.layoutFrame;
+    if (!CGSizeEqualToSize(safeFrame.size, CGSizeZero)) {
+      screenBounds = safeFrame;
+    }
+  }
+  return (int)CGRectGetWidth(screenBounds);
+}
+
 /// Creates a GADBannerView with the specified width, height, and position. Returns a reference to
 /// the GADUBannerView.
 GADUTypeBannerRef GADUCreateBannerView(GADUTypeBannerClientRef *bannerClient, const char *adUnitID,
@@ -431,6 +443,20 @@ void GADUShowRewardedAd(GADUTypeRewardedAdRef rewardedAd) {
   [internalRewardedAd show];
 }
 
+/// Returns the type of the reward.
+const char *GADURewardedAdGetRewardType(GADUTypeRewardedAdRef rewardedAd) {
+  GADURewardedAd *internalRewardedAd = (__bridge GADURewardedAd *)rewardedAd;
+  GADAdReward *reward = internalRewardedAd.rewardedAd.reward;
+  return cStringCopy(reward.type.UTF8String);
+}
+
+/// Returns the amount of the reward.
+double GADURewardedAdGetRewardAmount(GADUTypeRewardedAdRef rewardedAd) {
+  GADURewardedAd *internalRewardedAd = (__bridge GADURewardedAd *)rewardedAd;
+  GADAdReward *reward = internalRewardedAd.rewardedAd.reward;
+  return reward.amount.doubleValue;
+}
+
 /// Creates an empty GADRequest and returns its reference.
 GADUTypeRequestRef GADUCreateRequest() {
   GADURequest *request = [[GADURequest alloc] init];
@@ -619,7 +645,7 @@ const char *GADUNativeCustomTemplateAdImageAsBytesForKey(
       (__bridge GADUNativeCustomTemplateAd *)nativeCustomTemplateAd;
   NSData *imageData = UIImageJPEGRepresentation(
       [internalNativeCustomTemplateAd imageForKey:GADUStringFromUTF8String(key)], 0.0);
-  NSString *base64String = [imageData base64EncodedStringWithOptions:nil];
+  NSString *base64String = [imageData base64EncodedStringWithOptions:0];
   return cStringCopy(base64String.UTF8String);
 }
 

@@ -14,8 +14,8 @@
 
 namespace GoogleMobileAds.Api
 {
-    internal enum Orientation
-    {
+
+    internal enum Orientation {
         Current = 0,
         Landscape = 1,
         Portrait = 2
@@ -23,12 +23,15 @@ namespace GoogleMobileAds.Api
 
     public class AdSize
     {
-        public enum Type
-        {
+        public enum Type {
             Standard = 0,
             SmartBanner = 1,
             AnchoredAdaptive = 2
         }
+        private Type type;
+        private Orientation orientation;
+        private int width;
+        private int height;
 
         public static readonly AdSize Banner = new AdSize(320, 50);
         public static readonly AdSize MediumRectangle = new AdSize(300, 250);
@@ -39,45 +42,69 @@ namespace GoogleMobileAds.Api
 
         public AdSize(int width, int height)
         {
-            AdType = Type.Standard;
-            Width = width;
-            Height = height;
-            Orientation = Orientation.Current;
+            this.type = Type.Standard;
+            this.width = width;
+            this.height = height;
+            this.orientation = Orientation.Current;
         }
 
         private AdSize(int width, int height, Type type) : this(width, height)
         {
-            AdType = type;
+            this.type = type;
         }
-
-        public int Width { get; }
-
-        public int Height { get; }
-
-        public Type AdType { get; }
-
-        internal Orientation Orientation { get; private set; }
 
         private static AdSize CreateAnchoredAdaptiveAdSize(int width, Orientation orientation)
         {
-            var adSize = new AdSize(width, 0, Type.AnchoredAdaptive);
-            adSize.Orientation = orientation;
+            AdSize adSize = new AdSize(width, 0, Type.AnchoredAdaptive);
+            adSize.orientation = orientation;
             return adSize;
         }
 
-        public static AdSize GetLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-        {
-            return CreateAnchoredAdaptiveAdSize(width, Orientation.Landscape);
+        public static AdSize GetLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(int width) {
+          return CreateAnchoredAdaptiveAdSize(width, Orientation.Landscape);
         }
 
-        public static AdSize GetPortraitAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-        {
+        public static AdSize GetPortraitAnchoredAdaptiveBannerAdSizeWithWidth(int width) {
             return CreateAnchoredAdaptiveAdSize(width, Orientation.Portrait);
         }
 
-        public static AdSize GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(int width)
-        {
+        public static AdSize GetCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(int width) {
             return CreateAnchoredAdaptiveAdSize(width, Orientation.Current);
+        }
+
+        public int Width
+        {
+            get
+            {
+                if (width == FullWidth) {
+                    return MobileAds.Utils.GetDeviceSafeWidth();
+                }
+                return width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                return height;
+            }
+        }
+
+        public Type AdType
+        {
+            get
+            {
+                return type;
+            }
+        }
+
+        internal Orientation Orientation
+        {
+            get
+            {
+              return orientation;
+            }
         }
 
         public override bool Equals(object obj)
@@ -85,9 +112,9 @@ namespace GoogleMobileAds.Api
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            var other = (AdSize) obj;
-            return Width == other.Width && Height == other.Height
-                                        && AdType == other.AdType && Orientation == other.Orientation;
+            AdSize other = (AdSize)obj;
+            return (width == other.width) && (height == other.height)
+            && (type == other.type) && (orientation == other.orientation);
         }
 
         public static bool operator ==(AdSize a, AdSize b)
@@ -102,14 +129,14 @@ namespace GoogleMobileAds.Api
 
         public override int GetHashCode()
         {
-            var hashBase = 71;
-            var hashMultiplier = 11;
+            int hashBase = 71;
+            int hashMultiplier = 11;
 
-            var hash = hashBase;
-            hash = (hash * hashMultiplier) ^ Width.GetHashCode();
-            hash = (hash * hashMultiplier) ^ Height.GetHashCode();
-            hash = (hash * hashMultiplier) ^ AdType.GetHashCode();
-            hash = (hash * hashMultiplier) ^ Orientation.GetHashCode();
+            int hash = hashBase;
+            hash = (hash * hashMultiplier) ^ width.GetHashCode();
+            hash = (hash * hashMultiplier) ^ height.GetHashCode();
+            hash = (hash * hashMultiplier) ^ type.GetHashCode();
+            hash = (hash * hashMultiplier) ^ orientation.GetHashCode();
             return hash;
         }
     }

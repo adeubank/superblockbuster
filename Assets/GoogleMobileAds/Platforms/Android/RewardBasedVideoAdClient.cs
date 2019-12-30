@@ -15,25 +15,16 @@
 #if UNITY_ANDROID
 
 using System;
+using UnityEngine;
+
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
-using UnityEngine;
 
 namespace GoogleMobileAds.Android
 {
     public class RewardBasedVideoAdClient : AndroidJavaProxy, IRewardBasedVideoAdClient
     {
-        private readonly AndroidJavaObject androidRewardBasedVideo;
-
-        public RewardBasedVideoAdClient()
-            : base(Utils.UnityRewardBasedVideoAdListenerClassName)
-        {
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
-                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
-            androidRewardBasedVideo = new AndroidJavaObject(Utils.RewardBasedVideoClassName,
-                activity, this);
-        }
+        private AndroidJavaObject androidRewardBasedVideo;
 
         public event EventHandler<EventArgs> OnAdLoaded = delegate { };
         public event EventHandler<AdFailedToLoadEventArgs> OnAdFailedToLoad = delegate { };
@@ -43,6 +34,16 @@ namespace GoogleMobileAds.Android
         public event EventHandler<Reward> OnAdRewarded = delegate { };
         public event EventHandler<EventArgs> OnAdLeavingApplication = delegate { };
         public event EventHandler<EventArgs> OnAdCompleted = delegate { };
+
+        public RewardBasedVideoAdClient()
+            : base(Utils.UnityRewardBasedVideoAdListenerClassName)
+        {
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
+                playerClass.GetStatic<AndroidJavaObject>("currentActivity");
+            androidRewardBasedVideo = new AndroidJavaObject(Utils.RewardBasedVideoClassName,
+                                                            activity, this);
+        }
 
         #region IRewardBasedVideoClient implementation
 
@@ -79,66 +80,84 @@ namespace GoogleMobileAds.Android
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return androidRewardBasedVideo.Call<string>("getMediationAdapterClassName");
+            return this.androidRewardBasedVideo.Call<string>("getMediationAdapterClassName");
         }
 
         #endregion
 
         #region Callbacks from UnityRewardBasedVideoAdListener.
 
-        private void onAdLoaded()
+        void onAdLoaded()
         {
-            if (OnAdLoaded != null) OnAdLoaded(this, EventArgs.Empty);
-        }
-
-        private void onAdFailedToLoad(string errorReason)
-        {
-            if (OnAdFailedToLoad != null)
+            if (this.OnAdLoaded != null)
             {
-                var args = new AdFailedToLoadEventArgs
-                {
-                    Message = errorReason
-                };
-                OnAdFailedToLoad(this, args);
+                this.OnAdLoaded(this, EventArgs.Empty);
             }
         }
 
-        private void onAdOpened()
+        void onAdFailedToLoad(string errorReason)
         {
-            if (OnAdOpening != null) OnAdOpening(this, EventArgs.Empty);
-        }
-
-        private void onAdStarted()
-        {
-            if (OnAdStarted != null) OnAdStarted(this, EventArgs.Empty);
-        }
-
-        private void onAdClosed()
-        {
-            if (OnAdClosed != null) OnAdClosed(this, EventArgs.Empty);
-        }
-
-        private void onAdRewarded(string type, float amount)
-        {
-            if (OnAdRewarded != null)
+            if (this.OnAdFailedToLoad != null)
             {
-                var args = new Reward
+                AdFailedToLoadEventArgs args = new AdFailedToLoadEventArgs()
+                {
+                    Message = errorReason
+                };
+                this.OnAdFailedToLoad(this, args);
+            }
+        }
+
+        void onAdOpened()
+        {
+            if (this.OnAdOpening != null)
+            {
+                this.OnAdOpening(this, EventArgs.Empty);
+            }
+        }
+
+        void onAdStarted()
+        {
+            if (this.OnAdStarted != null)
+            {
+                this.OnAdStarted(this, EventArgs.Empty);
+            }
+        }
+
+        void onAdClosed()
+        {
+            if (this.OnAdClosed != null)
+            {
+                this.OnAdClosed(this, EventArgs.Empty);
+            }
+        }
+
+        void onAdRewarded(string type, float amount)
+        {
+            if (this.OnAdRewarded != null)
+            {
+                Reward args = new Reward()
                 {
                     Type = type,
                     Amount = amount
                 };
-                OnAdRewarded(this, args);
+                this.OnAdRewarded(this, args);
             }
         }
 
-        private void onAdLeftApplication()
+        void onAdLeftApplication()
         {
-            if (OnAdLeavingApplication != null) OnAdLeavingApplication(this, EventArgs.Empty);
+            if (this.OnAdLeavingApplication != null)
+            {
+                this.OnAdLeavingApplication(this, EventArgs.Empty);
+            }
         }
 
-        private void onAdCompleted()
+        void onAdCompleted()
         {
-            if (OnAdCompleted != null) OnAdCompleted(this, EventArgs.Empty);
+            if (this.OnAdCompleted != null)
+            {
+                this.OnAdCompleted(this, EventArgs.Empty);
+            }
         }
 
         #endregion

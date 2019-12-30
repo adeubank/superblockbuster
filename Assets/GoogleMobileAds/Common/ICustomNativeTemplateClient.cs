@@ -26,3 +26,4 @@ namespace GoogleMobileAds.Common
         void RecordImpression();
     }
 }
+

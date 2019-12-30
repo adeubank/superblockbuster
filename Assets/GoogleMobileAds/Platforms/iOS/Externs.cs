@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #if UNITY_IOS
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -57,6 +58,9 @@ namespace GoogleMobileAds.iOS
 
         [DllImport("__Internal")]
         internal static extern float GADUDeviceScale();
+
+        [DllImport("__Internal")]
+        internal static extern int GADUDeviceSafeWidth();
 
         [DllImport("__Internal")]
         internal static extern IntPtr GADUCreateRequest();
@@ -289,6 +293,12 @@ namespace GoogleMobileAds.iOS
 
         [DllImport("__Internal")]
         internal static extern void GADURewardedAdSetServerSideVerificationOptions(IntPtr rewardedAd, IntPtr options);
+
+        [DllImport("__Internal")]
+        internal static extern string GADURewardedAdGetRewardType(IntPtr rewardedAd);
+
+        [DllImport("__Internal")]
+        internal static extern double GADURewardedAdGetRewardAmount(IntPtr rewardedAd);
 
         [DllImport("__Internal")]
         internal static extern IntPtr GADUMediationAdapterClassNameForRewardedAd(IntPtr rewardedVideo);

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+
 using GoogleMobileAds.Api;
 
 namespace GoogleMobileAds.Common
@@ -41,5 +42,8 @@ namespace GoogleMobileAds.Common
 
         // Returns the scale for the current device.
         float GetDeviceScale();
+
+        // Returns the safe width for the current device.
+        int GetDeviceSafeWidth();
     }
 }

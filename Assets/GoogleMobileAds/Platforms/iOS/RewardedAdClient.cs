@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #if UNITY_IOS
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -121,6 +122,18 @@ namespace GoogleMobileAds.iOS
         public bool IsLoaded()
         {
             return Externs.GADURewardedAdReady(this.RewardedAdPtr);
+        }
+
+        // Returns the reward item for the loaded rewarded ad.
+        public Reward GetRewardItem()
+        {
+          string type = Externs.GADURewardedAdGetRewardType(this.RewardedAdPtr);
+          double amount = Externs.GADURewardedAdGetRewardAmount(this.RewardedAdPtr);;
+          return new Reward()
+          {
+              Type = type,
+              Amount = amount
+          };
         }
 
         // Returns the mediation adapter class name.

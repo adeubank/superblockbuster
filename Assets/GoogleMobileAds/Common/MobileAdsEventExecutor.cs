@@ -13,25 +13,30 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace GoogleMobileAds.Common
 {
     public class MobileAdsEventExecutor : MonoBehaviour
     {
-        public static MobileAdsEventExecutor instance;
+        public static MobileAdsEventExecutor instance = null;
 
-        private static readonly List<Action> adEventsQueue = new List<Action>();
+        private static List<Action> adEventsQueue = new List<Action>();
 
-        private static volatile bool adEventsQueueEmpty = true;
+        private volatile static bool adEventsQueueEmpty = true;
 
         public static void Initialize()
         {
-            if (IsActive()) return;
+            if (IsActive())
+            {
+                return;
+            }
 
             // Add an invisible game object to the scene
-            var obj = new GameObject("MobileAdsMainThreadExecuter");
+            GameObject obj = new GameObject("MobileAdsMainThreadExecuter");
             obj.hideFlags = HideFlags.HideAndDontSave;
             DontDestroyOnLoad(obj);
             instance = obj.AddComponent<MobileAdsEventExecutor>();
@@ -55,12 +60,14 @@ namespace GoogleMobileAds.Common
                 adEventsQueueEmpty = false;
             }
         }
-
         public void Update()
         {
-            if (adEventsQueueEmpty) return;
+            if (adEventsQueueEmpty)
+            {
+                return;
+            }
 
-            var stagedAdEventsQueue = new List<Action>();
+            List<Action> stagedAdEventsQueue = new List<Action>();
 
             lock (adEventsQueue)
             {
@@ -69,7 +76,10 @@ namespace GoogleMobileAds.Common
                 adEventsQueueEmpty = true;
             }
 
-            foreach (var stagedEvent in stagedAdEventsQueue) stagedEvent.Invoke();
+            foreach (Action stagedEvent in stagedAdEventsQueue)
+            {
+                stagedEvent.Invoke();
+            }
         }
 
         public void OnDisable()

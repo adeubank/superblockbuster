@@ -15,6 +15,7 @@
 #if UNITY_ANDROID
 
 using System.Collections.Generic;
+
 using GoogleMobileAds.Common;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace GoogleMobileAds.Android
 {
     internal class CustomNativeTemplateClient : ICustomNativeTemplateClient
     {
-        private readonly AndroidJavaObject customNativeAd;
+        private AndroidJavaObject customNativeAd;
 
         public CustomNativeTemplateClient(AndroidJavaObject customNativeAd)
         {
@@ -31,38 +32,44 @@ namespace GoogleMobileAds.Android
 
         public List<string> GetAvailableAssetNames()
         {
-            return new List<string>(customNativeAd.Call<string[]>("getAvailableAssetNames"));
+            return new List<string>(this.customNativeAd.Call<string[]>("getAvailableAssetNames"));
         }
 
         public string GetTemplateId()
         {
-            return customNativeAd.Call<string>("getTemplateId");
+            return this.customNativeAd.Call<string>("getTemplateId");
         }
 
         public byte[] GetImageByteArray(string key)
         {
-            var imageAssetAsByteArray = customNativeAd.Call<byte[]>("getImage", key);
-            if (imageAssetAsByteArray.Length == 0) return null;
+            byte[] imageAssetAsByteArray = this.customNativeAd.Call<byte[]>("getImage", key);
+            if (imageAssetAsByteArray.Length == 0)
+            {
+                return null;
+            }
 
             return imageAssetAsByteArray;
         }
 
         public string GetText(string key)
         {
-            var assetText = customNativeAd.Call<string>("getText", key);
-            if (assetText.Equals(string.Empty)) return null;
+            string assetText = this.customNativeAd.Call<string>("getText", key);
+            if (assetText.Equals(string.Empty))
+            {
+                return null;
+            }
 
             return assetText;
         }
 
         public void PerformClick(string assetName)
         {
-            customNativeAd.Call("performClick", assetName);
+            this.customNativeAd.Call("performClick", assetName);
         }
 
         public void RecordImpression()
         {
-            customNativeAd.Call("recordImpression");
+            this.customNativeAd.Call("recordImpression");
         }
     }
 }

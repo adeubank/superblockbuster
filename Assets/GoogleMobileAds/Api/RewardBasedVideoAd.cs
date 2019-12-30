@@ -13,62 +13,95 @@
 // limitations under the License.
 
 using System;
+
+
 using GoogleMobileAds.Common;
 
 namespace GoogleMobileAds.Api
 {
     public class RewardBasedVideoAd
     {
-        private readonly IRewardBasedVideoAdClient client;
+        private IRewardBasedVideoAdClient client;
+        private static readonly RewardBasedVideoAd instance = new RewardBasedVideoAd();
+
+        public static RewardBasedVideoAd Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
 
         // Creates a Singleton RewardBasedVideoAd.
         private RewardBasedVideoAd()
         {
-            client = GoogleMobileAdsClientFactory.BuildRewardBasedVideoAdClient();
+            this.client = GoogleMobileAdsClientFactory.BuildRewardBasedVideoAdClient();
             client.CreateRewardBasedVideoAd();
 
-            client.OnAdLoaded += (sender, args) =>
+            this.client.OnAdLoaded += (sender, args) =>
             {
-                if (OnAdLoaded != null) OnAdLoaded(this, args);
+                if (this.OnAdLoaded != null)
+                {
+                    this.OnAdLoaded(this, args);
+                }
             };
 
-            client.OnAdFailedToLoad += (sender, args) =>
+            this.client.OnAdFailedToLoad += (sender, args) =>
             {
-                if (OnAdFailedToLoad != null) OnAdFailedToLoad(this, args);
+                if (this.OnAdFailedToLoad != null)
+                {
+                    this.OnAdFailedToLoad(this, args);
+                }
             };
 
-            client.OnAdOpening += (sender, args) =>
+            this.client.OnAdOpening += (sender, args) =>
             {
-                if (OnAdOpening != null) OnAdOpening(this, args);
+                if (this.OnAdOpening != null)
+                {
+                    this.OnAdOpening(this, args);
+                }
             };
 
-            client.OnAdStarted += (sender, args) =>
+            this.client.OnAdStarted += (sender, args) =>
             {
-                if (OnAdStarted != null) OnAdStarted(this, args);
+                if (this.OnAdStarted != null)
+                {
+                    this.OnAdStarted(this, args);
+                }
             };
 
-            client.OnAdClosed += (sender, args) =>
+            this.client.OnAdClosed += (sender, args) =>
             {
-                if (OnAdClosed != null) OnAdClosed(this, args);
+                if (this.OnAdClosed != null)
+                {
+                    this.OnAdClosed(this, args);
+                }
             };
 
-            client.OnAdLeavingApplication += (sender, args) =>
+            this.client.OnAdLeavingApplication += (sender, args) =>
             {
-                if (OnAdLeavingApplication != null) OnAdLeavingApplication(this, args);
+                if (this.OnAdLeavingApplication != null)
+                {
+                    this.OnAdLeavingApplication(this, args);
+                }
             };
 
-            client.OnAdRewarded += (sender, args) =>
+            this.client.OnAdRewarded += (sender, args) =>
             {
-                if (OnAdRewarded != null) OnAdRewarded(this, args);
+                if (this.OnAdRewarded != null)
+                {
+                    this.OnAdRewarded(this, args);
+                }
             };
 
-            client.OnAdCompleted += (sender, args) =>
+            this.client.OnAdCompleted += (sender, args) =>
             {
-                if (OnAdCompleted != null) OnAdCompleted(this, args);
+                if (this.OnAdCompleted != null)
+                {
+                    this.OnAdCompleted(this, args);
+                }
             };
         }
-
-        public static RewardBasedVideoAd Instance { get; } = new RewardBasedVideoAd();
 
         // These are the ad callback events that can be hooked into.
         public event EventHandler<EventArgs> OnAdLoaded;
@@ -114,7 +147,7 @@ namespace GoogleMobileAds.Api
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return client.MediationAdapterClassName();
+            return this.client.MediationAdapterClassName();
         }
     }
 }

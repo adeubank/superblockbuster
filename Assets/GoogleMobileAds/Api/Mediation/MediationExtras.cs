@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+
+using UnityEngine;
 
 namespace GoogleMobileAds.Api.Mediation
 {
     public abstract class MediationExtras
     {
+        public Dictionary<string, string> Extras { get; protected set; }
+
         public MediationExtras()
         {
-            Extras = new Dictionary<string, string>();
+            this.Extras = new Dictionary<string, string>();
         }
-
-        public Dictionary<string, string> Extras { get; protected set; }
 
         public abstract string AndroidMediationExtraBuilderClassName { get; }
 

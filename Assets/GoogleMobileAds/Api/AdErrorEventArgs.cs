@@ -14,6 +14,8 @@
 
 using System;
 
+using GoogleMobileAds.Common;
+
 namespace GoogleMobileAds.Api
 {
     public class AdErrorEventArgs : EventArgs

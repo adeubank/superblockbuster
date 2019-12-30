@@ -52,7 +52,7 @@ public class AdController : Singleton<AdController>
         bannerView = new BannerView(BannerAdUnitId(), AdSize.Banner, AdPosition.Bottom);
         // Create an empty ad request.
         AdRequest request = new AdRequest.Builder()
-          // .AddTestDevice("2077ef9a63d2b398840261c8221a0c9b")
+          // .AddTestDevice("8CFBCAB8AE99E62800B95EBE7ED3FA62")
           .Build();
         // Load the banner with the request.
         bannerView.LoadAd(request);

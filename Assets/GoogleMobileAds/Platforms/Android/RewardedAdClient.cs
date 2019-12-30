@@ -15,20 +15,21 @@
 #if UNITY_ANDROID
 
 using System;
+using UnityEngine;
+
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Common;
-using UnityEngine;
 
 namespace GoogleMobileAds.Android
 {
     public class RewardedAdClient : AndroidJavaProxy, IRewardedAdClient
     {
-        private readonly AndroidJavaObject androidRewardedAd;
+        private AndroidJavaObject androidRewardedAd;
 
         public RewardedAdClient() : base(Utils.UnityRewardedAdCallbackClassName)
         {
-            var playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
-            var activity =
+            AndroidJavaClass playerClass = new AndroidJavaClass(Utils.UnityActivityClassName);
+            AndroidJavaObject activity =
                 playerClass.GetStatic<AndroidJavaObject>("currentActivity");
             androidRewardedAd = new AndroidJavaObject(Utils.UnityRewardedAdClassName, activity, this);
         }
@@ -77,66 +78,91 @@ namespace GoogleMobileAds.Android
             androidRewardedAd.Call("destroy");
         }
 
+        // Returns the reward item for the loaded rewarded ad.
+        public Reward GetRewardItem()
+        {
+          AndroidJavaObject rewardItem = this.androidRewardedAd.Call<AndroidJavaObject>("getRewardItem");
+          if (rewardItem == null) {
+            return null;
+          }
+          string type = rewardItem.Call<string>("getType");
+          int amount = rewardItem.Call<int>("getAmount");
+          return new Reward()
+          {
+              Type = type,
+              Amount = (double) amount
+          };
+        }
+
         // Returns the mediation adapter class name.
         public string MediationAdapterClassName()
         {
-            return androidRewardedAd.Call<string>("getMediationAdapterClassName");
+            return this.androidRewardedAd.Call<string>("getMediationAdapterClassName");
         }
 
         #endregion
 
         #region Callbacks from UnityRewardBasedVideoAdListener.
 
-        private void onRewardedAdLoaded()
+        void onRewardedAdLoaded()
         {
-            if (OnAdLoaded != null) OnAdLoaded(this, EventArgs.Empty);
-        }
-
-        private void onRewardedAdFailedToLoad(string errorReason)
-        {
-            if (OnAdFailedToLoad != null)
+            if (this.OnAdLoaded != null)
             {
-                var args = new AdErrorEventArgs
-                {
-                    Message = errorReason
-                };
-                OnAdFailedToLoad(this, args);
+                this.OnAdLoaded(this, EventArgs.Empty);
             }
         }
 
-        private void onRewardedAdFailedToShow(string errorReason)
+        void onRewardedAdFailedToLoad(string errorReason)
         {
-            if (OnAdFailedToShow != null)
+            if (this.OnAdFailedToLoad != null)
             {
-                var args = new AdErrorEventArgs
+                AdErrorEventArgs args = new AdErrorEventArgs()
                 {
                     Message = errorReason
                 };
-                OnAdFailedToShow(this, args);
+                this.OnAdFailedToLoad(this, args);
             }
         }
 
-        private void onRewardedAdOpened()
+        void onRewardedAdFailedToShow(string errorReason)
         {
-            if (OnAdOpening != null) OnAdOpening(this, EventArgs.Empty);
-        }
-
-
-        private void onRewardedAdClosed()
-        {
-            if (OnAdClosed != null) OnAdClosed(this, EventArgs.Empty);
-        }
-
-        private void onUserEarnedReward(string type, float amount)
-        {
-            if (OnUserEarnedReward != null)
+            if (this.OnAdFailedToShow != null)
             {
-                var args = new Reward
+                AdErrorEventArgs args = new AdErrorEventArgs()
+                {
+                    Message = errorReason
+                };
+                this.OnAdFailedToShow(this, args);
+            }
+        }
+
+        void onRewardedAdOpened()
+        {
+            if (this.OnAdOpening != null)
+            {
+                this.OnAdOpening(this, EventArgs.Empty);
+            }
+        }
+
+
+        void onRewardedAdClosed()
+        {
+            if (this.OnAdClosed != null)
+            {
+                this.OnAdClosed(this, EventArgs.Empty);
+            }
+        }
+
+        void onUserEarnedReward(string type, float amount)
+        {
+            if (this.OnUserEarnedReward != null)
+            {
+                Reward args = new Reward()
                 {
                     Type = type,
                     Amount = amount
                 };
-                OnUserEarnedReward(this, args);
+                this.OnUserEarnedReward(this, args);
             }
         }
 

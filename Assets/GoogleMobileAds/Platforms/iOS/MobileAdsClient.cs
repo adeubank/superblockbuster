@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #if UNITY_IOS
+
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -71,6 +72,11 @@ namespace GoogleMobileAds.iOS
         public float GetDeviceScale()
         {
             return Externs.GADUDeviceScale();
+        }
+
+        public int GetDeviceSafeWidth()
+        {
+            return Externs.GADUDeviceSafeWidth();
         }
 
         [MonoPInvokeCallback(typeof(GADUInitializationCompleteCallback))]

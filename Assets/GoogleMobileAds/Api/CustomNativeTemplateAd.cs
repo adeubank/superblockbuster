@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
+
 using GoogleMobileAds.Common;
 using UnityEngine;
 
@@ -20,7 +22,7 @@ namespace GoogleMobileAds.Api
 {
     public class CustomNativeTemplateAd
     {
-        private readonly ICustomNativeTemplateClient client;
+        private ICustomNativeTemplateClient client;
 
         internal CustomNativeTemplateAd(ICustomNativeTemplateClient client)
         {
@@ -29,12 +31,12 @@ namespace GoogleMobileAds.Api
 
         public List<string> GetAvailableAssetNames()
         {
-            return client.GetAvailableAssetNames();
+            return this.client.GetAvailableAssetNames();
         }
 
         public string GetCustomTemplateId()
         {
-            return client.GetTemplateId();
+            return this.client.GetTemplateId();
         }
 
         // Get image asset corresponding to the key parameter of custom native template ad as a
@@ -42,8 +44,11 @@ namespace GoogleMobileAds.Api
         // returned.
         public Texture2D GetTexture2D(string key)
         {
-            var imageAssetAsByteArray = client.GetImageByteArray(key);
-            if (imageAssetAsByteArray == null) return null;
+            byte[] imageAssetAsByteArray = this.client.GetImageByteArray(key);
+            if (imageAssetAsByteArray == null)
+            {
+                return null;
+            }
 
             return Utils.GetTexture2DFromByteArray(imageAssetAsByteArray);
         }
@@ -53,17 +58,17 @@ namespace GoogleMobileAds.Api
         // returned.
         public string GetText(string key)
         {
-            return client.GetText(key);
+            return this.client.GetText(key);
         }
 
         public void PerformClick(string assetName)
         {
-            client.PerformClick(assetName);
+            this.client.PerformClick(assetName);
         }
 
         public void RecordImpression()
         {
-            client.RecordImpression();
+            this.client.RecordImpression();
         }
     }
 }

@@ -14,6 +14,7 @@
 
 using System;
 using System.Reflection;
+
 using GoogleMobileAds.Api;
 using UnityEngine;
 
@@ -22,40 +23,6 @@ namespace GoogleMobileAds.Common
     public class RewardedAdDummyClient : IRewardedAdClient
     {
         public RewardedAdDummyClient()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void CreateRewardedAd(string adUnitId)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public void LoadAd(AdRequest request)
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-
-            if (OnAdLoaded != null) OnAdLoaded(this, EventArgs.Empty);
-        }
-
-        public bool IsLoaded()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-            return true;
-        }
-
-        public void Show()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-        }
-
-        public string MediationAdapterClassName()
-        {
-            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
-            return null;
-        }
-
-        public void SetServerSideVerificationOptions(ServerSideVerificationOptions serverSideVerificationOptions)
         {
             Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
         }
@@ -76,5 +43,48 @@ namespace GoogleMobileAds.Common
         public event EventHandler<Reward> OnUserEarnedReward;
 
 #pragma warning restore 67
+
+        public void CreateRewardedAd(string adUnitId)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public void LoadAd(AdRequest request)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+
+            if (OnAdLoaded != null)
+            {
+                OnAdLoaded(this, EventArgs.Empty);
+            }
+        }
+
+        public bool IsLoaded()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return true;
+        }
+
+        public void Show()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
+
+        public string MediationAdapterClassName()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return null;
+        }
+
+        public Reward GetRewardItem()
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+            return null;
+        }
+
+        public void SetServerSideVerificationOptions(ServerSideVerificationOptions serverSideVerificationOptions)
+        {
+            Debug.Log("Dummy " + MethodBase.GetCurrentMethod().Name);
+        }
     }
 }
