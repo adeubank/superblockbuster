@@ -39,3 +39,5 @@ sysinfo.txt
 [Bb]uilds/
 [Ll]ogs/
 /Assets/Plugins/Editor/
+/Assets/Plugins/Android/
+/Assets/Plugins/iOS/
