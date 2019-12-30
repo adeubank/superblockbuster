@@ -17,7 +17,11 @@ public class AdController : Singleton<AdController>
     {
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
-        MobileAds.Initialize(initStatus => { Debug.Log("unity-script: MobileAds.Initialize " + initStatus); });
+        MobileAds.Initialize(initStatus =>
+        {
+            Debug.Log("unity-script: MobileAds.Initialize " + initStatus);
+            _adsInitialized = true; 
+        });
         _adsInitialized = true;
 
         Debug.Log("unity-script: AdController finished");
