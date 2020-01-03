@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
 {
-    public const string IronSourcePlacementName = "GameOver";
+    public const string PlacementName = "GameOver";
 
     [SerializeField] private Button btnReplay;
 
@@ -18,9 +18,7 @@ public class GameOver : MonoBehaviour
 
         btnReplay.gameObject.SetActive(GameController.GamesPlayed() > 1);
 
-        // TODO Implement game over full screen
-        // if (RemoteConfigController.Instance.CanShowAd() && !IronSource.Agent.isInterstitialPlacementCapped(IronSourcePlacementName) && IronSource.Agent.isInterstitialReady())
-        //     IronSource.Agent.showInterstitial(IronSourcePlacementName);
+        AdController.Instance.ShowInterstitial();
 
         InputManager.Instance.EnableTouch();
     }

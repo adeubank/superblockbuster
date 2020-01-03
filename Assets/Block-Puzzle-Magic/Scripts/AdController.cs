@@ -5,7 +5,7 @@ using UnityEngine;
 public class AdController : Singleton<AdController>
 {
     private bool _adsInitialized;
-    private BannerView bannerView;
+    private BannerView _bannerView;
 
     public bool CanShowAds()
     {
@@ -20,14 +20,14 @@ public class AdController : Singleton<AdController>
         MobileAds.Initialize(initStatus =>
         {
             Debug.Log("unity-script: MobileAds.Initialize " + initStatus);
-            _adsInitialized = true; 
+            _adsInitialized = true;
         });
         _adsInitialized = true;
 
         Debug.Log("unity-script: AdController finished");
     }
 
-    public string BannerAdUnitId()
+    public string BannerAdUnitId(string placementName)
     {
         if (Debug.isDebugBuild)
         {
@@ -40,21 +40,73 @@ public class AdController : Singleton<AdController>
 #endif
         }
 
-        throw new NotImplementedException("No banner ad unit ID");
+        switch (placementName)
+        {
+            case "MainScreen":
+            case "GamePlay":
+            default:
+                throw new NotImplementedException("No banner ad unit ID");
+        }
     }
 
-    public void ShowBanner()
+    public void ShowBanner(string placementName)
     {
         if (!CanShowAds()) return;
 
         // Create a 320x50 banner at the bottom of the screen.
-        Debug.Log("unity-script: Showing banner ad");
-        bannerView = new BannerView(BannerAdUnitId(), AdSize.Banner, AdPosition.Bottom);
-        // Create an empty ad request.
-        AdRequest request = new AdRequest.Builder()
-          // .AddTestDevice("8CFBCAB8AE99E62800B95EBE7ED3FA62")
-          .Build();
-        // Load the banner with the request.
-        bannerView.LoadAd(request);
+        var adUnitId = BannerAdUnitId(placementName);
+        _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
+        AdRequest request = new AdRequest.Builder().Build();
+        Debug.Log("unity-script: Showing banner ad: " + adUnitId);
+        _bannerView.LoadAd(request);
+    }
+
+    public void HideBanner()
+    {
+        _bannerView.Destroy();
+    }
+
+    private InterstitialAd interstitial;
+
+    private string InterstitialAdUnitId(string placementName)
+    {
+        if (Debug.isDebugBuild)
+        {
+#if UNITY_ANDROID
+        return  "ca-app-pub-3940256099942544/1033173712";
+#elif UNITY_IPHONE
+            return "ca-app-pub-3940256099942544/4411468910";
+#else
+        return  "unexpected_platform";
+#endif
+        }
+
+        switch (placementName)
+        {
+            case "GameOver":
+            default:
+                throw new NotImplementedException("No interstitial ad unit ID");
+        }
+    }
+
+    public void RequestInterstitial(string placementName)
+    {
+        if (!CanShowAds()) return;
+
+        var adUnitId = InterstitialAdUnitId(placementName);
+        interstitial?.Destroy();
+        interstitial = new InterstitialAd(adUnitId);
+        AdRequest request = new AdRequest.Builder().Build();
+        Debug.Log("unity-script: Loading interstitial ad: " + adUnitId);
+
+        interstitial.LoadAd(request);
+    }
+
+    public void ShowInterstitial()
+    {
+        if (CanShowAds() && interstitial.IsLoaded())
+        {
+            interstitial.Show();
+        }
     }
 }

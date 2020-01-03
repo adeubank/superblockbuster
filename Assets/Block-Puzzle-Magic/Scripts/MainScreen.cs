@@ -20,7 +20,7 @@ public class MainScreen : MonoBehaviour
 
     private void OnDisable()
     {
-        HideBannerAd();
+        AdController.Instance.HideBanner();
         CancelInvoke(nameof(RefreshAds));
     }
 
@@ -32,14 +32,7 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        AdController.Instance.ShowBanner();
-    }
-
-    private void HideBannerAd()
-    {
-        Debug.Log("Hiding MainScreen banner");
-        // TODO Implement main screen banner
-        // IronSource.Agent.hideBanner();
+        AdController.Instance.ShowBanner(name);
     }
 
     private void CheckIfRewardedVideoIsAvailable()
@@ -104,7 +97,7 @@ public class MainScreen : MonoBehaviour
             }
             else
             {
-                HideBannerAd();
+                AdController.Instance.HideBanner();
                 StackManager.Instance.powerupSelectScreen.Activate();
             }
         }
