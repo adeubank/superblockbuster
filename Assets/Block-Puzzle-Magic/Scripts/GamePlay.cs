@@ -325,7 +325,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         
         AdController.Instance.RequestInterstitial(GameOver.PlacementName);
 
-        AdController.Instance.ShowBanner(name);
+        AdController.Instance.ShowBanner();
     }
 
     private void OnDestroy()

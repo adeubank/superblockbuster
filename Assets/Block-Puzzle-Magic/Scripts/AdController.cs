@@ -4,13 +4,8 @@ using UnityEngine;
 
 public class AdController : Singleton<AdController>
 {
+    public event EventHandler OnAdsInitialized;
     private bool _adsInitialized;
-    private BannerView _bannerView;
-
-    public bool CanShowAds()
-    {
-        return RemoteConfigController.Instance.adsEnabled && _adsInitialized;
-    }
 
     // Start is called before the first frame update
     private void Start()
@@ -21,13 +16,24 @@ public class AdController : Singleton<AdController>
         {
             Debug.Log("unity-script: MobileAds.Initialize " + initStatus);
             _adsInitialized = true;
+            InitializeRewardedVideo();
+            OnAdsInitialized?.Invoke(this, EventArgs.Empty);
         });
-        _adsInitialized = true;
 
         Debug.Log("unity-script: AdController finished");
     }
 
-    public string BannerAdUnitId(string placementName)
+    private bool CanShowAds()
+    {
+        return RemoteConfigController.Instance.adsEnabled && _adsInitialized;
+    }
+
+    #region Banner Ad
+
+    private BannerView _bannerView;
+    private bool _bannerIsVisible;
+
+    private string BannerAdUnitId()
     {
         if (Debug.isDebugBuild)
         {
@@ -39,41 +45,47 @@ public class AdController : Singleton<AdController>
             return "unexpected_platform";
 #endif
         }
-
-        switch (placementName)
-        {
-            case "MainScreen":
-            case "GamePlay":
-            default:
-                throw new NotImplementedException("No banner ad unit ID");
-        }
+#if UNITY_ANDROID
+        return "ca-app-pub-4216152597478324/8552528193";
+#elif UNITY_IPHONE
+        return "ca-app-pub-4216152597478324/8169384819";
+#else
+            return "unexpected_platform";
+#endif
     }
 
-    public void ShowBanner(string placementName)
+    public void ShowBanner()
     {
         if (!CanShowAds()) return;
+        if (_bannerIsVisible) return;
 
         // Create a 320x50 banner at the bottom of the screen.
-        var adUnitId = BannerAdUnitId(placementName);
+        var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
         AdRequest request = new AdRequest.Builder().Build();
         Debug.Log("unity-script: Showing banner ad: " + adUnitId);
         _bannerView.LoadAd(request);
+        _bannerIsVisible = true;
     }
 
     public void HideBanner()
     {
         _bannerView.Destroy();
+        _bannerIsVisible = false;
     }
+
+    #endregion
+
+    #region Interstitial Ad
 
     private InterstitialAd interstitial;
 
-    private string InterstitialAdUnitId(string placementName)
+    private string InterstitialAdUnitId()
     {
         if (Debug.isDebugBuild)
         {
 #if UNITY_ANDROID
-        return  "ca-app-pub-3940256099942544/1033173712";
+            return "ca-app-pub-3940256099942544/1033173712";
 #elif UNITY_IPHONE
             return "ca-app-pub-3940256099942544/4411468910";
 #else
@@ -81,19 +93,20 @@ public class AdController : Singleton<AdController>
 #endif
         }
 
-        switch (placementName)
-        {
-            case "GameOver":
-            default:
-                throw new NotImplementedException("No interstitial ad unit ID");
-        }
+#if UNITY_ANDROID
+        return "ca-app-pub-4216152597478324/7239446520";
+#elif UNITY_IPHONE
+        return "ca-app-pub-4216152597478324/2917058137";
+#else
+        return "unexpected_platform";
+#endif
     }
 
     public void RequestInterstitial(string placementName)
     {
         if (!CanShowAds()) return;
 
-        var adUnitId = InterstitialAdUnitId(placementName);
+        var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
         interstitial = new InterstitialAd(adUnitId);
         AdRequest request = new AdRequest.Builder().Build();
@@ -104,9 +117,95 @@ public class AdController : Singleton<AdController>
 
     public void ShowInterstitial()
     {
-        if (CanShowAds() && interstitial.IsLoaded())
+        if (interstitial == null) return;
+        if (!CanShowAds()) return;
+        
+        if (interstitial.IsLoaded())
         {
             interstitial.Show();
+        }
+    }
+
+    #endregion
+
+    #region Reward Video Ad
+
+    private RewardBasedVideoAd _rewardBasedVideo;
+    public event EventHandler<EventArgs> OnAdLoaded;
+
+    public bool RewardVideoLoaded()
+    {
+        return _rewardBasedVideo != null && _rewardBasedVideo.IsLoaded();
+    }
+
+    private void InitializeRewardedVideo()
+    {
+        // Get singleton reward based video ad reference.
+        _rewardBasedVideo = RewardBasedVideoAd.Instance;
+        // Called when the user should be rewarded for watching a video.
+        _rewardBasedVideo.OnAdRewarded += HandleRewardBasedVideoRewarded;
+        _rewardBasedVideo.OnAdLoaded += HandleRewardBasedVideoLoaded;
+        _rewardBasedVideo.OnAdClosed += HandleRewardBasedVideoClosed;
+    }
+
+    private string RewardVideoAdUnitId()
+    {
+        if (Debug.isDebugBuild)
+        {
+#if UNITY_ANDROID
+            string adUnitId = "ca-app-pub-3940256099942544/5224354917";
+#elif UNITY_IPHONE
+            string adUnitId = "ca-app-pub-3940256099942544/1712485313";
+#else
+            string adUnitId = "unexpected_platform";
+#endif
+        }
+#if UNITY_ANDROID
+        return "ca-app-pub-4216152597478324/5926364856";
+#elif UNITY_IPHONE
+        return "ca-app-pub-4216152597478324/6664731457";
+#else
+        return "unexpected_platform";
+#endif
+    }
+
+    public void RequestRewardVideoAd()
+    {
+        var adUnitId = RewardVideoAdUnitId();
+        AdRequest request = new AdRequest.Builder().Build();
+        this._rewardBasedVideo.LoadAd(request, adUnitId);
+    }
+
+    public void HandleRewardBasedVideoRewarded(object sender, Reward args)
+    {
+        string type = args.Type;
+        double amount = args.Amount;
+        Debug.Log("User rewarded with: " + amount.ToString() + " " + type);
+    }
+
+    public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)
+    {
+        Debug.Log("HandleRewardBasedVideoLoaded event received");
+        OnAdLoaded?.Invoke(sender, args);
+    }
+
+    public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
+    {
+        this.RequestRewardVideoAd();
+    }
+
+    #endregion
+
+    public void ShowRewardedVideo()
+    {
+        if (!_adsInitialized || _rewardBasedVideo == null)
+        {
+            return;
+        }
+
+        if (_rewardBasedVideo.IsLoaded())
+        {
+            _rewardBasedVideo.Show();
         }
     }
 }

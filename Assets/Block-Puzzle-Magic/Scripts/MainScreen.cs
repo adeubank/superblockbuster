@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class MainScreen : MonoBehaviour
 {
@@ -7,9 +8,14 @@ public class MainScreen : MonoBehaviour
 
     public void Start()
     {
-        // TODO implement main screen reward video
-        // IronSourceEvents.onRewardedVideoAvailabilityChangedEvent += RewardedVideoAvailabilityChangedEvent;
+        RemoteConfigController.Instance.OnRemoteConfigFetched += RefreshAds;
+        AdController.Instance.OnAdsInitialized += RefreshAds;
         InvokeRepeating(nameof(RefreshAds), 0, 60);
+    }
+
+    private void RefreshAds(object sender, EventArgs e)
+    {
+        RefreshAds();
     }
 
     private void OnEnable()
@@ -32,49 +38,29 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        AdController.Instance.ShowBanner(name);
+        AdController.Instance.ShowBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable()
     {
         Debug.Log("unity-script: Checking if rewarded video ad is available");
-        // TODO implement main screen reward video
-        // if (IronSource.Agent.isRewardedVideoAvailable())
-        //     EnableRewardVideoButton();
-        // else
-        //     DisableRewardVideoButton();
-    }
-
-    private void RewardedVideoAvailabilityChangedEvent(bool canShowAd)
-    {
-        Debug.Log("unity-script: I got RewardedVideoAvailabilityChangedEvent, value = " + canShowAd);
-    }
-
-    private void EnableRewardVideoButton()
-    {
-        // TODO implement main screen reward video
-        // if (RemoteConfigController.Instance.CanShowAd() && !IsFirstPlay() && !IronSource.Agent.isRewardedVideoPlacementCapped(name))
-        //     showRewardedVideoButton.Activate();
-    }
-
-    private void DisableRewardVideoButton()
-    {
-        showRewardedVideoButton.Deactivate();
+        if (AdController.Instance.RewardVideoLoaded())
+            showRewardedVideoButton.Activate();
+        else
+            showRewardedVideoButton.Deactivate();
     }
 
     public void RewardedVideoButtonClicked()
     {
         Debug.Log("unity-script: ShowRewardedVideoButtonClicked");
-        // TODO implement main screen reward video
-        // if (IronSource.Agent.isRewardedVideoAvailable())
-        // {
-        //     IronSource.Agent.showRewardedVideo(name);
-        // }
-        // else
-        // {
-        //     DisableRewardVideoButton();
-        //     Debug.Log("unity-script: IronSource.Agent.isRewardedVideoAvailable - False");
-        // }
+        if (AdController.Instance.RewardVideoLoaded())
+        {
+            AdController.Instance.ShowRewardedVideo();
+        }
+        else
+        {
+            showRewardedVideoButton.Deactivate();
+        }
     }
 
     /// <summary>

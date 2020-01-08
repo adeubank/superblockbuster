@@ -1,8 +1,11 @@
-﻿using Unity.RemoteConfig;
+﻿using System;
+using Unity.RemoteConfig;
 using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
 {
+    public event EventHandler OnRemoteConfigFetched;
+
     // Declare any Settings variables you’ll want to configure remotely:
     public bool adsEnabled;
 
@@ -34,6 +37,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
                 assignmentId = ConfigManager.appConfig.assignmentID;
                 Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled);
+                OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }
     }
