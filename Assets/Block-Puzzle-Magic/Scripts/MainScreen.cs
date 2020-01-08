@@ -62,6 +62,11 @@ public class MainScreen : MonoBehaviour
         }
     }
 
+    public void RewardedVideoClosed()
+    {
+        showRewardedVideoButton.Deactivate();        
+    }
+
     /// <summary>
     ///     Raises the play button pressed event.
     /// </summary>

@@ -6,6 +6,7 @@ using UnityEngine;
 public class AdController : Singleton<AdController>
 {
     public event EventHandler OnAdsInitialized;
+    public event EventHandler OnRewardVideoClosed;
     private bool _adsInitialized;
 
     // Start is called before the first frame update
@@ -199,7 +200,9 @@ public class AdController : Singleton<AdController>
 
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
+        Debug.Log("");
         this.RequestRewardVideoAd();
+        OnRewardVideoClosed?.Invoke(sender, args);
     }
 
     #endregion
