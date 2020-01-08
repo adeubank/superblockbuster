@@ -10,6 +10,7 @@ public class MainScreen : MonoBehaviour
     {
         RemoteConfigController.Instance.OnRemoteConfigFetched += RefreshAds;
         AdController.Instance.OnAdsInitialized += RefreshAds;
+        AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
         InvokeRepeating(nameof(RefreshAds), 0, 60);
     }
 
@@ -62,7 +63,7 @@ public class MainScreen : MonoBehaviour
         }
     }
 
-    public void RewardedVideoClosed()
+    public void RewardedVideoClosed(object sender, EventArgs eventArgs)
     {
         showRewardedVideoButton.Deactivate();        
     }

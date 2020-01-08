@@ -200,7 +200,7 @@ public class AdController : Singleton<AdController>
 
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
-        Debug.Log("");
+        Debug.Log("HandleRewardBasedVideoClosed event received");
         this.RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
