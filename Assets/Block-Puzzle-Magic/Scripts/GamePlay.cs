@@ -321,9 +321,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private void InitAds()
     {
-        if (!RemoteConfigController.Instance.CanShowAd() || GameController.GamesPlayed() < 1) return;
+        if (GameController.GamesPlayed() < 1) return;
         
-        AdController.Instance.RequestInterstitial(GameOver.PlacementName);
+        AdController.Instance.RequestInterstitial();
 
         AdController.Instance.ShowBanner();
     }

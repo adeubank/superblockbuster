@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using GoogleMobileAds.Api;
 using UnityEngine;
 
@@ -14,13 +15,11 @@ public class AdController : Singleton<AdController>
         // Do not call other ads until ads are initialized when using admob mediation
         MobileAds.Initialize(initStatus =>
         {
-            Debug.Log("unity-script: MobileAds.Initialize " + initStatus);
             _adsInitialized = true;
             InitializeRewardedVideo();
             OnAdsInitialized?.Invoke(this, EventArgs.Empty);
+            Debug.Log("MobileAds.Initialize " + initStatus + " CanShowAds=" + CanShowAds());
         });
-
-        Debug.Log("unity-script: AdController finished");
     }
 
     private bool CanShowAds()
@@ -63,14 +62,14 @@ public class AdController : Singleton<AdController>
         var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
         AdRequest request = new AdRequest.Builder().Build();
-        Debug.Log("unity-script: Showing banner ad: " + adUnitId);
+        Debug.Log("Showing banner ad: " + adUnitId);
         _bannerView.LoadAd(request);
         _bannerIsVisible = true;
     }
 
     public void HideBanner()
     {
-        _bannerView.Destroy();
+        _bannerView?.Destroy();
         _bannerIsVisible = false;
     }
 
@@ -102,7 +101,7 @@ public class AdController : Singleton<AdController>
 #endif
     }
 
-    public void RequestInterstitial(string placementName)
+    public void RequestInterstitial()
     {
         if (!CanShowAds()) return;
 
@@ -110,7 +109,7 @@ public class AdController : Singleton<AdController>
         interstitial?.Destroy();
         interstitial = new InterstitialAd(adUnitId);
         AdRequest request = new AdRequest.Builder().Build();
-        Debug.Log("unity-script: Loading interstitial ad: " + adUnitId);
+        Debug.Log("Loading interstitial ad: " + adUnitId);
 
         interstitial.LoadAd(request);
     }
@@ -146,6 +145,7 @@ public class AdController : Singleton<AdController>
         _rewardBasedVideo.OnAdRewarded += HandleRewardBasedVideoRewarded;
         _rewardBasedVideo.OnAdLoaded += HandleRewardBasedVideoLoaded;
         _rewardBasedVideo.OnAdClosed += HandleRewardBasedVideoClosed;
+        RequestRewardVideoAd();
     }
 
     private string RewardVideoAdUnitId()
@@ -173,6 +173,7 @@ public class AdController : Singleton<AdController>
     {
         var adUnitId = RewardVideoAdUnitId();
         AdRequest request = new AdRequest.Builder().Build();
+        Debug.Log("Loading reward video ad: " + adUnitId);
         this._rewardBasedVideo.LoadAd(request, adUnitId);
     }
 
@@ -180,7 +181,14 @@ public class AdController : Singleton<AdController>
     {
         string type = args.Type;
         double amount = args.Amount;
-        Debug.Log("User rewarded with: " + amount.ToString() + " " + type);
+        Debug.Log("User rewarded with: " + amount + " " + type);
+        StartCoroutine(AddCoins((int) amount));
+    }
+
+    private IEnumerator AddCoins(int amount)
+    {
+        yield return new WaitForSecondsRealtime(0.8f);
+        CurrencyManager.Instance.AddCoinBalance(amount);
     }
 
     public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)

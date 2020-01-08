@@ -32,7 +32,7 @@ public class MainScreen : MonoBehaviour
 
     private void RefreshAds()
     {
-        if (!RemoteConfigController.Instance.CanShowAd() || IsFirstPlay()) return;
+        if (IsFirstPlay()) return;
 
         Debug.Log("Refreshing ads on main screen");
 
@@ -43,7 +43,6 @@ public class MainScreen : MonoBehaviour
 
     private void CheckIfRewardedVideoIsAvailable()
     {
-        Debug.Log("unity-script: Checking if rewarded video ad is available");
         if (AdController.Instance.RewardVideoLoaded())
             showRewardedVideoButton.Activate();
         else
