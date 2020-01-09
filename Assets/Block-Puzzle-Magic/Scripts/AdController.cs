@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AdController : Singleton<AdController>
 {
-    public event EventHandler OnAdsInitialized;
+
     public event EventHandler OnRewardVideoClosed;
     private bool _adsInitialized;
 
@@ -18,7 +18,6 @@ public class AdController : Singleton<AdController>
         {
             _adsInitialized = true;
             InitializeRewardedVideo();
-            OnAdsInitialized?.Invoke(this, EventArgs.Empty);
             Debug.Log("MobileAds.Initialize " + initStatus + " CanShowAds=" + CanShowAds());
         });
     }
