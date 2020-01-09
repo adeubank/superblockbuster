@@ -8,15 +8,8 @@ public class MainScreen : MonoBehaviour
 
     public void Start()
     {
-        RemoteConfigController.Instance.OnRemoteConfigFetched += RefreshAds;
-        AdController.Instance.OnAdsInitialized += RefreshAds;
         AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
         InvokeRepeating(nameof(RefreshAds), 0, 60);
-    }
-
-    private void RefreshAds(object sender, EventArgs e)
-    {
-        RefreshAds();
     }
 
     private void OnEnable()
