@@ -625,7 +625,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adsEnabled: 0
   assignmentId: 
-  gamesPerAd: 0
 --- !u!1 &362125553
 GameObject:
   m_ObjectHideFlags: 0
@@ -2503,7 +2502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coinGainSound: {fileID: 8300000, guid: 752a25235314d7549ad98013b2ec66ee, type: 3}
-  InitialCoinBalance: 1000
+  InitialCoinBalance: 1500
 --- !u!114 &1863145568
 MonoBehaviour:
   m_ObjectHideFlags: 0
