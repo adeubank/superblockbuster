@@ -28,7 +28,6 @@ public class InputManager : Singleton<InputManager>
     public bool canInput(float delay = 0.25F, bool disableOnAvailable = true)
     {
         var status = isTouchAvailable;
-        Debug.Log("InputManager.canInput status=" + status);
         if (status && disableOnAvailable)
         {
             isTouchAvailable = false;

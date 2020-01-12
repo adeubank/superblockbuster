@@ -42,8 +42,6 @@ public class ShapeInfo : MonoBehaviour
         blockImage = firstBlock.block.GetComponent<Image>().sprite;
         startOffsetX = firstBlock.rowID;
         startOffsetY = firstBlock.columnID;
-
-        Debug.Log("Started a new shape! " + this);
     }
 
     public void CreateBlockList()
@@ -78,7 +76,6 @@ public class ShapeInfo : MonoBehaviour
     {
         if (ShapeBlocks == null || ShapeBlocks.Count == 0)
         {
-            Debug.Log("No Shape Blocks, not converting to powerup. shape=" + this + " powerup=" + powerupInfo);
             return;
         }
 
@@ -95,80 +92,43 @@ public class ShapeInfo : MonoBehaviour
         switch (ShapeID)
         {
             case (int) Powerups.Flood:
-
-                Debug.Log("Played Flood Powerup");
                 yield return HandleFloodBlocks(currentBlocks);
-
                 break;
             case (int) Powerups.Doubler:
-
-                Debug.Log("Played Doubler Powerup");
                 HandleDoublerBlocks(currentBlocks);
                 break;
-
             case (int) Powerups.Dandelion:
-
-                Debug.Log("Played Dandelion Powerup");
                 foreach (var block in currentBlocks) block.ConvertToDandelion();
                 break;
-
             case (int) Powerups.Bandage:
-
-                Debug.Log("Played Bandage Powerup");
                 var randomBandageBlock = currentBlocks[Random.Range(0, currentBlocks.Count)];
                 StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite((int) Powerups.Bandage,
                     randomBandageBlock.moveID, randomBandageBlock, true));
-
                 break;
-
             case (int) Powerups.Bomb:
-
-                Debug.Log("Played Bomb Powerup");
                 foreach (var block in currentBlocks) block.ConvertToBomb();
                 break;
-
             case (int) Powerups.ColorCoder:
-
-                Debug.Log("Played Coder Coder Powerup");
                 foreach (var block in currentBlocks) block.ConvertToColorCoder();
                 break;
-
             case (int) Powerups.SticksGalore:
-
-                Debug.Log("Played Sticks Galore Powerup");
                 foreach (var block in currentBlocks) block.ConvertToSticksGalore();
                 break;
-
             case (int) Powerups.Lag:
-
-                Debug.Log("Played Lag Powerup");
                 foreach (var block in currentBlocks) block.ConvertToLagBlock();
                 break;
-
             case (int) Powerups.Storm:
-
-                Debug.Log("Played Storm Powerup");
                 foreach (var block in currentBlocks) block.ConvertToStormBlock();
                 break;
-
             case (int) Powerups.Quake:
-
-                Debug.Log("Played Quake Powerup");
                 foreach (var block in currentBlocks) block.ConvertToQuakeBlock();
                 break;
-
             case (int) Powerups.Avalanche:
-
-                Debug.Log("Played Avalanche Powerup");
                 foreach (var block in currentBlocks) block.ConvertToAvalancheBlock();
                 break;
-
             case (int) Powerups.Frenzy:
-
-                Debug.Log("Played Frenzy Powerup");
                 foreach (var block in currentBlocks) block.ConvertToFrenzyBlock();
                 break;
-
             default:
                 Debug.Log("Cannot perform powerup with ShapeID=" + ShapeID + " (" + gameObject.name + ")");
                 break;

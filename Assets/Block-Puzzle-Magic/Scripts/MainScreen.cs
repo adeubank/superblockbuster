@@ -26,7 +26,11 @@ public class MainScreen : MonoBehaviour
 
     private void RefreshAds()
     {
-        if (IsFirstPlay()) return;
+        if (IsFirstPlay())
+        {
+            Debug.Log("Not refreshing ads on main screen. User hasn't played yet.");
+            return;
+        } 
 
         Debug.Log("Refreshing ads on main screen");
 
@@ -45,7 +49,6 @@ public class MainScreen : MonoBehaviour
 
     public void RewardedVideoButtonClicked()
     {
-        Debug.Log("unity-script: ShowRewardedVideoButtonClicked");
         if (AdController.Instance.RewardVideoLoaded())
         {
             AdController.Instance.ShowRewardedVideo();

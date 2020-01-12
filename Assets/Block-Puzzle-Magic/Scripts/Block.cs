@@ -383,7 +383,6 @@ public class Block : MonoBehaviour, IComparable
     public void RemovePowerup()
     {
         if (blockID < 1000) return;
-        Debug.Log("Removing powerup from moveID=" + moveID + " blockID=" + blockID + " " + this);
 
         RemovePowerupIcon();
 

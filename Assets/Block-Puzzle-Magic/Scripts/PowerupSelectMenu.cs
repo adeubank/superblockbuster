@@ -81,8 +81,6 @@ public class PowerupSelectMenu : Singleton<PowerupSelectMenu>
 
     private void UpdateEquippedPowerups()
     {
-        Debug.Log("Initializing equipped powerups list " + PowerupController.Instance.equippedPowerupIds);
-
         if (PowerupController.Instance.equippedPowerupIds.Any())
         {
             powerupsEquippedTxt.Activate();

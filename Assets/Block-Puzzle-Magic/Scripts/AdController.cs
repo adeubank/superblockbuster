@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class AdController : Singleton<AdController>
 {
-
     public event EventHandler OnRewardVideoClosed;
     private bool _adsInitialized;
 
@@ -24,7 +23,19 @@ public class AdController : Singleton<AdController>
 
     private bool CanShowAds()
     {
-        return RemoteConfigController.Instance.adsEnabled && _adsInitialized;
+        if (!RemoteConfigController.Instance.adsEnabled)
+        {
+            Debug.Log("Remote setting adsEnabled is not set");
+            return false;
+        }
+
+        if (_adsInitialized)
+        {
+            Debug.Log("Ads have not been initialized yet");
+            return false;
+        }
+
+        return true;
     }
 
     #region Banner Ad
@@ -116,9 +127,14 @@ public class AdController : Singleton<AdController>
 
     public void ShowInterstitial()
     {
-        if (interstitial == null) return;
+        if (interstitial == null)
+        {
+            Debug.Log("interstitial was not initialized");
+            return;
+        }
+
         if (!CanShowAds()) return;
-        
+
         if (interstitial.IsLoaded())
         {
             interstitial.Show();

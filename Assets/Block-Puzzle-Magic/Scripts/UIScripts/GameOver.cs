@@ -14,8 +14,6 @@ public class GameOver : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log("Game over screen awake!");
-
         btnReplay.gameObject.SetActive(GameController.GamesPlayed() > 1);
 
         AdController.Instance.ShowInterstitial();

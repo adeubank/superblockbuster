@@ -49,23 +49,17 @@ public class PowerupController : Singleton<PowerupController>
     {
         PlayerPrefs.SetString(prefsName, string.Join(",", powerups));
         PlayerPrefs.Save();
-        Debug.Log("Saved powerups " + prefsName);
     }
 
     public bool AddPurchasedPowerupId(int blockId)
     {
-        Debug.Log("Adding purchased powerup " + blockId);
         purchasedPowerupIds.Add(blockId);
-
-
         return true;
     }
 
 
     public bool AddEquippedPowerupId(int blockId)
     {
-        Debug.Log("Adding equipped powerup " + blockId);
-
         if (equippedPowerupIds.Count == 3) RemoveEquippedPowerupId(equippedPowerupIds[equippedPowerupIds.Count - 1]);
 
         equippedPowerupIds.Add(blockId);
@@ -75,7 +69,6 @@ public class PowerupController : Singleton<PowerupController>
 
     public bool RemoveEquippedPowerupId(int equippedPowerup)
     {
-        Debug.Log("Removing equipped powerup " + equippedPowerup);
         equippedPowerupIds.Remove(equippedPowerup);
         return true;
     }
@@ -87,17 +80,14 @@ public class PowerupController : Singleton<PowerupController>
             try
             {
                 list = PlayerPrefs.GetString(prefsKey).Split(',').Select(int.Parse).ToList();
-                Debug.Log("Loaded saved powerups. prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
             }
             catch (FormatException e)
             {
-                Debug.LogError("Failed to parse powerups! prefsKey=" + prefsKey + " " + PlayerPrefs.GetString(prefsKey));
                 list = new List<int>();
             }
         }
         else
         {
-            Debug.Log("No saved powerups. prefsKey=" + prefsKey);
             list = new List<int>();
         }
     }

@@ -76,7 +76,6 @@ public class Timer : MonoBehaviour
 
     public void ActivateLagPowerup()
     {
-        Debug.Log("Activating Lag Powerup! _timeRemaining=" + timeRemaining);
         AddSeconds(10);
     }
 }

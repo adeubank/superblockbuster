@@ -106,7 +106,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     /// </summary>
     private void createShapeBlockProbabilityList()
     {
-        Debug.Log("Creating shape block probability list");
         shapeBlockProbabilityPool = new List<int>();
         foreach (var shapeBlock in ActiveShapeBlocks)
             AddShapeInProbabilityPool(shapeBlock.BlockID, shapeBlock.spawnProbability);
