@@ -17,7 +17,7 @@ public class AdController : Singleton<AdController>
         {
             _adsInitialized = true;
             InitializeRewardedVideo();
-            Debug.Log("MobileAds.Initialize " + initStatus + " CanShowAds=" + CanShowAds());
+            Debug.Log("MobileAds.Initialize CanShowAds=" + CanShowAds());
         });
     }
 
@@ -29,7 +29,7 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (_adsInitialized)
+        if (!_adsInitialized)
         {
             Debug.Log("Ads have not been initialized yet");
             return false;
@@ -42,6 +42,7 @@ public class AdController : Singleton<AdController>
 
     private BannerView _bannerView;
     private bool _bannerIsVisible;
+    private DateTime _lastBannerShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
 
     private string BannerAdUnitId()
     {
@@ -68,6 +69,7 @@ public class AdController : Singleton<AdController>
     {
         if (!CanShowAds()) return;
         if (_bannerIsVisible) return;
+        if ((_lastBannerShownAt - DateTime.Now).Minutes < 2) { return; }
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
@@ -76,6 +78,7 @@ public class AdController : Singleton<AdController>
         Debug.Log("Showing banner ad: " + adUnitId);
         _bannerView.LoadAd(request);
         _bannerIsVisible = true;
+        _lastBannerShownAt = DateTime.Now;
     }
 
     public void HideBanner()
@@ -150,6 +153,7 @@ public class AdController : Singleton<AdController>
 
     public bool RewardVideoLoaded()
     {
+        if (!CanShowAds()) return false;
         return _rewardBasedVideo != null && _rewardBasedVideo.IsLoaded();
     }
 
