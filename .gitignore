@@ -48,8 +48,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-
-# AdMob SDK
-/Assets/Plugins/Android/*.aar
-/Assets/Plugins/Android/*.jar
-/Assets/Plugins/Android/*.meta
