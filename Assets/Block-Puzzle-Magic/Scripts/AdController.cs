@@ -69,7 +69,7 @@ public class AdController : Singleton<AdController>
     {
         if (!CanShowAds()) return;
         if (_bannerIsVisible) return;
-        if ((_lastBannerShownAt - DateTime.Now).Minutes < 2) { return; }
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2) { return; }
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
