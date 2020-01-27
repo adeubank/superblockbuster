@@ -161,7 +161,7 @@ PlayerSettings:
     Android: com.supergeekgames.superblockbuster
     iOS: com.supergeekgames.SuperBlockBuster
   buildNumber:
-    iOS: 0
+    iOS: 1
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 28
