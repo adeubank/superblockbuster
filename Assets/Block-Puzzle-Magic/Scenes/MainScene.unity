@@ -2234,6 +2234,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114127311586368110, guid: fcf1321b88df57044b42049de6988cc0,
+        type: 3}
+      propertyPath: m_Text
+      value: V 1.0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8642557425865413422, guid: fcf1321b88df57044b42049de6988cc0,
+        type: 3}
+      propertyPath: iOSAppID
+      value: 1492314116
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcf1321b88df57044b42049de6988cc0, type: 3}
 --- !u!1 &1369380778 stripped
