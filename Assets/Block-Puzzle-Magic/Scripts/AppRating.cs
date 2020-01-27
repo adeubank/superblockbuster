@@ -8,7 +8,7 @@ using UnityEngine;
 public class AppRating : MonoBehaviour
 {
     private const string AndroidRatingURI = "http://play.google.com/store/apps/details?id={0}";
-    private const string iOSRatingURI = "itms://itunes.apple.com/us/app/apple-store/{0}?mt=8";
+    private const string iOSRatingURI = "itms-apps://itunes.apple.com/app/id{0}";
 
     [Tooltip("iOS App ID (number), example: 1122334455")]
     public string iOSAppID = "";
