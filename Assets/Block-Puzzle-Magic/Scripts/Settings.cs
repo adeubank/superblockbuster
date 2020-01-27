@@ -4,7 +4,11 @@ public class Settings : MonoBehaviour
 {
     public void OnRateButtonPressed()
     {
-        if (InputManager.Instance.canInput()) AudioManager.Instance.PlayButtonClickSound();
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            gameObject.GetComponent<AppRating>()?.Open();
+        }
     }
 
     public void OnCloseButtonPressed()
