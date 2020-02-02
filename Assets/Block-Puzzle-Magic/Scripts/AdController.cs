@@ -2,11 +2,13 @@
 using System.Collections;
 using GoogleMobileAds.Api;
 using UnityEngine;
+using UnityEngine.tvOS;
 
 public class AdController : Singleton<AdController>
 {
     public event EventHandler OnRewardVideoClosed;
     private bool _adsInitialized;
+    private DateTime _lastAdShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
 
     // Start is called before the first frame update
     private void Start()
@@ -32,6 +34,19 @@ public class AdController : Singleton<AdController>
         if (!_adsInitialized)
         {
             Debug.Log("Ads have not been initialized yet");
+            return false;
+        }
+
+        if (GameController.GamesPlayed() < RemoteConfigController.Instance.gamesPlayedBeforeAds)
+        {
+            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed() + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds);
+            return false;
+        }
+
+        // limit how many ads shown per minute
+        if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
+        {
+            Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes + ". Limiting ads to minutes " + RemoteConfigController.Instance.minutesPerAd);
             return false;
         }
 
@@ -69,7 +84,10 @@ public class AdController : Singleton<AdController>
     {
         if (!CanShowAds()) return;
         if (_bannerIsVisible) return;
-        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2) { return; }
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2)
+        {
+            return;
+        }
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
@@ -79,6 +97,7 @@ public class AdController : Singleton<AdController>
         _bannerView.LoadAd(request);
         _bannerIsVisible = true;
         _lastBannerShownAt = DateTime.Now;
+        _lastAdShownAt = DateTime.Now;
     }
 
     public void HideBanner()
@@ -141,6 +160,7 @@ public class AdController : Singleton<AdController>
         if (interstitial.IsLoaded())
         {
             interstitial.Show();
+            _lastAdShownAt = DateTime.Now;
         }
     }
 
@@ -236,6 +256,7 @@ public class AdController : Singleton<AdController>
         if (_rewardBasedVideo.IsLoaded())
         {
             _rewardBasedVideo.Show();
+            _lastAdShownAt = DateTime.Now;
         }
     }
 }

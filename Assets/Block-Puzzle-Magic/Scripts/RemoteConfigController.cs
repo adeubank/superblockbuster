@@ -7,8 +7,10 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public event EventHandler OnRemoteConfigFetched;
 
     // Declare any Settings variables you’ll want to configure remotely:
-    public bool adsEnabled;
-
+    public bool adsEnabled = false;
+    public int minutesPerAd = 5;
+    public int gamesPlayedBeforeAds = 2;
+    
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
 
@@ -35,8 +37,10 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 break;
             case ConfigOrigin.Remote:
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
+                minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
+                gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", 2);
                 assignmentId = ConfigManager.appConfig.assignmentID;
-                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled);
+                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled + " minutesPerAd=" + minutesPerAd);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }

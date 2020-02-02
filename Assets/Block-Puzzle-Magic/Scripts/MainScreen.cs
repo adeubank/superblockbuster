@@ -37,7 +37,7 @@ public class MainScreen : MonoBehaviour
 
         CheckIfRewardedVideoIsAvailable();
 
-        AdController.Instance.ShowBanner();
+        // AdController.Instance.ShowBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable()
