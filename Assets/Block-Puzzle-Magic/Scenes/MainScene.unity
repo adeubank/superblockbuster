@@ -624,6 +624,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   adsEnabled: 0
+  minutesPerAd: 5
+  gamesPlayedBeforeAds: 2
+  gameLengthInSeconds: 30
   assignmentId: 
 --- !u!1 &362125553
 GameObject:

@@ -2,7 +2,6 @@
 using System.Collections;
 using GoogleMobileAds.Api;
 using UnityEngine;
-using UnityEngine.tvOS;
 
 public class AdController : Singleton<AdController>
 {
@@ -37,7 +36,7 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (GameController.GamesPlayed() < RemoteConfigController.Instance.gamesPlayedBeforeAds)
+        if (GameController.GamesPlayed() < RemoteConfigController.Instance.gamesPlayedBeforeAds || GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
         {
             Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed() + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds);
             return false;
@@ -46,7 +45,9 @@ public class AdController : Singleton<AdController>
         // limit how many ads shown per minute
         if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
         {
-            Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes + ". Limiting ads to minutes " + RemoteConfigController.Instance.minutesPerAd);
+            Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt
+                                                              + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.minutesPerAd + " minutes.");
             return false;
         }
 

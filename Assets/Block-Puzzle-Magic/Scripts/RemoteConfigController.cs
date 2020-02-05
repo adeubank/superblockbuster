@@ -10,7 +10,8 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public bool adsEnabled = false;
     public int minutesPerAd = 5;
     public int gamesPlayedBeforeAds = 2;
-    
+    public int gameLengthInSeconds = 30;
+
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
 
@@ -38,9 +39,14 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
             case ConfigOrigin.Remote:
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
                 minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
-                gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", 2);
+                gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", gamesPlayedBeforeAds);
+                gameLengthInSeconds = ConfigManager.appConfig.GetInt("gameLengthInSeconds", gameLengthInSeconds);
+
                 assignmentId = ConfigManager.appConfig.assignmentID;
-                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled + " minutesPerAd=" + minutesPerAd);
+                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled
+                                                                                                     + " minutesPerAd=" + minutesPerAd
+                                                                                                     + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
+                                                                                                     + " gameLengthInSeconds=" + gameLengthInSeconds);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }

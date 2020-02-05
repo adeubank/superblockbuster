@@ -4,16 +4,18 @@ using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField] private float timeRemaining = 90.0F;
+    [SerializeField] private float timeRemaining = 30.0F;
     [SerializeField] private Image imageProgress;
 
-    [SerializeField] private int maxTimeCounter = 90;
+    [SerializeField] private int maxTimeCounter = 30;
 
     [SerializeField] private float timerRate = 0.1f;
     [SerializeField] private Text txtTimeRemaining;
 
     private void Start()
     {
+        timeRemaining = RemoteConfigController.Instance.gameLengthInSeconds;
+        maxTimeCounter = RemoteConfigController.Instance.gameLengthInSeconds;
         SetTimeSlider(GetRemainingTime());
         if (!IsInvoking(nameof(ElapseTimer))) InvokeRepeating(nameof(ElapseTimer), timerRate, timerRate);
     }
