@@ -170,6 +170,7 @@ public class AdController : Singleton<AdController>
     #region Reward Video Ad
 
     private RewardBasedVideoAd _rewardBasedVideo;
+    private double _recentRewardAmount;
     public event EventHandler<EventArgs> OnAdLoaded;
 
     public bool RewardVideoLoaded()
@@ -222,8 +223,8 @@ public class AdController : Singleton<AdController>
     {
         string type = args.Type;
         double amount = args.Amount;
+        _recentRewardAmount = amount;
         Debug.Log("User rewarded with: " + amount + " " + type);
-        StartCoroutine(AddCoins((int) amount));
     }
 
     private IEnumerator AddCoins(int amount)
@@ -241,6 +242,12 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoClosed event received");
+        if (_recentRewardAmount >= Double.Epsilon)
+        {
+            StartCoroutine(AddCoins((int) _recentRewardAmount));
+            _recentRewardAmount = 0;
+        }
+
         this.RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
