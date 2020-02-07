@@ -198,11 +198,11 @@ public class AdController : Singleton<AdController>
         if (Debug.isDebugBuild)
         {
 #if UNITY_ANDROID
-            string adUnitId = "ca-app-pub-3940256099942544/5224354917";
+            return "ca-app-pub-3940256099942544/5224354917";
 #elif UNITY_IPHONE
-            string adUnitId = "ca-app-pub-3940256099942544/1712485313";
+            return "ca-app-pub-3940256099942544/1712485313";
 #else
-            string adUnitId = "unexpected_platform";
+            return "unexpected_platform";
 #endif
         }
 #if UNITY_ANDROID
