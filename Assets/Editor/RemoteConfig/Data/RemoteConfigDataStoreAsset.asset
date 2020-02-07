@@ -62,6 +62,78 @@ MonoBehaviour:
       key: gameLengthInSeconds
       type: int
       value: 30
+  - metadata:
+      entityId: 7acb1588-a888-4674-95fa-e0364f830240
+    rs:
+      key: prodAndroidBannerAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/8552528193
+  - metadata:
+      entityId: 04b1d7e0-d931-4840-b41e-80994fddfb1d
+    rs:
+      key: devAndroidBannerAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/6300978111
+  - metadata:
+      entityId: ddf95c6d-8fa8-4e31-b4be-1b4702831181
+    rs:
+      key: devIphoneBannerAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/2934735716
+  - metadata:
+      entityId: c69c2ea9-3004-496a-a45e-e5ed615f4711
+    rs:
+      key: prodIphoneBannerAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/8169384819
+  - metadata:
+      entityId: 24f748f4-3b8e-4c8c-9e8f-98d1744df774
+    rs:
+      key: prodAndroidInterstitialAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/7239446520
+  - metadata:
+      entityId: b4496979-234d-45e4-a620-3e9ebcdd5dd8
+    rs:
+      key: devAndroidInterstitialAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/1033173712
+  - metadata:
+      entityId: e7f2006b-cf6f-45b9-a777-a8967acc0165
+    rs:
+      key: devIphoneInterstitialAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/4411468910
+  - metadata:
+      entityId: 5bbc7b90-13c5-4aba-847a-385c6475eb03
+    rs:
+      key: prodIphoneInterstitialAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/2917058137
+  - metadata:
+      entityId: 82eecd58-04a7-421e-b8f9-0ff63d3e97e7
+    rs:
+      key: prodAndroidRewardVideoAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/5926364856
+  - metadata:
+      entityId: 6dbc45cb-c4f9-4a9d-8668-4048307eb48a
+    rs:
+      key: devIphoneRewardVideoAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/1712485313
+  - metadata:
+      entityId: c4aa755f-2f5b-43a5-9914-e859f4c1ae50
+    rs:
+      key: prodIphoneRewardVideoAdUnitId
+      type: string
+      value: ca-app-pub-4216152597478324/6664731457
+  - metadata:
+      entityId: 9666e0d1-a0e6-4835-ae88-e4ba3ee5003d
+    rs:
+      key: devAndroidRewardVideoAdUnitId
+      type: string
+      value: ca-app-pub-3940256099942544/5224354917
   configId: d0b3418b-941c-4617-a9f3-cac64427dfdb
   currentEnvironmentId: 44aa530f-8188-4721-a87a-a4db85fc0c60
   environments:

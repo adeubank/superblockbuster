@@ -2,6 +2,7 @@
 using System.Collections;
 using GoogleMobileAds.Api;
 using UnityEngine;
+using UnityEngine.tvOS;
 
 public class AdController : Singleton<AdController>
 {
@@ -12,6 +13,13 @@ public class AdController : Singleton<AdController>
     // Start is called before the first frame update
     private void Start()
     {
+        RemoteConfigController.Instance.OnRemoteConfigFetched += InitializeAds;
+    }
+
+    private void InitializeAds(object sender, EventArgs eventArgs)
+    {
+        if (_adsInitialized) return;
+
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
         MobileAds.Initialize(initStatus =>
@@ -62,23 +70,13 @@ public class AdController : Singleton<AdController>
     private BannerView _bannerView;
     private bool _bannerIsVisible;
     private DateTime _lastBannerShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
-
+   
     private string BannerAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/6300978111";
+        return RemoteConfigController.Instance.androidBannerAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/2934735716";
-#else
-            return "unexpected_platform";
-#endif
-        }
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/8552528193";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/8169384819";
+        return RemoteConfigController.Instance.iPhoneBannerAdUnitId;
 #else
             return "unexpected_platform";
 #endif
@@ -115,26 +113,15 @@ public class AdController : Singleton<AdController>
     #region Interstitial Ad
 
     private InterstitialAd interstitial;
-
+   
     private string InterstitialAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/1033173712";
+        return RemoteConfigController.Instance.androidInterstitialAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/4411468910";
+        return RemoteConfigController.Instance.iPhoneInterstitialAdUnitId;
 #else
-        return  "unexpected_platform";
-#endif
-        }
-
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/7239446520";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/2917058137";
-#else
-        return "unexpected_platform";
+            return "unexpected_platform";
 #endif
     }
 
@@ -174,6 +161,7 @@ public class AdController : Singleton<AdController>
 
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
+    
     public event EventHandler<EventArgs> OnAdLoaded;
 
     public bool RewardVideoLoaded()
@@ -195,22 +183,12 @@ public class AdController : Singleton<AdController>
 
     private string RewardVideoAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/5224354917";
+        return RemoteConfigController.Instance.androidRewardVideoAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/1712485313";
+        return RemoteConfigController.Instance.iPhoneRewardVideoAdUnitId;
 #else
             return "unexpected_platform";
-#endif
-        }
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/5926364856";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/6664731457";
-#else
-        return "unexpected_platform";
 #endif
     }
 

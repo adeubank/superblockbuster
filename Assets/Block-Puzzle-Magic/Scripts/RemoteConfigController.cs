@@ -12,6 +12,15 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public int gamesPlayedBeforeAds = 2;
     public int gameLengthInSeconds = 30;
 
+    public string androidBannerAdUnitId = "ca-app-pub-4216152597478324/8552528193";
+    public string androidInterstitialAdUnitId = "ca-app-pub-4216152597478324/7239446520";
+    public string androidRewardVideoAdUnitId = "ca-app-pub-4216152597478324/5926364856";
+
+    public string iPhoneBannerAdUnitId = "ca-app-pub-4216152597478324/8169384819";
+    public string iPhoneInterstitialAdUnitId = "ca-app-pub-4216152597478324/2917058137";
+    public string iPhoneRewardVideoAdUnitId = "ca-app-pub-4216152597478324/6664731457";
+
+
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
 
@@ -42,11 +51,22 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", gamesPlayedBeforeAds);
                 gameLengthInSeconds = ConfigManager.appConfig.GetInt("gameLengthInSeconds", gameLengthInSeconds);
 
+                androidBannerAdUnitId = ConfigManager.appConfig.GetString("androidBannerAdUnitId", androidBannerAdUnitId);
+                iPhoneBannerAdUnitId = ConfigManager.appConfig.GetString("iPhoneBannerAdUnitId", iPhoneBannerAdUnitId);
+                androidInterstitialAdUnitId = ConfigManager.appConfig.GetString("androidInterstitialAdUnitId", androidInterstitialAdUnitId);
+                iPhoneInterstitialAdUnitId = ConfigManager.appConfig.GetString("iPhoneInterstitialAdUnitId", iPhoneInterstitialAdUnitId);
+                androidRewardVideoAdUnitId = ConfigManager.appConfig.GetString("androidRewardVideoAdUnitId", androidRewardVideoAdUnitId);
+                iPhoneRewardVideoAdUnitId = ConfigManager.appConfig.GetString("iPhoneInterstitialAdUnitId", iPhoneRewardVideoAdUnitId);
+
                 assignmentId = ConfigManager.appConfig.assignmentID;
                 Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled
                                                                                                      + " minutesPerAd=" + minutesPerAd
                                                                                                      + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
-                                                                                                     + " gameLengthInSeconds=" + gameLengthInSeconds);
+                                                                                                     + " gameLengthInSeconds=" + gameLengthInSeconds
+                                                                                                     + " androidBannerAdUnitId=" + androidBannerAdUnitId
+                                                                                                     + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
+                                                                                                     + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
+                                                                                                     + " iPhoneInterstitialAdUnitId=" + iPhoneInterstitialAdUnitId);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }
