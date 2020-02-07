@@ -96,6 +96,16 @@ public class AdController : Singleton<AdController>
             return;
         }
 
+        // limit how many banner ads shown per minute
+        // since there is no way if a banner has shown an ad
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
+        {
+            Debug.Log("Too many ads shown. Last ad shown at " + _lastBannerShownAt
+                                                              + ". Minutes since last shown " + (DateTime.Now - _lastBannerShownAt).Minutes
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.minutesPerAd + " minutes.");
+            return;
+        }
+
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
@@ -104,7 +114,6 @@ public class AdController : Singleton<AdController>
         _bannerView.LoadAd(request);
         _bannerIsVisible = true;
         _lastBannerShownAt = DateTime.Now;
-        _lastAdShownAt = DateTime.Now;
     }
 
     public void HideBanner()

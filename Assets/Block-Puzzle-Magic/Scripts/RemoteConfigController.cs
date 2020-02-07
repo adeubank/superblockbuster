@@ -24,6 +24,8 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public string iPhoneRewardVideoAdUnitId = "ca-app-pub-4216152597478324/6664731457";
 
     public int minutesPerAd = 5;
+    public int minutesPerBannerAd = 10;
+
     public bool rewardVideoAdsEnabled;
     public event EventHandler OnRemoteConfigFetched;
 
@@ -51,6 +53,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
             case ConfigOrigin.Remote:
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
                 minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
+                minutesPerBannerAd = ConfigManager.appConfig.GetInt("minutesPerBannerAd", minutesPerBannerAd);
                 gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", gamesPlayedBeforeAds);
                 gameLengthInSeconds = ConfigManager.appConfig.GetInt("gameLengthInSeconds", gameLengthInSeconds);
                 bannerAdsEnabled = ConfigManager.appConfig.GetBool("bannerAdsEnabled");
@@ -67,6 +70,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 assignmentId = ConfigManager.appConfig.assignmentID;
                 Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled
                                                                                                      + " minutesPerAd=" + minutesPerAd
+                                                                                                     + " minutesPerBannerAd=" + minutesPerBannerAd
                                                                                                      + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
                                                                                                      + " gameLengthInSeconds=" + gameLengthInSeconds
                                                                                                      + " bannerAdsEnabled=" + bannerAdsEnabled
