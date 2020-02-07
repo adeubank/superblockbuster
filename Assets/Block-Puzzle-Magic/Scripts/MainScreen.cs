@@ -31,13 +31,13 @@ public class MainScreen : MonoBehaviour
         {
             Debug.Log("Not refreshing ads on main screen. User hasn't played yet.");
             return;
-        } 
+        }
 
         Debug.Log("Refreshing ads on main screen");
 
         CheckIfRewardedVideoIsAvailable();
 
-        // AdController.Instance.ShowBanner();
+        AdController.Instance.ShowBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable()
@@ -51,18 +51,14 @@ public class MainScreen : MonoBehaviour
     public void RewardedVideoButtonClicked()
     {
         if (AdController.Instance.RewardVideoLoaded())
-        {
             AdController.Instance.ShowRewardedVideo();
-        }
         else
-        {
             showRewardedVideoButton.Deactivate();
-        }
     }
 
     public void RewardedVideoClosed(object sender, EventArgs eventArgs)
     {
-        showRewardedVideoButton.Deactivate();        
+        showRewardedVideoButton.Deactivate();
     }
 
     /// <summary>

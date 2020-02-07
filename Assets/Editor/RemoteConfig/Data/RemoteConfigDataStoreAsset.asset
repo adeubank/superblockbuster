@@ -73,6 +73,24 @@ MonoBehaviour:
       key: iPhoneRewardVideoAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/6664731457
+  - metadata:
+      entityId: 7c544dee-9b97-458d-b3b4-f67c908aca16
+    rs:
+      key: bannerAdsEnabled
+      type: bool
+      value: True
+  - metadata:
+      entityId: 6e1b424f-ba73-422f-b07a-95d7e0836c97
+    rs:
+      key: interstitialAdsEnabled
+      type: bool
+      value: True
+  - metadata:
+      entityId: fe794ef3-7aad-42ff-93a9-63a8460cf66d
+    rs:
+      key: rewardVideoAdsEnabled
+      type: bool
+      value: True
   rsLastCachedKeyList:
   - metadata:
       entityId: 22b093ca-b81b-4a7a-bf07-a803a415d1fa
@@ -134,6 +152,24 @@ MonoBehaviour:
       key: iPhoneRewardVideoAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/6664731457
+  - metadata:
+      entityId: 7c544dee-9b97-458d-b3b4-f67c908aca16
+    rs:
+      key: bannerAdsEnabled
+      type: bool
+      value: True
+  - metadata:
+      entityId: 6e1b424f-ba73-422f-b07a-95d7e0836c97
+    rs:
+      key: interstitialAdsEnabled
+      type: bool
+      value: True
+  - metadata:
+      entityId: fe794ef3-7aad-42ff-93a9-63a8460cf66d
+    rs:
+      key: rewardVideoAdsEnabled
+      type: bool
+      value: True
   configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
   currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
   environments:

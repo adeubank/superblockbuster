@@ -83,7 +83,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (HoldingNewBlocks()) return;
-        
+
         if (_isDraggingPlayableShape && currentShape != null)
         {
             var pos = Camera.main.ScreenToWorldPoint(eventData.position);
@@ -142,7 +142,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         _isDraggingPlayableShape = false;
         if (HoldingNewBlocks()) return;
-        
+
         if (eventData.pointerCurrentRaycast.gameObject == null) return;
 
         var clickedObject = eventData.pointerCurrentRaycast.gameObject.transform;
@@ -247,10 +247,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var canPlaceShapeHere = nearbyBlocks.Any(nearbyBlock =>
             {
                 // if not, see if we can play it here
-                if (CanPlaceShape(nearbyBlock.transform, currentShape))
-                {
-                    return true;
-                }
+                if (CanPlaceShape(nearbyBlock.transform, currentShape)) return true;
 
                 return false; // no idea where the tap is
             });
@@ -310,10 +307,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private void InitAds()
     {
         if (GameController.GamesPlayed() < 1) return;
-        
+
         AdController.Instance.RequestInterstitial();
 
-        // AdController.Instance.ShowBanner();
+        AdController.Instance.ShowBanner();
     }
 
     private void OnDestroy()
@@ -331,10 +328,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return new WaitWhile(() =>
         {
-            if (HoldingNewBlocks())
-            {
-                return true;
-            }
+            if (HoldingNewBlocks()) return true;
 
             return false;
         });
@@ -636,10 +630,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateQuakePowerup()
     {
-        if (!_activeQuakePowerups.Any())
-        {
-            yield break;
-        }
+        if (!_activeQuakePowerups.Any()) yield break;
 
         var shakeComponent = gameObject.GetComponent<ShakeGameObject>();
         shakeComponent.shakeDuration += 1f; // start the shake
@@ -810,7 +801,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (BlockShapeSpawner.Instance.FillShapeContainer())
         {
             var newRound = currentRound + 1;
-            
+
             UpdateRound(newRound);
 
             yield return RoundClearPowerups();
@@ -835,7 +826,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (BlockShapeSpawner.Instance.isNextRoundSticksGaloreBlocks)
         {
             _sticksGaloreRounds++;
-            
+
             if (_sticksGaloreRounds >= 2)
             {
                 BlockShapeSpawner.Instance.DeactivateSticksGalore();
@@ -873,7 +864,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             _shouldActivateFrenzy = false;
         else
             yield break;
-        
+
         // check lock
         if (_isFrenzyPowerupRunning) yield break;
 
@@ -1038,7 +1029,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             // pick up any changes from prep powerups
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
-            
+
             yield return BreakLines(placingShapeBlockCount, comboMultiplier, breakingRows, breakingColumns);
 
             // pick up any changes from after clear powerups
@@ -1081,7 +1072,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
         var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
         var newScore = 100 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 100;
-        
+
         // break the lines one at a time
         var soundsToPlay = new Queue<AudioClip>(lineClearSounds);
         var breakingLines = breakingRows.Concat(breakingColumns).ToList();
@@ -1117,11 +1108,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
         blockGrid.Where(b => b.moveID > 0 && clearedMoveIds.Contains(b.moveID)).ToList()
-            .ForEach(b =>
-            {
-                b.RemovePowerup();
-            });
-        
+            .ForEach(b => { b.RemovePowerup(); });
+
         #region clearing was exploding blocks
 
         // remove still exploding blocks and reset them
@@ -1131,7 +1119,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var blocksExploded = wasExplodingBlocks.Count(b => b.isFilled);
             var wasExplodingBlocksSequence = DOTween.Sequence();
             foreach (var wasExplodingBlock in wasExplodingBlocks)
-            {
                 if (wasExplodingBlock.isFilled)
                 {
                     PrepBlockForBreak(wasExplodingBlocksSequence, wasExplodingBlock);
@@ -1141,7 +1128,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     wasExplodingBlock.isExploding = false;
                 }
-            }
 
             if (blocksExploded > 0 && placingShapeBlockCount > 0)
                 ScoreManager.Instance.AddScore(blocksExploded * 500);
@@ -1166,7 +1152,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             block.RemovePowerup();
             block.ClearDandelionSeedIcon();
         }
-
     }
 
     /// <summary>
@@ -1190,7 +1175,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     /// <param name="activatePowerups">Flag whether to call powerup code or not</param>
     private Sequence BreakThisLine(List<Block> breakingLine, bool activatePowerups)
     {
-
         var lineBreakSequence = DOTween.Sequence();
 
         foreach (var b in breakingLine)
@@ -1249,10 +1233,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             _shouldActivateFrenzy = true;
         }
 
-        if (block.isAvalanchePowerup)
-        {
-            _spawnAvalancheBlocks += 1;
-        }
+        if (block.isAvalanchePowerup) _spawnAvalancheBlocks += 1;
     }
 
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
@@ -1261,9 +1242,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (_powerupsToActivate.Any(p =>
             p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
-        {
             return false;
-        }
 
         _powerupsToActivate.Add(powerupActivation);
 
@@ -1597,10 +1576,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         }
 
         var seedSequence = DOTween.Sequence();
-        seedBlocks.ForEach(b =>
-        {
-            seedSequence.Join(b.ConvertToDandelionSeed(dandelionPowerup));
-        });
+        seedBlocks.ForEach(b => { seedSequence.Join(b.ConvertToDandelionSeed(dandelionPowerup)); });
 
         return seedSequence;
     }
@@ -1621,7 +1597,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             foreach (var surroundingBlock in SurroundingBlocks(bombPowerup, true))
             {
                 if (analyzedBlocks.Contains(surroundingBlock)) continue;
-                
+
                 analyzedBlocks.Add(surroundingBlock);
                 surroundingBlock.ConvertToExplodingBlock();
                 if (surroundingBlock.isBombPowerup) bombPowerups.Push(surroundingBlock);
