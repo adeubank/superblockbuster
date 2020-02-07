@@ -36,9 +36,12 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (GameController.GamesPlayed() < RemoteConfigController.Instance.gamesPlayedBeforeAds || GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
+        if (GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
         {
-            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed() + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds);
+            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
+                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds
+                                                                                     + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
+                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds);
             return false;
         }
 
