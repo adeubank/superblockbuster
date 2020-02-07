@@ -64,17 +64,6 @@ public class AdController : Singleton<AdController>
         return true;
     }
 
-    public void ShowRewardedVideo()
-    {
-        if (!_adsInitialized || _rewardBasedVideo == null) return;
-
-        if (_rewardBasedVideo.IsLoaded())
-        {
-            _rewardBasedVideo.Show();
-            _lastAdShownAt = DateTime.Now;
-        }
-    }
-
     #region Banner Ad
 
     private BannerView _bannerView;
@@ -95,8 +84,17 @@ public class AdController : Singleton<AdController>
     public void ShowBanner()
     {
         if (!CanShowAds()) return;
-        if (_bannerIsVisible) return;
-        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2) return;
+        if (_bannerIsVisible)
+        {
+            Debug.Log("Banner is already shown");
+            return;
+        }
+
+        if (!RemoteConfigController.Instance.bannerAdsEnabled)
+        {
+            Debug.Log("Banner is not enabled.");
+            return;
+        }
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
@@ -135,6 +133,11 @@ public class AdController : Singleton<AdController>
     public void RequestInterstitial()
     {
         if (!CanShowAds()) return;
+        if (!RemoteConfigController.Instance.interstitialAdsEnabled)
+        {
+            Debug.Log("Interstitial is not enabled.");
+            return;
+        }
 
         var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
@@ -155,10 +158,20 @@ public class AdController : Singleton<AdController>
 
         if (!CanShowAds()) return;
 
+        if (!RemoteConfigController.Instance.interstitialAdsEnabled)
+        {
+            Debug.Log("Interstitial is not enabled.");
+            return;
+        }
+
         if (interstitial.IsLoaded())
         {
             interstitial.Show();
             _lastAdShownAt = DateTime.Now;
+        }
+        else
+        {
+            Debug.Log("Interstitial is not loaded.");
         }
     }
 
@@ -171,10 +184,52 @@ public class AdController : Singleton<AdController>
 
     public event EventHandler<EventArgs> OnAdLoaded;
 
+    public void ShowRewardedVideo()
+    {
+        if (!CanShowAds()) return;
+        if (_rewardBasedVideo == null)
+        {
+            Debug.Log("Reward video is not set.");
+            return;
+        }
+
+        if (!RemoteConfigController.Instance.rewardVideoAdsEnabled)
+        {
+            Debug.Log("Reward video is not enabled.");
+            return;
+        }
+
+        if (_rewardBasedVideo.IsLoaded())
+        {
+            _rewardBasedVideo.Show();
+            _lastAdShownAt = DateTime.Now;
+        }
+        else
+        {
+            Debug.Log("Reward video is not loaded.");
+        }
+    }
+
     public bool RewardVideoLoaded()
     {
         if (!CanShowAds()) return false;
-        return _rewardBasedVideo != null && _rewardBasedVideo.IsLoaded();
+
+        if (!RemoteConfigController.Instance.rewardVideoAdsEnabled)
+        {
+            Debug.Log("Reward video is not enabled.");
+            return false;
+        }
+
+        if (_rewardBasedVideo == null)
+        {
+            Debug.Log("Reward video is not set.");
+            return false;
+        }
+
+        if (_rewardBasedVideo.IsLoaded()) return true;
+
+        Debug.Log("Reward video is not loaded.");
+        return false;
     }
 
     private void InitializeRewardedVideo()

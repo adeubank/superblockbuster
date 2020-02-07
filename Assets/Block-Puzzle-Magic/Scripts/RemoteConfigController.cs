@@ -4,25 +4,28 @@ using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
 {
-    public event EventHandler OnRemoteConfigFetched;
-
     // Declare any Settings variables you’ll want to configure remotely:
-    public bool adsEnabled = false;
-    public int minutesPerAd = 5;
-    public int gamesPlayedBeforeAds = 2;
-    public int gameLengthInSeconds = 30;
+    public bool adsEnabled;
 
     public string androidBannerAdUnitId = "ca-app-pub-4216152597478324/8552528193";
     public string androidInterstitialAdUnitId = "ca-app-pub-4216152597478324/7239446520";
     public string androidRewardVideoAdUnitId = "ca-app-pub-4216152597478324/5926364856";
 
+
+    // Optionally declare a unique assignmentId if you need it for tracking:
+    public string assignmentId;
+    public bool bannerAdsEnabled;
+    public int gameLengthInSeconds = 30;
+    public int gamesPlayedBeforeAds = 2;
+    public bool interstitialAdsEnabled;
+
     public string iPhoneBannerAdUnitId = "ca-app-pub-4216152597478324/8169384819";
     public string iPhoneInterstitialAdUnitId = "ca-app-pub-4216152597478324/2917058137";
     public string iPhoneRewardVideoAdUnitId = "ca-app-pub-4216152597478324/6664731457";
 
-
-    // Optionally declare a unique assignmentId if you need it for tracking:
-    public string assignmentId;
+    public int minutesPerAd = 5;
+    public bool rewardVideoAdsEnabled;
+    public event EventHandler OnRemoteConfigFetched;
 
     private void Awake()
     {
@@ -50,6 +53,9 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
                 gamesPlayedBeforeAds = ConfigManager.appConfig.GetInt("gamesPlayedBeforeAds", gamesPlayedBeforeAds);
                 gameLengthInSeconds = ConfigManager.appConfig.GetInt("gameLengthInSeconds", gameLengthInSeconds);
+                bannerAdsEnabled = ConfigManager.appConfig.GetBool("bannerAdsEnabled");
+                interstitialAdsEnabled = ConfigManager.appConfig.GetBool("interstitialAdsEnabled");
+                rewardVideoAdsEnabled = ConfigManager.appConfig.GetBool("rewardVideoAdsEnabled");
 
                 androidBannerAdUnitId = ConfigManager.appConfig.GetString("androidBannerAdUnitId", androidBannerAdUnitId);
                 iPhoneBannerAdUnitId = ConfigManager.appConfig.GetString("iPhoneBannerAdUnitId", iPhoneBannerAdUnitId);
@@ -63,6 +69,9 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                                                                                                      + " minutesPerAd=" + minutesPerAd
                                                                                                      + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
                                                                                                      + " gameLengthInSeconds=" + gameLengthInSeconds
+                                                                                                     + " bannerAdsEnabled=" + bannerAdsEnabled
+                                                                                                     + " interstitialAdsEnabled=" + interstitialAdsEnabled
+                                                                                                     + " rewardVideoAdsEnabled=" + rewardVideoAdsEnabled
                                                                                                      + " androidBannerAdUnitId=" + androidBannerAdUnitId
                                                                                                      + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
                                                                                                      + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
