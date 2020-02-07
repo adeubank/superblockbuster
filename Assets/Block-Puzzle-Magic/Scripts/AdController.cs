@@ -36,7 +36,7 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
+        if (RemoteConfigController.Instance.gamesPlayedBeforeAds > 0 && GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
         {
             Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
                                                                                      + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds
