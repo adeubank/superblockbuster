@@ -2,13 +2,12 @@
 using System.Collections;
 using GoogleMobileAds.Api;
 using UnityEngine;
-using UnityEngine.tvOS;
 
 public class AdController : Singleton<AdController>
 {
-    public event EventHandler OnRewardVideoClosed;
     private bool _adsInitialized;
     private DateTime _lastAdShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
+    public event EventHandler OnRewardVideoClosed;
 
     // Start is called before the first frame update
     private void Start()
@@ -65,12 +64,23 @@ public class AdController : Singleton<AdController>
         return true;
     }
 
+    public void ShowRewardedVideo()
+    {
+        if (!_adsInitialized || _rewardBasedVideo == null) return;
+
+        if (_rewardBasedVideo.IsLoaded())
+        {
+            _rewardBasedVideo.Show();
+            _lastAdShownAt = DateTime.Now;
+        }
+    }
+
     #region Banner Ad
 
     private BannerView _bannerView;
     private bool _bannerIsVisible;
     private DateTime _lastBannerShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
-   
+
     private string BannerAdUnitId()
     {
 #if UNITY_ANDROID
@@ -86,15 +96,12 @@ public class AdController : Singleton<AdController>
     {
         if (!CanShowAds()) return;
         if (_bannerIsVisible) return;
-        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2)
-        {
-            return;
-        }
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2) return;
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
-        AdRequest request = new AdRequest.Builder().Build();
+        var request = new AdRequest.Builder().Build();
         Debug.Log("Showing banner ad: " + adUnitId);
         _bannerView.LoadAd(request);
         _bannerIsVisible = true;
@@ -113,7 +120,7 @@ public class AdController : Singleton<AdController>
     #region Interstitial Ad
 
     private InterstitialAd interstitial;
-   
+
     private string InterstitialAdUnitId()
     {
 #if UNITY_ANDROID
@@ -132,7 +139,7 @@ public class AdController : Singleton<AdController>
         var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
         interstitial = new InterstitialAd(adUnitId);
-        AdRequest request = new AdRequest.Builder().Build();
+        var request = new AdRequest.Builder().Build();
         Debug.Log("Loading interstitial ad: " + adUnitId);
 
         interstitial.LoadAd(request);
@@ -161,7 +168,7 @@ public class AdController : Singleton<AdController>
 
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
-    
+
     public event EventHandler<EventArgs> OnAdLoaded;
 
     public bool RewardVideoLoaded()
@@ -195,15 +202,15 @@ public class AdController : Singleton<AdController>
     public void RequestRewardVideoAd()
     {
         var adUnitId = RewardVideoAdUnitId();
-        AdRequest request = new AdRequest.Builder().Build();
+        var request = new AdRequest.Builder().Build();
         Debug.Log("Loading reward video ad: " + adUnitId);
-        this._rewardBasedVideo.LoadAd(request, adUnitId);
+        _rewardBasedVideo.LoadAd(request, adUnitId);
     }
 
     public void HandleRewardBasedVideoRewarded(object sender, Reward args)
     {
-        string type = args.Type;
-        double amount = args.Amount;
+        var type = args.Type;
+        var amount = args.Amount;
         _recentRewardAmount = amount;
         Debug.Log("User rewarded with: " + amount + " " + type);
     }
@@ -223,29 +230,15 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoClosed event received");
-        if (_recentRewardAmount >= Double.Epsilon)
+        if (_recentRewardAmount >= double.Epsilon)
         {
             StartCoroutine(AddCoins((int) _recentRewardAmount));
             _recentRewardAmount = 0;
         }
 
-        this.RequestRewardVideoAd();
+        RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
 
     #endregion
-
-    public void ShowRewardedVideo()
-    {
-        if (!_adsInitialized || _rewardBasedVideo == null)
-        {
-            return;
-        }
-
-        if (_rewardBasedVideo.IsLoaded())
-        {
-            _rewardBasedVideo.Show();
-            _lastAdShownAt = DateTime.Now;
-        }
-    }
 }
