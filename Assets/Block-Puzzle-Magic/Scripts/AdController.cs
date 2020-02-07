@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using GoogleMobileAds.Api;
 using UnityEngine;
 
@@ -64,6 +65,28 @@ public class AdController : Singleton<AdController>
         return true;
     }
 
+    private AdRequest NewAdRequest()
+    {
+        var builder = new AdRequest.Builder();
+
+        if (Debug.isDebugBuild || RemoteConfigController.Instance.debugAds)
+        {
+            builder.AddTestDevice(AdRequest.TestDeviceSimulator);
+            builder = RemoteConfigController.Instance.androidTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring android test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+            builder = RemoteConfigController.Instance.iPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring iPhone test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+        }
+
+        return builder.Build();
+    }
+
     #region Banner Ad
 
     private BannerView _bannerView;
@@ -109,11 +132,19 @@ public class AdController : Singleton<AdController>
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
-        var request = new AdRequest.Builder().Build();
+        _bannerView.OnAdFailedToLoad += BannerViewOnOnAdFailedToLoad;
+
+        var adRequest = NewAdRequest();
         Debug.Log("Showing banner ad: " + adUnitId);
-        _bannerView.LoadAd(request);
+        _bannerView.LoadAd(adRequest);
         _bannerIsVisible = true;
         _lastBannerShownAt = DateTime.Now;
+    }
+
+    private void BannerViewOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Banner ad failed to load: " + e.Message);
+        _bannerIsVisible = false;
     }
 
     public void HideBanner()
@@ -151,10 +182,17 @@ public class AdController : Singleton<AdController>
         var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
         interstitial = new InterstitialAd(adUnitId);
-        var request = new AdRequest.Builder().Build();
+        // Called when an ad request failed to load.
+        interstitial.OnAdFailedToLoad += InterstitialOnOnAdFailedToLoad;
+        var adRequest = NewAdRequest();
         Debug.Log("Loading interstitial ad: " + adUnitId);
 
-        interstitial.LoadAd(request);
+        interstitial.LoadAd(adRequest);
+    }
+
+    private void InterstitialOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Interstitial ad failed to load: " + e.Message);
     }
 
     public void ShowInterstitial()
@@ -190,8 +228,6 @@ public class AdController : Singleton<AdController>
 
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
-
-    public event EventHandler<EventArgs> OnAdLoaded;
 
     public void ShowRewardedVideo()
     {
@@ -249,7 +285,13 @@ public class AdController : Singleton<AdController>
         _rewardBasedVideo.OnAdRewarded += HandleRewardBasedVideoRewarded;
         _rewardBasedVideo.OnAdLoaded += HandleRewardBasedVideoLoaded;
         _rewardBasedVideo.OnAdClosed += HandleRewardBasedVideoClosed;
+        _rewardBasedVideo.OnAdFailedToLoad += RewardBasedVideoOnOnAdFailedToLoad;
         RequestRewardVideoAd();
+    }
+
+    private void RewardBasedVideoOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Reward video ad failed to load: " + e.Message);
     }
 
     private string RewardVideoAdUnitId()
@@ -266,7 +308,7 @@ public class AdController : Singleton<AdController>
     public void RequestRewardVideoAd()
     {
         var adUnitId = RewardVideoAdUnitId();
-        var request = new AdRequest.Builder().Build();
+        var request = NewAdRequest();
         Debug.Log("Loading reward video ad: " + adUnitId);
         _rewardBasedVideo.LoadAd(request, adUnitId);
     }
@@ -288,7 +330,6 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoLoaded event received");
-        OnAdLoaded?.Invoke(sender, args);
     }
 
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)

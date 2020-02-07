@@ -91,6 +91,24 @@ MonoBehaviour:
       key: rewardVideoAdsEnabled
       type: bool
       value: True
+  - metadata:
+      entityId: ff0cb264-aee8-47a1-bee1-4a1ffaae83f7
+    rs:
+      key: debugAds
+      type: bool
+      value: True
+  - metadata:
+      entityId: 1b102838-4901-464a-9e6c-7f63d3938fa5
+    rs:
+      key: androidTestDevices
+      type: string
+      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62,8CFBCAB8AE99E62800B95EBE7ED3FA62
+  - metadata:
+      entityId: 9b8bac88-afe9-4bc3-b9c6-8e5853a61df2
+    rs:
+      key: iPhoneTestDevices
+      type: string
+      value: 1eba537bec490fde807f330c68465605,1eba537bec490fde807f330c68465605
   rsLastCachedKeyList:
   - metadata:
       entityId: 22b093ca-b81b-4a7a-bf07-a803a415d1fa
@@ -170,6 +188,24 @@ MonoBehaviour:
       key: rewardVideoAdsEnabled
       type: bool
       value: True
+  - metadata:
+      entityId: ff0cb264-aee8-47a1-bee1-4a1ffaae83f7
+    rs:
+      key: debugAds
+      type: bool
+      value: True
+  - metadata:
+      entityId: 1b102838-4901-464a-9e6c-7f63d3938fa5
+    rs:
+      key: androidTestDevices
+      type: string
+      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62,8CFBCAB8AE99E62800B95EBE7ED3FA62
+  - metadata:
+      entityId: 9b8bac88-afe9-4bc3-b9c6-8e5853a61df2
+    rs:
+      key: iPhoneTestDevices
+      type: string
+      value: 1eba537bec490fde807f330c68465605,1eba537bec490fde807f330c68465605
   configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
   currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
   environments:
