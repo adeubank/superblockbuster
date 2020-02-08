@@ -8,8 +8,14 @@ public class MainScreen : MonoBehaviour
 
     public void Start()
     {
+        AdController.Instance.OnRewardVideoLoaded += InstanceOnOnRewardVideoLoaded;
         AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
         AdController.Instance.OnAdsInitialized += InstanceOnOnAdsInitialized;
+    }
+
+    private void InstanceOnOnRewardVideoLoaded(object sender, EventArgs e)
+    {
+        CheckIfRewardedVideoIsAvailable();
     }
 
     private void InstanceOnOnAdsInitialized(object sender, EventArgs e)
@@ -19,11 +25,7 @@ public class MainScreen : MonoBehaviour
 
     private void OnEnable()
     {
-        if (AdController.Instance.adsInitialized)
-        {
-            CancelInvoke(nameof(RefreshAds));
-            InvokeRepeating(nameof(RefreshAds), 0, 60);
-        }
+        if (AdController.Instance.adsInitialized) RefreshAds();
     }
 
     private void OnDisable()
@@ -42,8 +44,7 @@ public class MainScreen : MonoBehaviour
 
         Debug.Log("Refreshing ads on main screen");
 
-        CheckIfRewardedVideoIsAvailable();
-
+        AdController.Instance.RequestRewardVideoAd();
         AdController.Instance.ShowBanner();
     }
 

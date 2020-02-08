@@ -25,8 +25,8 @@ public class AdController : Singleton<AdController>
         MobileAds.Initialize(initStatus =>
         {
             adsInitialized = true;
-            InitializeRewardedVideo();
             Debug.Log("MobileAds.Initialize CanShowAds=" + CanShowAds());
+            InitializeRewardedVideo();
             OnAdsInitialized?.Invoke(this, EventArgs.Empty);
         });
     }
@@ -228,6 +228,7 @@ public class AdController : Singleton<AdController>
     #region Reward Video Ad
 
     public event EventHandler OnRewardVideoClosed;
+    public event EventHandler OnRewardVideoLoaded;
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
 
@@ -288,7 +289,6 @@ public class AdController : Singleton<AdController>
         _rewardBasedVideo.OnAdLoaded += HandleRewardBasedVideoLoaded;
         _rewardBasedVideo.OnAdClosed += HandleRewardBasedVideoClosed;
         _rewardBasedVideo.OnAdFailedToLoad += RewardBasedVideoOnOnAdFailedToLoad;
-        RequestRewardVideoAd();
     }
 
     private void RewardBasedVideoOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
@@ -332,6 +332,7 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoLoaded event received");
+        OnRewardVideoLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
@@ -343,7 +344,7 @@ public class AdController : Singleton<AdController>
             _recentRewardAmount = 0;
         }
 
-        RequestRewardVideoAd();
+        if (CanShowAds()) RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
 
