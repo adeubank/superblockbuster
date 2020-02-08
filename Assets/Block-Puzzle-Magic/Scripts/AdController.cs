@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class AdController : Singleton<AdController>
 {
-    private bool _adsInitialized;
     private DateTime _lastAdShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
-    public event EventHandler OnRewardVideoClosed;
+    public bool adsInitialized;
+    public event EventHandler OnAdsInitialized;
 
     // Start is called before the first frame update
     private void Start()
@@ -18,15 +18,16 @@ public class AdController : Singleton<AdController>
 
     private void InitializeAds(object sender, EventArgs eventArgs)
     {
-        if (_adsInitialized) return;
+        if (adsInitialized) return;
 
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
         MobileAds.Initialize(initStatus =>
         {
-            _adsInitialized = true;
+            adsInitialized = true;
             InitializeRewardedVideo();
             Debug.Log("MobileAds.Initialize CanShowAds=" + CanShowAds());
+            OnAdsInitialized?.Invoke(this, EventArgs.Empty);
         });
     }
 
@@ -38,7 +39,7 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (!_adsInitialized)
+        if (!adsInitialized)
         {
             Debug.Log("Ads have not been initialized yet");
             return false;
@@ -226,6 +227,7 @@ public class AdController : Singleton<AdController>
 
     #region Reward Video Ad
 
+    public event EventHandler OnRewardVideoClosed;
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
 

@@ -9,14 +9,21 @@ public class MainScreen : MonoBehaviour
     public void Start()
     {
         AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
-        CancelInvoke(nameof(RefreshAds));
-        InvokeRepeating(nameof(RefreshAds), 0, 60);
+        AdController.Instance.OnAdsInitialized += InstanceOnOnAdsInitialized;
+    }
+
+    private void InstanceOnOnAdsInitialized(object sender, EventArgs e)
+    {
+        RefreshAds();
     }
 
     private void OnEnable()
     {
-        CancelInvoke(nameof(RefreshAds));
-        InvokeRepeating(nameof(RefreshAds), 0, 60);
+        if (AdController.Instance.adsInitialized)
+        {
+            CancelInvoke(nameof(RefreshAds));
+            InvokeRepeating(nameof(RefreshAds), 0, 60);
+        }
     }
 
     private void OnDisable()
