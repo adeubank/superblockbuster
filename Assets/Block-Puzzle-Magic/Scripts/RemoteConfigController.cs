@@ -5,34 +5,31 @@ using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
 {
-    public bool adsEnabled;
-    public string androidBannerAdUnitId = "ca-app-pub-4216152597478324/8552528193";
-    public string androidInterstitialAdUnitId = "ca-app-pub-4216152597478324/7239446520";
-    public string androidRewardVideoAdUnitId = "ca-app-pub-4216152597478324/5926364856";
-
-    public string[] androidTestDevices = {"8CFBCAB8AE99E62800B95EBE7ED3FA62"};
-
     // Declare any Settings variables you’ll want to configure remotely:
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
-    public bool bannerAdsEnabled;
-    public bool debugAds;
 
     public string envName = "N/A";
-    public int gameLengthInSeconds = 30;
+    public bool adsEnabled;
+    public bool bannerAdsEnabled;
+    public bool interstitialAdsEnabled;
+    public bool rewardVideoAdsEnabled;
+    public bool debugAds;
+    public int minutesPerAd = 5;
+    public int minutesPerBannerAd = 10;
+    public int gameLengthInSeconds = 90;
     public int gamesPlayedBeforeAds = 2;
 
-    public bool interstitialAdsEnabled;
+    public string androidBannerAdUnitId = "ca-app-pub-4216152597478324/8552528193";
+    public string androidInterstitialAdUnitId = "ca-app-pub-4216152597478324/7239446520";
+    public string androidRewardVideoAdUnitId = "ca-app-pub-4216152597478324/5926364856";
+    public string[] androidTestDevices = {"8CFBCAB8AE99E62800B95EBE7ED3FA62"};
 
     public string iPhoneBannerAdUnitId = "ca-app-pub-4216152597478324/8169384819";
     public string iPhoneInterstitialAdUnitId = "ca-app-pub-4216152597478324/2917058137";
     public string iPhoneRewardVideoAdUnitId = "ca-app-pub-4216152597478324/6664731457";
     public string[] iPhoneTestDevices = {"1eba537bec490fde807f330c68465605"};
 
-
-    public int minutesPerAd = 5;
-    public int minutesPerBannerAd = 10;
-    public bool rewardVideoAdsEnabled;
 
     public event EventHandler OnRemoteConfigFetched;
 
@@ -58,7 +55,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 Debug.Log("No settings loaded this session; using cached values from a previous session.");
                 break;
             case ConfigOrigin.Remote:
-                envName = ConfigManager.appConfig.GetString("envName");
+                envName = ConfigManager.appConfig.GetString("envName", envName);
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
                 debugAds = ConfigManager.appConfig.GetBool("debugAds");
                 minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
