@@ -74,7 +74,7 @@ public class AdController : Singleton<AdController>
         {
             builder.AddTestDevice(AdRequest.TestDeviceSimulator);
 #if UNITY_ANDROID
-            builder = RemoteConfigController.Instance.androidTestDevices.Aggregate(builder, (current, testDevice) =>
+            builder = RemoteConfigController.Instance.AndroidTestDevices.Aggregate(builder, (current, testDevice) =>
             {
                 Debug.Log("Configuring android test device " + testDevice);
                 return current.AddTestDevice(testDevice);
@@ -101,7 +101,7 @@ public class AdController : Singleton<AdController>
     private string BannerAdUnitId()
     {
 #if UNITY_ANDROID
-        return RemoteConfigController.Instance.androidBannerAdUnitId;
+        return RemoteConfigController.Instance.AndroidBannerAdUnitId;
 #elif UNITY_IPHONE
         return RemoteConfigController.Instance.IPhoneBannerAdUnitId;
 #else
@@ -167,7 +167,7 @@ public class AdController : Singleton<AdController>
     private string InterstitialAdUnitId()
     {
 #if UNITY_ANDROID
-        return RemoteConfigController.Instance.androidInterstitialAdUnitId;
+        return RemoteConfigController.Instance.AndroidInterstitialAdUnitId;
 #elif UNITY_IPHONE
         return RemoteConfigController.Instance.IPhoneInterstitialAdUnitId;
 #else
@@ -303,7 +303,7 @@ public class AdController : Singleton<AdController>
     private string RewardVideoAdUnitId()
     {
 #if UNITY_ANDROID
-        return RemoteConfigController.Instance.androidRewardVideoAdUnitId;
+        return RemoteConfigController.Instance.AndroidRewardVideoAdUnitId;
 #elif UNITY_IPHONE
         return RemoteConfigController.Instance.IPhoneRewardVideoAdUnitId;
 #else
