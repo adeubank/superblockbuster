@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
 {
-    // Declare any Settings variables you’ll want to configure remotely:
     public bool adsEnabled;
     public string androidBannerAdUnitId = "ca-app-pub-4216152597478324/8552528193";
     public string androidInterstitialAdUnitId = "ca-app-pub-4216152597478324/7239446520";
@@ -16,7 +15,11 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
     public bool bannerAdsEnabled;
+
     public bool debugAds;
+
+    // Declare any Settings variables you’ll want to configure remotely:
+    public string envName = "N/A";
     public int gameLengthInSeconds = 30;
     public int gamesPlayedBeforeAds = 2;
     public bool interstitialAdsEnabled;
@@ -54,6 +57,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 Debug.Log("No settings loaded this session; using cached values from a previous session.");
                 break;
             case ConfigOrigin.Remote:
+                envName = ConfigManager.appConfig.GetString("envName");
                 adsEnabled = ConfigManager.appConfig.GetBool("adsEnabled");
                 debugAds = ConfigManager.appConfig.GetBool("debugAds");
                 minutesPerAd = ConfigManager.appConfig.GetInt("minutesPerAd", minutesPerAd);
@@ -81,24 +85,27 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 androidInterstitialAdUnitId = ConfigManager.appConfig.GetString("androidInterstitialAdUnitId", androidInterstitialAdUnitId);
                 iPhoneInterstitialAdUnitId = ConfigManager.appConfig.GetString("iPhoneInterstitialAdUnitId", iPhoneInterstitialAdUnitId);
                 androidRewardVideoAdUnitId = ConfigManager.appConfig.GetString("androidRewardVideoAdUnitId", androidRewardVideoAdUnitId);
-                iPhoneRewardVideoAdUnitId = ConfigManager.appConfig.GetString("iPhoneInterstitialAdUnitId", iPhoneRewardVideoAdUnitId);
+                iPhoneRewardVideoAdUnitId = ConfigManager.appConfig.GetString("iPhoneRewardVideoAdUnitId", iPhoneRewardVideoAdUnitId);
 
                 assignmentId = ConfigManager.appConfig.assignmentID;
-                Debug.Log("New settings loaded this session; update values accordingly. adsEnabled=" + adsEnabled
-                                                                                                     + " debugAds=" + debugAds
-                                                                                                     + " minutesPerAd=" + minutesPerAd
-                                                                                                     + " minutesPerBannerAd=" + minutesPerBannerAd
-                                                                                                     + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
-                                                                                                     + " gameLengthInSeconds=" + gameLengthInSeconds
-                                                                                                     + " bannerAdsEnabled=" + bannerAdsEnabled
-                                                                                                     + " androidTestDevices=" + androidTestDevices
-                                                                                                     + " iPhoneTestDevices=" + iPhoneTestDevices
-                                                                                                     + " interstitialAdsEnabled=" + interstitialAdsEnabled
-                                                                                                     + " rewardVideoAdsEnabled=" + rewardVideoAdsEnabled
-                                                                                                     + " androidBannerAdUnitId=" + androidBannerAdUnitId
-                                                                                                     + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
-                                                                                                     + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
-                                                                                                     + " iPhoneInterstitialAdUnitId=" + iPhoneInterstitialAdUnitId);
+                Debug.Log("New settings loaded this session; envName= " + envName
+                                                                        + " adsEnabled=" + adsEnabled
+                                                                        + " debugAds=" + debugAds
+                                                                        + " minutesPerAd=" + minutesPerAd
+                                                                        + " minutesPerBannerAd=" + minutesPerBannerAd
+                                                                        + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
+                                                                        + " gameLengthInSeconds=" + gameLengthInSeconds
+                                                                        + " bannerAdsEnabled=" + bannerAdsEnabled
+                                                                        + " androidTestDevices=" + string.Join(",", androidTestDevices)
+                                                                        + " iPhoneTestDevices=" + string.Join(",", iPhoneTestDevices)
+                                                                        + " interstitialAdsEnabled=" + interstitialAdsEnabled
+                                                                        + " rewardVideoAdsEnabled=" + rewardVideoAdsEnabled
+                                                                        + " androidBannerAdUnitId=" + androidBannerAdUnitId
+                                                                        + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
+                                                                        + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
+                                                                        + " iPhoneInterstitialAdUnitId=" + iPhoneInterstitialAdUnitId
+                                                                        + " androidRewardVideoAdUnitId=" + androidRewardVideoAdUnitId
+                                                                        + " iPhoneRewardVideoAdUnitId=" + iPhoneRewardVideoAdUnitId);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }

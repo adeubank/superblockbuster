@@ -14,198 +14,210 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rsKeyList:
   - metadata:
-      entityId: 22b093ca-b81b-4a7a-bf07-a803a415d1fa
+      entityId: 20bf6a2b-4442-4d9d-8468-bbcb1a0ebb7e
     rs:
       key: adsEnabled
       type: bool
       value: true
   - metadata:
-      entityId: d1209fe6-eb0b-4d08-9632-5757cd749167
+      entityId: b7ce740e-f9f6-4ecc-90dc-4ddd7ea94994
     rs:
       key: minutesPerAd
       type: int
       value: 0
   - metadata:
-      entityId: 3830d280-d00d-4a4b-920c-de85bd4feff8
+      entityId: 42b1614e-6538-476d-b9b7-9c925e461047
     rs:
       key: gamesPlayedBeforeAds
       type: int
       value: 0
   - metadata:
-      entityId: 2ecd9dc1-ab61-4484-a397-a1c53dc32d1d
+      entityId: d0589544-1490-45cf-b5c5-b6fd714df4e3
     rs:
       key: gameLengthInSeconds
       type: int
       value: 30
   - metadata:
-      entityId: d5b96d6e-6e63-44d1-8991-f7d6cdc03d70
+      entityId: 3ab4956e-2bb3-4fa2-9cb6-720387167166
     rs:
       key: androidBannerAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/8552528193
   - metadata:
-      entityId: 6c57ced2-7a01-4e2a-bdb0-e9cdab25f83f
+      entityId: d7abc85d-056a-4d47-b5d3-c1448e114d76
     rs:
       key: iPhoneBannerAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/8169384819
+      value: ca-app-pub-4216152597478324/5090248145
   - metadata:
-      entityId: 61548d53-7d70-4d8e-bde9-2c305e3fc224
+      entityId: cd99ce0f-335d-4d4e-90f6-64cfc5cf9eae
     rs:
       key: androidInterstitialAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/7239446520
   - metadata:
-      entityId: 07dffc00-92bb-4ad1-9071-f235cb745664
+      entityId: d8a14b0f-f692-47e4-a12d-93e1e4c0f854
     rs:
       key: iPhoneInterstitialAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/2917058137
+      value: ca-app-pub-4216152597478324/8837921462
   - metadata:
-      entityId: c172c362-db5b-4e47-a21e-46a45608a65c
+      entityId: e6dece49-8500-42cd-a8df-1a0b75e5d1ef
     rs:
       key: androidRewardVideoAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/5926364856
   - metadata:
-      entityId: b1389bb1-9429-4476-88cf-60b441b1ca5d
+      entityId: 9cee001b-8d3a-40f0-86a4-e4e8433dabde
     rs:
       key: iPhoneRewardVideoAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/6664731457
+      value: ca-app-pub-4216152597478324/4898676459
   - metadata:
-      entityId: 7c544dee-9b97-458d-b3b4-f67c908aca16
+      entityId: 36f5bf29-bcbc-4e9a-8130-e0bbce12aec3
     rs:
       key: bannerAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: 6e1b424f-ba73-422f-b07a-95d7e0836c97
+      entityId: 8f961955-14b9-46b3-95c7-408dc32a45d8
     rs:
       key: interstitialAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: fe794ef3-7aad-42ff-93a9-63a8460cf66d
+      entityId: 1ce659f4-284e-4262-be94-507cde8fd2a0
     rs:
       key: rewardVideoAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: ff0cb264-aee8-47a1-bee1-4a1ffaae83f7
+      entityId: dd9c3f93-0786-43f3-beaf-e47ba11a9252
     rs:
       key: debugAds
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: 1b102838-4901-464a-9e6c-7f63d3938fa5
+      entityId: 02b0c39a-cb10-46de-ab73-c23cf1c45d88
     rs:
       key: androidTestDevices
       type: string
-      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62,8CFBCAB8AE99E62800B95EBE7ED3FA62
+      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62
   - metadata:
-      entityId: 9b8bac88-afe9-4bc3-b9c6-8e5853a61df2
+      entityId: 16c6a6c8-e1ef-44b2-a90a-d8b0dbaa73ca
     rs:
       key: iPhoneTestDevices
       type: string
-      value: 1eba537bec490fde807f330c68465605,1eba537bec490fde807f330c68465605
+      value: 1eba537bec490fde807f330c68465605
+  - metadata:
+      entityId: d65e1138-8831-4521-ad63-d0534006b05d
+    rs:
+      key: envName
+      type: string
+      value: Release
   rsLastCachedKeyList:
   - metadata:
-      entityId: 22b093ca-b81b-4a7a-bf07-a803a415d1fa
+      entityId: 20bf6a2b-4442-4d9d-8468-bbcb1a0ebb7e
     rs:
       key: adsEnabled
       type: bool
       value: true
   - metadata:
-      entityId: d1209fe6-eb0b-4d08-9632-5757cd749167
+      entityId: b7ce740e-f9f6-4ecc-90dc-4ddd7ea94994
     rs:
       key: minutesPerAd
       type: int
       value: 0
   - metadata:
-      entityId: 3830d280-d00d-4a4b-920c-de85bd4feff8
+      entityId: 42b1614e-6538-476d-b9b7-9c925e461047
     rs:
       key: gamesPlayedBeforeAds
       type: int
       value: 0
   - metadata:
-      entityId: 2ecd9dc1-ab61-4484-a397-a1c53dc32d1d
+      entityId: d0589544-1490-45cf-b5c5-b6fd714df4e3
     rs:
       key: gameLengthInSeconds
       type: int
       value: 30
   - metadata:
-      entityId: d5b96d6e-6e63-44d1-8991-f7d6cdc03d70
+      entityId: 3ab4956e-2bb3-4fa2-9cb6-720387167166
     rs:
       key: androidBannerAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/8552528193
   - metadata:
-      entityId: 6c57ced2-7a01-4e2a-bdb0-e9cdab25f83f
+      entityId: d7abc85d-056a-4d47-b5d3-c1448e114d76
     rs:
       key: iPhoneBannerAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/8169384819
+      value: ca-app-pub-4216152597478324/5090248145
   - metadata:
-      entityId: 61548d53-7d70-4d8e-bde9-2c305e3fc224
+      entityId: cd99ce0f-335d-4d4e-90f6-64cfc5cf9eae
     rs:
       key: androidInterstitialAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/7239446520
   - metadata:
-      entityId: 07dffc00-92bb-4ad1-9071-f235cb745664
+      entityId: d8a14b0f-f692-47e4-a12d-93e1e4c0f854
     rs:
       key: iPhoneInterstitialAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/2917058137
+      value: ca-app-pub-4216152597478324/8837921462
   - metadata:
-      entityId: c172c362-db5b-4e47-a21e-46a45608a65c
+      entityId: e6dece49-8500-42cd-a8df-1a0b75e5d1ef
     rs:
       key: androidRewardVideoAdUnitId
       type: string
       value: ca-app-pub-4216152597478324/5926364856
   - metadata:
-      entityId: b1389bb1-9429-4476-88cf-60b441b1ca5d
+      entityId: 9cee001b-8d3a-40f0-86a4-e4e8433dabde
     rs:
       key: iPhoneRewardVideoAdUnitId
       type: string
-      value: ca-app-pub-4216152597478324/6664731457
+      value: ca-app-pub-4216152597478324/4898676459
   - metadata:
-      entityId: 7c544dee-9b97-458d-b3b4-f67c908aca16
+      entityId: 36f5bf29-bcbc-4e9a-8130-e0bbce12aec3
     rs:
       key: bannerAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: 6e1b424f-ba73-422f-b07a-95d7e0836c97
+      entityId: 8f961955-14b9-46b3-95c7-408dc32a45d8
     rs:
       key: interstitialAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: fe794ef3-7aad-42ff-93a9-63a8460cf66d
+      entityId: 1ce659f4-284e-4262-be94-507cde8fd2a0
     rs:
       key: rewardVideoAdsEnabled
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: ff0cb264-aee8-47a1-bee1-4a1ffaae83f7
+      entityId: dd9c3f93-0786-43f3-beaf-e47ba11a9252
     rs:
       key: debugAds
       type: bool
-      value: True
+      value: true
   - metadata:
-      entityId: 1b102838-4901-464a-9e6c-7f63d3938fa5
+      entityId: 02b0c39a-cb10-46de-ab73-c23cf1c45d88
     rs:
       key: androidTestDevices
       type: string
-      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62,8CFBCAB8AE99E62800B95EBE7ED3FA62
+      value: 8CFBCAB8AE99E62800B95EBE7ED3FA62
   - metadata:
-      entityId: 9b8bac88-afe9-4bc3-b9c6-8e5853a61df2
+      entityId: 16c6a6c8-e1ef-44b2-a90a-d8b0dbaa73ca
     rs:
       key: iPhoneTestDevices
       type: string
-      value: 1eba537bec490fde807f330c68465605,1eba537bec490fde807f330c68465605
+      value: 1eba537bec490fde807f330c68465605
+  - metadata:
+      entityId: d65e1138-8831-4521-ad63-d0534006b05d
+    rs:
+      key: envName
+      type: string
+      value: Release
   configId: 4966d361-e4bb-4ecd-ab43-876125d95cbd
   currentEnvironmentId: b0324093-06c8-4d79-804f-0814f8ef976a
   environments:
