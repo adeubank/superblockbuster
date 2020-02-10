@@ -12,27 +12,28 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
 
     public string[] androidTestDevices = {"8CFBCAB8AE99E62800B95EBE7ED3FA62"};
 
+    // Declare any Settings variables you’ll want to configure remotely:
     // Optionally declare a unique assignmentId if you need it for tracking:
     public string assignmentId;
     public bool bannerAdsEnabled;
-
     public bool debugAds;
 
-    // Declare any Settings variables you’ll want to configure remotely:
     public string envName = "N/A";
     public int gameLengthInSeconds = 30;
     public int gamesPlayedBeforeAds = 2;
+
     public bool interstitialAdsEnabled;
+
     public string iPhoneBannerAdUnitId = "ca-app-pub-4216152597478324/8169384819";
     public string iPhoneInterstitialAdUnitId = "ca-app-pub-4216152597478324/2917058137";
     public string iPhoneRewardVideoAdUnitId = "ca-app-pub-4216152597478324/6664731457";
-
     public string[] iPhoneTestDevices = {"1eba537bec490fde807f330c68465605"};
+
 
     public int minutesPerAd = 5;
     public int minutesPerBannerAd = 10;
-
     public bool rewardVideoAdsEnabled;
+
     public event EventHandler OnRemoteConfigFetched;
 
     private void Awake()
@@ -88,24 +89,24 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 iPhoneRewardVideoAdUnitId = ConfigManager.appConfig.GetString("iPhoneRewardVideoAdUnitId", iPhoneRewardVideoAdUnitId);
 
                 assignmentId = ConfigManager.appConfig.assignmentID;
-                Debug.Log("New settings loaded this session; envName= " + envName
-                                                                        + " adsEnabled=" + adsEnabled
-                                                                        + " debugAds=" + debugAds
-                                                                        + " minutesPerAd=" + minutesPerAd
-                                                                        + " minutesPerBannerAd=" + minutesPerBannerAd
-                                                                        + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
-                                                                        + " gameLengthInSeconds=" + gameLengthInSeconds
-                                                                        + " bannerAdsEnabled=" + bannerAdsEnabled
-                                                                        + " androidTestDevices=" + string.Join(",", androidTestDevices)
-                                                                        + " iPhoneTestDevices=" + string.Join(",", iPhoneTestDevices)
-                                                                        + " interstitialAdsEnabled=" + interstitialAdsEnabled
-                                                                        + " rewardVideoAdsEnabled=" + rewardVideoAdsEnabled
-                                                                        + " androidBannerAdUnitId=" + androidBannerAdUnitId
-                                                                        + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
-                                                                        + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
-                                                                        + " iPhoneInterstitialAdUnitId=" + iPhoneInterstitialAdUnitId
-                                                                        + " androidRewardVideoAdUnitId=" + androidRewardVideoAdUnitId
-                                                                        + " iPhoneRewardVideoAdUnitId=" + iPhoneRewardVideoAdUnitId);
+                Debug.Log("New settings loaded this session; envName=" + envName
+                                                                       + " adsEnabled=" + adsEnabled
+                                                                       + " debugAds=" + debugAds
+                                                                       + " minutesPerAd=" + minutesPerAd
+                                                                       + " minutesPerBannerAd=" + minutesPerBannerAd
+                                                                       + " gamesPlayedBeforeAds=" + gamesPlayedBeforeAds
+                                                                       + " gameLengthInSeconds=" + gameLengthInSeconds
+                                                                       + " bannerAdsEnabled=" + bannerAdsEnabled
+                                                                       + " androidTestDevices=" + string.Join(",", androidTestDevices)
+                                                                       + " iPhoneTestDevices=" + string.Join(",", iPhoneTestDevices)
+                                                                       + " interstitialAdsEnabled=" + interstitialAdsEnabled
+                                                                       + " rewardVideoAdsEnabled=" + rewardVideoAdsEnabled
+                                                                       + " androidBannerAdUnitId=" + androidBannerAdUnitId
+                                                                       + " iPhoneBannerAdUnitId=" + iPhoneBannerAdUnitId
+                                                                       + " androidInterstitialAdUnitId=" + androidInterstitialAdUnitId
+                                                                       + " iPhoneInterstitialAdUnitId=" + iPhoneInterstitialAdUnitId
+                                                                       + " androidRewardVideoAdUnitId=" + androidRewardVideoAdUnitId
+                                                                       + " iPhoneRewardVideoAdUnitId=" + iPhoneRewardVideoAdUnitId);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }
