@@ -66,9 +66,7 @@ public class AdController : Singleton<AdController>
         if (RemoteConfigController.Instance.GamesPlayedBeforeAds > 0 && GameController.GamesPlayed() < RemoteConfigController.Instance.GamesPlayedBeforeAds)
         {
             Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
-                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds
-                                                                                     + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
-                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds);
+                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds);
             return false;
         }
 
@@ -120,7 +118,6 @@ public class AdController : Singleton<AdController>
 
     public void ShowBanner()
     {
-        if (!CanShowAds()) return;
         if (_bannerIsVisible)
         {
             Debug.Log("Banner is already shown");
@@ -132,6 +129,8 @@ public class AdController : Singleton<AdController>
             Debug.Log("Banner is not enabled.");
             return;
         }
+
+        if (!CanShowAds()) return;
 
         // limit how many banner ads shown per minute
         // since there is no way if a banner has shown an ad
@@ -186,12 +185,13 @@ public class AdController : Singleton<AdController>
 
     public void RequestInterstitial()
     {
-        if (!CanShowAds()) return;
         if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
         {
             Debug.Log("Interstitial is not enabled.");
             return;
         }
+
+        if (!CanShowAds()) return;
 
         var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
@@ -247,16 +247,16 @@ public class AdController : Singleton<AdController>
 
     public void ShowRewardedVideo()
     {
+        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
+        {
+            Debug.Log("Reward video is not enabled.");
+            return;
+        }
+
         if (!CanShowAds()) return;
         if (_rewardBasedVideo == null)
         {
             Debug.Log("Reward video is not set.");
-            return;
-        }
-
-        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
-        {
-            Debug.Log("Reward video is not enabled.");
             return;
         }
 
