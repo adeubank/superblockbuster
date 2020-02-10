@@ -73,16 +73,20 @@ public class AdController : Singleton<AdController>
         if (Debug.isDebugBuild || RemoteConfigController.Instance.debugAds)
         {
             builder.AddTestDevice(AdRequest.TestDeviceSimulator);
+#if UNITY_ANDROID
             builder = RemoteConfigController.Instance.androidTestDevices.Aggregate(builder, (current, testDevice) =>
             {
                 Debug.Log("Configuring android test device " + testDevice);
                 return current.AddTestDevice(testDevice);
             });
+#endif
+#if UNITY_IOS
             builder = RemoteConfigController.Instance.iPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
             {
                 Debug.Log("Configuring iPhone test device " + testDevice);
                 return current.AddTestDevice(testDevice);
             });
+#endif
         }
 
         return builder.Build();
