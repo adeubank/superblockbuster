@@ -14,6 +14,17 @@ public class AdController : Singleton<AdController>
     private void Start()
     {
         RemoteConfigController.Instance.OnRemoteConfigFetched += InitializeAds;
+        InvokeRepeating(nameof(CheckAdsInitialized), 0.3f, 0.3f);
+    }
+
+    private void CheckAdsInitialized()
+    {
+        if (!adsInitialized) return;
+
+        Debug.Log("Ads were initialized. Signaling to unity objects.");
+        CancelInvoke(nameof(CheckAdsInitialized));
+        InitializeRewardedVideo();
+        OnAdsInitialized?.Invoke(this, EventArgs.Empty);
     }
 
     private void InitializeAds(object sender, EventArgs eventArgs)
@@ -25,9 +36,7 @@ public class AdController : Singleton<AdController>
         MobileAds.Initialize(initStatus =>
         {
             adsInitialized = true;
-            Debug.Log("MobileAds.Initialize CanShowAds=" + CanShowAds());
-            InitializeRewardedVideo();
-            OnAdsInitialized?.Invoke(this, EventArgs.Empty);
+            Debug.Log("MobileAds.Initialize: " + initStatus.getAdapterStatusMap());
         });
     }
 

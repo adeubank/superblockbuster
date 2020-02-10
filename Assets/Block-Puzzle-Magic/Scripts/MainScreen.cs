@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class MainScreen : MonoBehaviour
@@ -15,42 +16,50 @@ public class MainScreen : MonoBehaviour
 
     private void InstanceOnOnRewardVideoLoaded(object sender, EventArgs e)
     {
-        CheckIfRewardedVideoIsAvailable();
+        StartCoroutine(RefreshAds());
     }
 
     private void InstanceOnOnAdsInitialized(object sender, EventArgs e)
     {
-        RefreshAds();
+        StartCoroutine(RefreshAds());
     }
 
     private void OnEnable()
     {
-        if (AdController.Instance.adsInitialized) RefreshAds();
+        if (AdController.Instance.adsInitialized) StartCoroutine(RefreshAds());
     }
 
     private void OnDisable()
     {
         AdController.Instance.HideBanner();
-        CancelInvoke(nameof(RefreshAds));
     }
 
-    private void RefreshAds()
+    private IEnumerator RefreshAds()
     {
         if (IsFirstPlay())
         {
             Debug.Log("Not refreshing ads on main screen. User hasn't played yet.");
-            return;
+            yield break;
         }
 
         Debug.Log("Refreshing ads on main screen");
 
-        AdController.Instance.RequestRewardVideoAd();
+        if (AdController.Instance.RewardVideoLoaded())
+        {
+            CheckIfRewardedVideoIsAvailable(true);
+        }
+        else
+        {
+            CheckIfRewardedVideoIsAvailable(false);
+            AdController.Instance.RequestRewardVideoAd();
+        }
+
         AdController.Instance.ShowBanner();
     }
 
-    private void CheckIfRewardedVideoIsAvailable()
+    private void CheckIfRewardedVideoIsAvailable(bool showRewardVideoButton)
     {
-        if (AdController.Instance.RewardVideoLoaded())
+        if (showRewardVideoButton)
             showRewardedVideoButton.Activate();
         else
             showRewardedVideoButton.Deactivate();
