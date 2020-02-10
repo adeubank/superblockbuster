@@ -40,7 +40,7 @@ public class AdController : Singleton<AdController>
         });
     }
 
-    private bool CanShowAds()
+    public bool CanShowAds()
     {
         if (!RemoteConfigController.Instance.AdsEnabled)
         {
@@ -54,21 +54,21 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (RemoteConfigController.Instance.GamesPlayedBeforeAds > 0 && GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds > 0)
-        {
-            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
-                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds
-                                                                                     + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
-                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds);
-            return false;
-        }
-
         // limit how many ads shown per minute
         if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.MinutesPerAd)
         {
             Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt
                                                               + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes
                                                               + ". Limiting ads to every + " + RemoteConfigController.Instance.MinutesPerAd + " minutes.");
+            return false;
+        }
+
+        if (RemoteConfigController.Instance.GamesPlayedBeforeAds > 0 && GameController.GamesPlayed() < RemoteConfigController.Instance.GamesPlayedBeforeAds)
+        {
+            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
+                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds
+                                                                                     + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
+                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds);
             return false;
         }
 

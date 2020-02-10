@@ -44,6 +44,11 @@ public class MainScreen : MonoBehaviour
 
         Debug.Log("Refreshing ads on main screen");
 
+        if (!AdController.Instance.CanShowAds())
+        {
+            yield break;
+        }
+
         if (AdController.Instance.RewardVideoLoaded())
         {
             CheckIfRewardedVideoIsAvailable(true);
