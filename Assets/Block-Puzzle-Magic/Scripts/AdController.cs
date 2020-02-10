@@ -33,7 +33,7 @@ public class AdController : Singleton<AdController>
 
     private bool CanShowAds()
     {
-        if (!RemoteConfigController.Instance.adsEnabled)
+        if (!RemoteConfigController.Instance.AdsEnabled)
         {
             Debug.Log("Remote setting adsEnabled is not set");
             return false;
@@ -45,21 +45,21 @@ public class AdController : Singleton<AdController>
             return false;
         }
 
-        if (RemoteConfigController.Instance.gamesPlayedBeforeAds > 0 && GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
+        if (RemoteConfigController.Instance.GamesPlayedBeforeAds > 0 && GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds > 0)
         {
             Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
-                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds
+                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds
                                                                                      + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
-                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds);
+                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.GamesPlayedBeforeAds);
             return false;
         }
 
         // limit how many ads shown per minute
-        if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
+        if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.MinutesPerAd)
         {
             Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt
                                                               + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes
-                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.minutesPerAd + " minutes.");
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.MinutesPerAd + " minutes.");
             return false;
         }
 
@@ -70,7 +70,7 @@ public class AdController : Singleton<AdController>
     {
         var builder = new AdRequest.Builder();
 
-        if (Debug.isDebugBuild || RemoteConfigController.Instance.debugAds)
+        if (Debug.isDebugBuild || RemoteConfigController.Instance.DebugAds)
         {
             builder.AddTestDevice(AdRequest.TestDeviceSimulator);
 #if UNITY_ANDROID
@@ -81,7 +81,7 @@ public class AdController : Singleton<AdController>
             });
 #endif
 #if UNITY_IOS
-            builder = RemoteConfigController.Instance.iPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
+            builder = RemoteConfigController.Instance.IPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
             {
                 Debug.Log("Configuring iPhone test device " + testDevice);
                 return current.AddTestDevice(testDevice);
@@ -103,7 +103,7 @@ public class AdController : Singleton<AdController>
 #if UNITY_ANDROID
         return RemoteConfigController.Instance.androidBannerAdUnitId;
 #elif UNITY_IPHONE
-        return RemoteConfigController.Instance.iPhoneBannerAdUnitId;
+        return RemoteConfigController.Instance.IPhoneBannerAdUnitId;
 #else
             return "unexpected_platform";
 #endif
@@ -118,7 +118,7 @@ public class AdController : Singleton<AdController>
             return;
         }
 
-        if (!RemoteConfigController.Instance.bannerAdsEnabled)
+        if (!RemoteConfigController.Instance.BannerAdsEnabled)
         {
             Debug.Log("Banner is not enabled.");
             return;
@@ -126,11 +126,11 @@ public class AdController : Singleton<AdController>
 
         // limit how many banner ads shown per minute
         // since there is no way if a banner has shown an ad
-        if ((DateTime.Now - _lastBannerShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < RemoteConfigController.Instance.MinutesPerAd)
         {
             Debug.Log("Too many ads shown. Last ad shown at " + _lastBannerShownAt
                                                               + ". Minutes since last shown " + (DateTime.Now - _lastBannerShownAt).Minutes
-                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.minutesPerAd + " minutes.");
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.MinutesPerAd + " minutes.");
             return;
         }
 
@@ -169,7 +169,7 @@ public class AdController : Singleton<AdController>
 #if UNITY_ANDROID
         return RemoteConfigController.Instance.androidInterstitialAdUnitId;
 #elif UNITY_IPHONE
-        return RemoteConfigController.Instance.iPhoneInterstitialAdUnitId;
+        return RemoteConfigController.Instance.IPhoneInterstitialAdUnitId;
 #else
             return "unexpected_platform";
 #endif
@@ -178,7 +178,7 @@ public class AdController : Singleton<AdController>
     public void RequestInterstitial()
     {
         if (!CanShowAds()) return;
-        if (!RemoteConfigController.Instance.interstitialAdsEnabled)
+        if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
         {
             Debug.Log("Interstitial is not enabled.");
             return;
@@ -210,7 +210,7 @@ public class AdController : Singleton<AdController>
 
         if (!CanShowAds()) return;
 
-        if (!RemoteConfigController.Instance.interstitialAdsEnabled)
+        if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
         {
             Debug.Log("Interstitial is not enabled.");
             return;
@@ -245,7 +245,7 @@ public class AdController : Singleton<AdController>
             return;
         }
 
-        if (!RemoteConfigController.Instance.rewardVideoAdsEnabled)
+        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
         {
             Debug.Log("Reward video is not enabled.");
             return;
@@ -266,7 +266,7 @@ public class AdController : Singleton<AdController>
     {
         if (!CanShowAds()) return false;
 
-        if (!RemoteConfigController.Instance.rewardVideoAdsEnabled)
+        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
         {
             Debug.Log("Reward video is not enabled.");
             return false;
@@ -305,7 +305,7 @@ public class AdController : Singleton<AdController>
 #if UNITY_ANDROID
         return RemoteConfigController.Instance.androidRewardVideoAdUnitId;
 #elif UNITY_IPHONE
-        return RemoteConfigController.Instance.iPhoneRewardVideoAdUnitId;
+        return RemoteConfigController.Instance.IPhoneRewardVideoAdUnitId;
 #else
             return "unexpected_platform";
 #endif
