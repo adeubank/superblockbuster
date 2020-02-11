@@ -251,7 +251,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 2
   androidSplashScreen: {fileID: 2800000, guid: 0a9c2bef783731e44869a1c9ced5080c, type: 3}
-  AndroidKeystoreName: D:/gdrive_my/Business/SuperGeekGames/Block Magic/superblockbuster-keystore-1.jks
+  AndroidKeystoreName: D:/gdrive_my/Business/SuperGeekGames/Block Magic/superblockbuster.keystore
   AndroidKeyaliasName: upload
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
@@ -814,7 +814,7 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   cloudProjectId: 1c58719e-5aa1-42cf-9e34-52f095dcfcc1
   framebufferDepthMemorylessMode: 0
-  projectName: Super Tile Puzzle
+  projectName: Super Block Buster
   organizationId: super-geek-games
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0

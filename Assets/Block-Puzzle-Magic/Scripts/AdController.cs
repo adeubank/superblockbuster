@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Api.Mediation.MoPub;
 using UnityEngine;
 
 public class AdController : Singleton<AdController>
@@ -33,11 +34,16 @@ public class AdController : Singleton<AdController>
 
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
-        MobileAds.Initialize(initStatus =>
-        {
-            adsInitialized = true;
-            Debug.Log("MobileAds.Initialize: " + initStatus.getAdapterStatusMap());
-        });
+        MobileAds.Initialize(initStatus => { Debug.Log("MobileAds.Initialize: " + initStatus.getAdapterStatusMap()); });
+
+        Debug.Log("Just Called MobileAds.Initialize");
+
+        // Initialize the MoPub SDK.
+#if UNITY_ANDROID
+        MoPub.Initialize(RemoteConfigController.Instance.AndroidMoPubFullscreenAdUnitID);
+#elif UNITY_IOS
+        MoPub.Initialize(RemoteConfigController.Instance.IPhoneMoPubFullscreenAdUnitID);
+#endif
     }
 
     public bool CanShowAds()

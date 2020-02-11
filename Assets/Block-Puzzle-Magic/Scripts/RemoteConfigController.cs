@@ -30,6 +30,8 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public string IPhoneInterstitialAdUnitId { get; private set; } = "ca-app-pub-4216152597478324/2917058137";
     public string IPhoneRewardVideoAdUnitId { get; private set; } = "ca-app-pub-4216152597478324/6664731457";
     public string[] IPhoneTestDevices { get; private set; } = {"1eba537bec490fde807f330c68465605"};
+    public string AndroidMoPubFullscreenAdUnitID { get; private set; } = "f0ae3360726649479b3d695f178242bf";
+    public string IPhoneMoPubFullscreenAdUnitID { get; private set; } = "92e4f5793ced47b5877e011f1cb92c8b";
 
     private void Awake()
     {
@@ -82,6 +84,8 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                 IPhoneInterstitialAdUnitId = ConfigManager.appConfig.GetString("IPhoneInterstitialAdUnitId", IPhoneInterstitialAdUnitId);
                 AndroidRewardVideoAdUnitId = ConfigManager.appConfig.GetString("AndroidRewardVideoAdUnitId", AndroidRewardVideoAdUnitId);
                 IPhoneRewardVideoAdUnitId = ConfigManager.appConfig.GetString("IPhoneRewardVideoAdUnitId", IPhoneRewardVideoAdUnitId);
+                AndroidMoPubFullscreenAdUnitID = ConfigManager.appConfig.GetString("AndroidMoPubFullscreenAdUnitID", AndroidMoPubFullscreenAdUnitID);
+                IPhoneMoPubFullscreenAdUnitID = ConfigManager.appConfig.GetString("IPhoneMoPubFullscreenAdUnitID", IPhoneMoPubFullscreenAdUnitID);
 
                 assignmentId = ConfigManager.appConfig.assignmentID;
                 Debug.Log("New settings loaded this session; EnvName=" + EnvName
@@ -101,7 +105,9 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
                                                                        + " AndroidInterstitialAdUnitId=" + AndroidInterstitialAdUnitId
                                                                        + " IPhoneInterstitialAdUnitId=" + IPhoneInterstitialAdUnitId
                                                                        + " AndroidRewardVideoAdUnitId=" + AndroidRewardVideoAdUnitId
-                                                                       + " IPhoneRewardVideoAdUnitId=" + IPhoneRewardVideoAdUnitId);
+                                                                       + " IPhoneRewardVideoAdUnitId=" + IPhoneRewardVideoAdUnitId
+                                                                       + " AndroidMoPubFullscreenAdUnitID=" + AndroidMoPubFullscreenAdUnitID
+                                                                       + " IPhoneMoPubFullscreenAdUnitID=" + IPhoneMoPubFullscreenAdUnitID);
                 OnRemoteConfigFetched?.Invoke(this, EventArgs.Empty);
                 break;
         }
