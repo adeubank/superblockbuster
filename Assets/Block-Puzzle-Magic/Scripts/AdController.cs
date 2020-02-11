@@ -34,16 +34,17 @@ public class AdController : Singleton<AdController>
 
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
-        MobileAds.Initialize(initStatus => { Debug.Log("MobileAds.Initialize: " + initStatus.getAdapterStatusMap()); });
-
-        Debug.Log("Just Called MobileAds.Initialize");
-
-        // Initialize the MoPub SDK.
+        MobileAds.Initialize(initStatus =>
+        {
+            // Initialize the MoPub SDK.
 #if UNITY_ANDROID
-        MoPub.Initialize(RemoteConfigController.Instance.AndroidMoPubFullscreenAdUnitID);
-#elif UNITY_IOS
-        MoPub.Initialize(RemoteConfigController.Instance.IPhoneMoPubFullscreenAdUnitID);
+            MoPub.Initialize(RemoteConfigController.Instance.AndroidMoPubFullscreenAdUnitID);
+#elif UNITY_IPHONE
+            MoPub.Initialize(RemoteConfigController.Instance.IPhoneMoPubFullscreenAdUnitID);
 #endif
+            Debug.Log("Mobile Ads initialized");
+            adsInitialized = true;
+        });
     }
 
     public bool CanShowAds()
