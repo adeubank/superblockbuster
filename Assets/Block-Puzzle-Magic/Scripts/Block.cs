@@ -74,11 +74,18 @@ public class Block : MonoBehaviour, IComparable
 
     public int moveID;
 
+    // used to store previous block image during game play
     public Sprite prevBlockImageSprite;
+
+    public GameObject colorCoderActivationPrefab;
+    public GameObject floodActivationPrefab;
+    public GameObject quakeActivationPrefab;
+    public GameObject dandelionActivationPrefab;
 
     //Row Index of block.
     public int rowID;
     private Text txtCounter;
+
 
     public int CompareTo(object obj)
     {
@@ -298,6 +305,30 @@ public class Block : MonoBehaviour, IComparable
         var powerupInfo = BlockShapeSpawner.Instance.FindPowerupById((int) ShapeInfo.Powerups.ColorCoder);
         Instantiate(powerupInfo.powerupBlockIcon, blockImage.transform, false);
         isColorCoderPowerup = true;
+    }
+
+    public void ActivateColorCoder()
+    {
+        Instantiate(colorCoderActivationPrefab, transform);
+    }
+
+    public void ActivateFloodParticles()
+    {
+        Instantiate(floodActivationPrefab, transform);
+    }
+
+    public void ActivateQuakeParticles()
+    {
+        var width = transform.GetComponent<RectTransform>().sizeDelta.x;
+        var leftParticles = Instantiate(quakeActivationPrefab, transform);
+        var rightParticles = Instantiate(quakeActivationPrefab, transform);
+        leftParticles.transform.localPosition -= leftParticles.transform.localPosition - new Vector3(width * 1.33f, 0, 0);
+        rightParticles.transform.localPosition += rightParticles.transform.localPosition - new Vector3(width * 1.33f, 0, 0);
+    }
+
+    public void ActivateDandelionParticles()
+    {
+        Instantiate(dandelionActivationPrefab, transform);
     }
 
     public void ConvertToSticksGalore()

@@ -14,6 +14,8 @@ public class AdController : Singleton<AdController>
     // Start is called before the first frame update
     private void Start()
     {
+        Debug.Log("AdController starting... Device ID=" + SystemInfo.deviceUniqueIdentifier + " Device Name=" + SystemInfo.deviceName);
+
         RemoteConfigController.Instance.OnRemoteConfigFetched += InitializeAds;
         InvokeRepeating(nameof(CheckAdsInitialized), 0.3f, 0.3f);
     }

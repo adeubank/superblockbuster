@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using Unity.RemoteConfig;
 using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
@@ -11,7 +9,7 @@ public class RemoteConfigController : Singleton<RemoteConfigController>
     public event EventHandler OnRemoteConfigFetched;
 
     private string EnvName { get; set; } = "N/A";
-    public int GameLengthInSeconds { get; private set; } = 90;
+    public int GameLengthInSeconds { get; private set; } = 45;
     public bool AdsEnabled { get; private set; }
     public bool BannerAdsEnabled { get; private set; }
     public bool InterstitialAdsEnabled { get; private set; }

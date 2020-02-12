@@ -23,7 +23,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private bool _isFrenzyPowerupRunning;
 
     private bool _powerupActivationAlreadyRunning;
-    private List<PowerupActivation> _powerupsToActivate;
+    private List<PowerupActivation> _powerupsActivated;
     private bool _shouldActivateFrenzy;
     private int _spawnAvalancheBlocks;
     private int _spawnStormBlocks;
@@ -288,7 +288,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         //Generate board from GameBoardGenerator Script Component.
         GetComponent<GameBoardGenerator>().GenerateBoard();
         highlightingBlocks = new List<Block>();
-        _powerupsToActivate = new List<PowerupActivation>();
+        _powerupsActivated = new List<PowerupActivation>();
 
         #region time mode
 
@@ -545,7 +545,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var quakePowerups = blockGrid.FindAll(b => quakePowerupMoveIds.Contains(b.moveID));
         _activeQuakePowerups.AddRange(quakePowerups);
 
-        // find any bomb blocks about to be detonated
+        // find any color coder blocks about to be detonated
         var colorCoderPowerupMoveIds =
             clearedLineBlocks.Where(b => b.isColorCoderPowerup).Select(b => b.moveID).Distinct();
         var colorCoderPowerups = blockGrid.FindAll(b => colorCoderPowerupMoveIds.Contains(b.moveID));
@@ -713,7 +713,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var colorCoderTweeners = clearedColorCoderBlocks.SelectMany(colorCoderBlock =>
         {
             // show the activation sprite
-            ShouldActivatePowerup(new PowerupActivation(colorCoderBlock), colorCoderBlock);
+            if (ShouldActivatePowerup(new PowerupActivation(colorCoderBlock), colorCoderBlock))
+            {
+                colorCoderBlock.ActivateColorCoder();
+            }
 
             var tweeners = new List<Block>();
             var rowId = colorCoderBlock.rowID;
@@ -1197,6 +1200,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (block.isDandelionPowerup)
         {
+            block.ActivateDandelionParticles();
             block.isDandelionPowerup = false;
             tweenSequence.Join(HandleDandelionPowerup(block));
         }
@@ -1240,11 +1244,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     {
         if (powerupActivation.PowerupID == 0 || powerupBlock.moveID < 1) return false;
 
-        if (_powerupsToActivate.Any(p =>
-            p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
+        if (_powerupsActivated.Any(p => p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
             return false;
 
-        _powerupsToActivate.Add(powerupActivation);
+        _powerupsActivated.Add(powerupActivation);
+
+        switch (powerupActivation.PowerupID)
+        {
+            case (int) ShapeInfo.Powerups.Quake:
+                powerupBlock.ActivateQuakeParticles();
+                break;
+        }
 
         // do not show for on-place activation powerups
         if ((int) ShapeInfo.Powerups.Doubler != powerupActivation.PowerupID &&
