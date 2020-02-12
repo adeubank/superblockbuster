@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class MainScreen : MonoBehaviour
@@ -8,41 +9,62 @@ public class MainScreen : MonoBehaviour
 
     public void Start()
     {
+        AdController.Instance.OnRewardVideoLoaded += InstanceOnOnRewardVideoLoaded;
         AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
-        CancelInvoke(nameof(RefreshAds));
-        InvokeRepeating(nameof(RefreshAds), 0, 60);
+        AdController.Instance.OnAdsInitialized += InstanceOnOnAdsInitialized;
+    }
+
+    private void InstanceOnOnRewardVideoLoaded(object sender, EventArgs e)
+    {
+        StartCoroutine(RefreshAds());
+    }
+
+    private void InstanceOnOnAdsInitialized(object sender, EventArgs e)
+    {
+        StartCoroutine(RefreshAds());
     }
 
     private void OnEnable()
     {
-        CancelInvoke(nameof(RefreshAds));
-        InvokeRepeating(nameof(RefreshAds), 0, 60);
+        if (AdController.Instance.adsInitialized) StartCoroutine(RefreshAds());
     }
 
     private void OnDisable()
     {
         AdController.Instance.HideBanner();
-        CancelInvoke(nameof(RefreshAds));
     }
 
-    private void RefreshAds()
+    private IEnumerator RefreshAds()
     {
         if (IsFirstPlay())
         {
             Debug.Log("Not refreshing ads on main screen. User hasn't played yet.");
-            return;
-        } 
+            yield break;
+        }
 
         Debug.Log("Refreshing ads on main screen");
 
-        CheckIfRewardedVideoIsAvailable();
+        if (!AdController.Instance.CanShowAds())
+        {
+            yield break;
+        }
 
-        // AdController.Instance.ShowBanner();
+        if (AdController.Instance.RewardVideoLoaded())
+        {
+            CheckIfRewardedVideoIsAvailable(true);
+        }
+        else
+        {
+            CheckIfRewardedVideoIsAvailable(false);
+            AdController.Instance.RequestRewardVideoAd();
+        }
+
+        AdController.Instance.ShowBanner();
     }
 
-    private void CheckIfRewardedVideoIsAvailable()
+    private void CheckIfRewardedVideoIsAvailable(bool showRewardVideoButton)
     {
-        if (AdController.Instance.RewardVideoLoaded())
+        if (showRewardVideoButton)
             showRewardedVideoButton.Activate();
         else
             showRewardedVideoButton.Deactivate();
@@ -51,18 +73,14 @@ public class MainScreen : MonoBehaviour
     public void RewardedVideoButtonClicked()
     {
         if (AdController.Instance.RewardVideoLoaded())
-        {
             AdController.Instance.ShowRewardedVideo();
-        }
         else
-        {
             showRewardedVideoButton.Deactivate();
-        }
     }
 
     public void RewardedVideoClosed(object sender, EventArgs eventArgs)
     {
-        showRewardedVideoButton.Deactivate();        
+        showRewardedVideoButton.Deactivate();
     }
 
     /// <summary>

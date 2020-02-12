@@ -14,8 +14,8 @@ public class Timer : MonoBehaviour
 
     private void Start()
     {
-        timeRemaining = RemoteConfigController.Instance.gameLengthInSeconds;
-        maxTimeCounter = RemoteConfigController.Instance.gameLengthInSeconds;
+        timeRemaining = RemoteConfigController.Instance.GameLengthInSeconds;
+        maxTimeCounter = RemoteConfigController.Instance.GameLengthInSeconds;
         SetTimeSlider(GetRemainingTime());
         if (!IsInvoking(nameof(ElapseTimer))) InvokeRepeating(nameof(ElapseTimer), timerRate, timerRate);
     }

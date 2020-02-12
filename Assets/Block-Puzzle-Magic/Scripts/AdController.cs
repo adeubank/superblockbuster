@@ -1,60 +1,111 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Api.Mediation.MoPub;
 using UnityEngine;
 
 public class AdController : Singleton<AdController>
 {
-    public event EventHandler OnRewardVideoClosed;
-    private bool _adsInitialized;
     private DateTime _lastAdShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
+    public bool adsInitialized;
+    public event EventHandler OnAdsInitialized;
 
     // Start is called before the first frame update
     private void Start()
     {
+        Debug.Log("AdController starting... Device ID=" + SystemInfo.deviceUniqueIdentifier + " Device Name=" + SystemInfo.deviceName);
+
+        RemoteConfigController.Instance.OnRemoteConfigFetched += InitializeAds;
+        InvokeRepeating(nameof(CheckAdsInitialized), 0.3f, 0.3f);
+    }
+
+    private void CheckAdsInitialized()
+    {
+        if (!adsInitialized) return;
+
+        Debug.Log("Ads were initialized. Signaling to unity objects.");
+        CancelInvoke(nameof(CheckAdsInitialized));
+        InitializeRewardedVideo();
+        OnAdsInitialized?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void InitializeAds(object sender, EventArgs eventArgs)
+    {
+        if (adsInitialized) return;
+
         // Initialize the Google Mobile Ads SDK.
         // Do not call other ads until ads are initialized when using admob mediation
         MobileAds.Initialize(initStatus =>
         {
-            _adsInitialized = true;
-            InitializeRewardedVideo();
-            Debug.Log("MobileAds.Initialize CanShowAds=" + CanShowAds());
+            // Initialize the MoPub SDK.
+#if UNITY_ANDROID
+            MoPub.Initialize(RemoteConfigController.Instance.AndroidMoPubFullscreenAdUnitID);
+#elif UNITY_IPHONE
+            MoPub.Initialize(RemoteConfigController.Instance.IPhoneMoPubFullscreenAdUnitID);
+#endif
+            Debug.Log("Mobile Ads initialized");
+            adsInitialized = true;
         });
     }
 
-    private bool CanShowAds()
+    public bool CanShowAds()
     {
-        if (!RemoteConfigController.Instance.adsEnabled)
+        if (!RemoteConfigController.Instance.AdsEnabled)
         {
             Debug.Log("Remote setting adsEnabled is not set");
             return false;
         }
 
-        if (!_adsInitialized)
+        if (!adsInitialized)
         {
             Debug.Log("Ads have not been initialized yet");
             return false;
         }
 
-        if (RemoteConfigController.Instance.gamesPlayedBeforeAds > 0 && GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds > 0)
-        {
-            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
-                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.gamesPlayedBeforeAds
-                                                                                     + " GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds=" +
-                                                                                     GameController.GamesPlayed() % RemoteConfigController.Instance.gamesPlayedBeforeAds);
-            return false;
-        }
-
         // limit how many ads shown per minute
-        if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.minutesPerAd)
+        if ((DateTime.Now - _lastAdShownAt).Minutes < RemoteConfigController.Instance.MinutesPerAd)
         {
             Debug.Log("Too many ads shown. Last ad shown at " + _lastAdShownAt
                                                               + ". Minutes since last shown " + (DateTime.Now - _lastAdShownAt).Minutes
-                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.minutesPerAd + " minutes.");
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.MinutesPerAd + " minutes.");
+            return false;
+        }
+
+        if (RemoteConfigController.Instance.GamesPlayedBeforeAds > 0 && GameController.GamesPlayed() < RemoteConfigController.Instance.GamesPlayedBeforeAds)
+        {
+            Debug.Log("Not enough games played yet... GameController.GamesPlayed()=" + GameController.GamesPlayed()
+                                                                                     + " gamesPlayedBeforeAds=" + RemoteConfigController.Instance.GamesPlayedBeforeAds);
             return false;
         }
 
         return true;
+    }
+
+    private AdRequest NewAdRequest()
+    {
+        var builder = new AdRequest.Builder();
+
+        if (Debug.isDebugBuild || RemoteConfigController.Instance.DebugAds)
+        {
+            builder.AddTestDevice(AdRequest.TestDeviceSimulator);
+#if UNITY_ANDROID
+            builder = RemoteConfigController.Instance.AndroidTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring android test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+#endif
+#if UNITY_IOS
+            builder = RemoteConfigController.Instance.IPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring iPhone test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+#endif
+        }
+
+        return builder.Build();
     }
 
     #region Banner Ad
@@ -65,20 +116,10 @@ public class AdController : Singleton<AdController>
 
     private string BannerAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/6300978111";
+        return RemoteConfigController.Instance.AndroidBannerAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/2934735716";
-#else
-            return "unexpected_platform";
-#endif
-        }
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/8552528193";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/8169384819";
+        return RemoteConfigController.Instance.IPhoneBannerAdUnitId;
 #else
             return "unexpected_platform";
 #endif
@@ -86,22 +127,46 @@ public class AdController : Singleton<AdController>
 
     public void ShowBanner()
     {
-        if (!CanShowAds()) return;
-        if (_bannerIsVisible) return;
-        if ((DateTime.Now - _lastBannerShownAt).Minutes < 2)
+        if (_bannerIsVisible)
         {
+            Debug.Log("Banner is already shown");
+            return;
+        }
+
+        if (!RemoteConfigController.Instance.BannerAdsEnabled)
+        {
+            Debug.Log("Banner is not enabled.");
+            return;
+        }
+
+        if (!CanShowAds()) return;
+
+        // limit how many banner ads shown per minute
+        // since there is no way if a banner has shown an ad
+        if ((DateTime.Now - _lastBannerShownAt).Minutes < RemoteConfigController.Instance.MinutesPerAd)
+        {
+            Debug.Log("Too many ads shown. Last ad shown at " + _lastBannerShownAt
+                                                              + ". Minutes since last shown " + (DateTime.Now - _lastBannerShownAt).Minutes
+                                                              + ". Limiting ads to every + " + RemoteConfigController.Instance.MinutesPerAd + " minutes.");
             return;
         }
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
         _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
-        AdRequest request = new AdRequest.Builder().Build();
+        _bannerView.OnAdFailedToLoad += BannerViewOnOnAdFailedToLoad;
+
+        var adRequest = NewAdRequest();
         Debug.Log("Showing banner ad: " + adUnitId);
-        _bannerView.LoadAd(request);
+        _bannerView.LoadAd(adRequest);
         _bannerIsVisible = true;
         _lastBannerShownAt = DateTime.Now;
-        _lastAdShownAt = DateTime.Now;
+    }
+
+    private void BannerViewOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Banner ad failed to load: " + e.Message);
+        _bannerIsVisible = false;
     }
 
     public void HideBanner()
@@ -118,37 +183,39 @@ public class AdController : Singleton<AdController>
 
     private string InterstitialAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/1033173712";
+        return RemoteConfigController.Instance.AndroidInterstitialAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/4411468910";
+        return RemoteConfigController.Instance.IPhoneInterstitialAdUnitId;
 #else
-        return  "unexpected_platform";
-#endif
-        }
-
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/7239446520";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/2917058137";
-#else
-        return "unexpected_platform";
+            return "unexpected_platform";
 #endif
     }
 
     public void RequestInterstitial()
     {
+        if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
+        {
+            Debug.Log("Interstitial is not enabled.");
+            return;
+        }
+
         if (!CanShowAds()) return;
 
         var adUnitId = InterstitialAdUnitId();
         interstitial?.Destroy();
         interstitial = new InterstitialAd(adUnitId);
-        AdRequest request = new AdRequest.Builder().Build();
+        // Called when an ad request failed to load.
+        interstitial.OnAdFailedToLoad += InterstitialOnOnAdFailedToLoad;
+        var adRequest = NewAdRequest();
         Debug.Log("Loading interstitial ad: " + adUnitId);
 
-        interstitial.LoadAd(request);
+        interstitial.LoadAd(adRequest);
+    }
+
+    private void InterstitialOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Interstitial ad failed to load: " + e.Message);
     }
 
     public void ShowInterstitial()
@@ -161,10 +228,20 @@ public class AdController : Singleton<AdController>
 
         if (!CanShowAds()) return;
 
+        if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
+        {
+            Debug.Log("Interstitial is not enabled.");
+            return;
+        }
+
         if (interstitial.IsLoaded())
         {
             interstitial.Show();
             _lastAdShownAt = DateTime.Now;
+        }
+        else
+        {
+            Debug.Log("Interstitial is not loaded.");
         }
     }
 
@@ -172,14 +249,57 @@ public class AdController : Singleton<AdController>
 
     #region Reward Video Ad
 
+    public event EventHandler OnRewardVideoClosed;
+    public event EventHandler OnRewardVideoLoaded;
     private RewardBasedVideoAd _rewardBasedVideo;
     private double _recentRewardAmount;
-    public event EventHandler<EventArgs> OnAdLoaded;
+
+    public void ShowRewardedVideo()
+    {
+        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
+        {
+            Debug.Log("Reward video is not enabled.");
+            return;
+        }
+
+        if (!CanShowAds()) return;
+        if (_rewardBasedVideo == null)
+        {
+            Debug.Log("Reward video is not set.");
+            return;
+        }
+
+        if (_rewardBasedVideo.IsLoaded())
+        {
+            _rewardBasedVideo.Show();
+            _lastAdShownAt = DateTime.Now;
+        }
+        else
+        {
+            Debug.Log("Reward video is not loaded.");
+        }
+    }
 
     public bool RewardVideoLoaded()
     {
         if (!CanShowAds()) return false;
-        return _rewardBasedVideo != null && _rewardBasedVideo.IsLoaded();
+
+        if (!RemoteConfigController.Instance.RewardVideoAdsEnabled)
+        {
+            Debug.Log("Reward video is not enabled.");
+            return false;
+        }
+
+        if (_rewardBasedVideo == null)
+        {
+            Debug.Log("Reward video is not set.");
+            return false;
+        }
+
+        if (_rewardBasedVideo.IsLoaded()) return true;
+
+        Debug.Log("Reward video is not loaded.");
+        return false;
     }
 
     private void InitializeRewardedVideo()
@@ -190,42 +310,37 @@ public class AdController : Singleton<AdController>
         _rewardBasedVideo.OnAdRewarded += HandleRewardBasedVideoRewarded;
         _rewardBasedVideo.OnAdLoaded += HandleRewardBasedVideoLoaded;
         _rewardBasedVideo.OnAdClosed += HandleRewardBasedVideoClosed;
-        RequestRewardVideoAd();
+        _rewardBasedVideo.OnAdFailedToLoad += RewardBasedVideoOnOnAdFailedToLoad;
+    }
+
+    private void RewardBasedVideoOnOnAdFailedToLoad(object sender, AdFailedToLoadEventArgs e)
+    {
+        Debug.Log("Reward video ad failed to load: " + e.Message);
     }
 
     private string RewardVideoAdUnitId()
     {
-        if (Debug.isDebugBuild)
-        {
 #if UNITY_ANDROID
-            return "ca-app-pub-3940256099942544/5224354917";
+        return RemoteConfigController.Instance.AndroidRewardVideoAdUnitId;
 #elif UNITY_IPHONE
-            return "ca-app-pub-3940256099942544/1712485313";
+        return RemoteConfigController.Instance.IPhoneRewardVideoAdUnitId;
 #else
             return "unexpected_platform";
-#endif
-        }
-#if UNITY_ANDROID
-        return "ca-app-pub-4216152597478324/5926364856";
-#elif UNITY_IPHONE
-        return "ca-app-pub-4216152597478324/6664731457";
-#else
-        return "unexpected_platform";
 #endif
     }
 
     public void RequestRewardVideoAd()
     {
         var adUnitId = RewardVideoAdUnitId();
-        AdRequest request = new AdRequest.Builder().Build();
+        var request = NewAdRequest();
         Debug.Log("Loading reward video ad: " + adUnitId);
-        this._rewardBasedVideo.LoadAd(request, adUnitId);
+        _rewardBasedVideo.LoadAd(request, adUnitId);
     }
 
     public void HandleRewardBasedVideoRewarded(object sender, Reward args)
     {
-        string type = args.Type;
-        double amount = args.Amount;
+        var type = args.Type;
+        var amount = args.Amount;
         _recentRewardAmount = amount;
         Debug.Log("User rewarded with: " + amount + " " + type);
     }
@@ -239,35 +354,21 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoLoaded event received");
-        OnAdLoaded?.Invoke(sender, args);
+        OnRewardVideoLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoClosed event received");
-        if (_recentRewardAmount >= Double.Epsilon)
+        if (_recentRewardAmount >= double.Epsilon)
         {
             StartCoroutine(AddCoins((int) _recentRewardAmount));
             _recentRewardAmount = 0;
         }
 
-        this.RequestRewardVideoAd();
+        if (CanShowAds()) RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
 
     #endregion
-
-    public void ShowRewardedVideo()
-    {
-        if (!_adsInitialized || _rewardBasedVideo == null)
-        {
-            return;
-        }
-
-        if (_rewardBasedVideo.IsLoaded())
-        {
-            _rewardBasedVideo.Show();
-            _lastAdShownAt = DateTime.Now;
-        }
-    }
 }

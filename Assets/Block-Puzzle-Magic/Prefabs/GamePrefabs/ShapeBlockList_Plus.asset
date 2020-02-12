@@ -88,23 +88,23 @@ MonoBehaviour:
   - BlockID: 18
     shapeBlock: {fileID: 1848114577987914, guid: 19110f9591be24f499af6ac184f8d67f,
       type: 3}
-    spawnProbability: 4
+    spawnProbability: 1
   - BlockID: 100
     shapeBlock: {fileID: 1353720840180176, guid: 409db0b3b34efe04087ce0ef6d19bf1b,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 101
     shapeBlock: {fileID: 1306851180626238, guid: 940da0f5f8edb4347b71203618c92be4,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 102
     shapeBlock: {fileID: 1237728024698970, guid: d7fc78584896a484d977f550017a63d9,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 103
     shapeBlock: {fileID: 1513809601680942, guid: 7758261ff5c5be645b3115833e62c3e1,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 104
     shapeBlock: {fileID: 1997106410271310, guid: 654d9d3fda88cb948b4321ef79480a27,
       type: 3}
@@ -112,56 +112,56 @@ MonoBehaviour:
   - BlockID: 105
     shapeBlock: {fileID: 1515622391353922, guid: c9878aa03bc98b54d873dc7e65b884db,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 106
     shapeBlock: {fileID: 1072894703221210, guid: 7714765786ddbdf41a4cfdbfd4666932,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 107
     shapeBlock: {fileID: 1345213016280486, guid: f46dde484125aa340b3102c14028d6a7,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 108
     shapeBlock: {fileID: 1715619411810400, guid: 3903b3edb6bc97c4ab290936452206a7,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 109
     shapeBlock: {fileID: 1069616828340024, guid: b249cddbebda6b544b9d3d8e152b9a74,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 110
     shapeBlock: {fileID: 1110162628994832, guid: 488f94e87cfef60469189c374c677afe,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 111
     shapeBlock: {fileID: 1760335534358812, guid: 3769d14daaca65e4e9a786a02077a749,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 112
     shapeBlock: {fileID: 1510997549700940, guid: 4a25bfeb60c52fe4ab8d9ac59c0661d6,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 113
     shapeBlock: {fileID: 1471891345246938, guid: d9616cac48ee3c34cb0a611548727da4,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 114
     shapeBlock: {fileID: 1413700948426992, guid: 5c3dd7dd1fde35244813a58256bcde78,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 115
     shapeBlock: {fileID: 1537827237867678, guid: e847bebca2ed7814d9ca8a79082cf279,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 116
     shapeBlock: {fileID: 1758304906299804, guid: 9d2f0ee88f8c6b74089a41063fd2ac48,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 117
     shapeBlock: {fileID: 1682383416459438, guid: 8a9d02b14936f2246a82cdd9f41e76bd,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
   - BlockID: 118
     shapeBlock: {fileID: 1368517373408084, guid: 813d8b86c935ab04487b5f401f76a9b0,
       type: 3}
-    spawnProbability: 2
+    spawnProbability: 1
