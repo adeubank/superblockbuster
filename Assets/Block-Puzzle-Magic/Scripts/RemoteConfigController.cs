@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.RemoteConfig;
 using UnityEngine;
 
 public class RemoteConfigController : Singleton<RemoteConfigController>
