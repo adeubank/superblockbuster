@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Api.Mediation.MoPub;
 using UnityEngine;
 
 public class AdController : Singleton<AdController>
@@ -13,6 +14,8 @@ public class AdController : Singleton<AdController>
     // Start is called before the first frame update
     private void Start()
     {
+        Debug.Log("AdController starting... Device ID=" + SystemInfo.deviceUniqueIdentifier + " Device Name=" + SystemInfo.deviceName);
+
         RemoteConfigController.Instance.OnRemoteConfigFetched += InitializeAds;
         InvokeRepeating(nameof(CheckAdsInitialized), 0.3f, 0.3f);
     }
@@ -35,8 +38,14 @@ public class AdController : Singleton<AdController>
         // Do not call other ads until ads are initialized when using admob mediation
         MobileAds.Initialize(initStatus =>
         {
+            // Initialize the MoPub SDK.
+#if UNITY_ANDROID
+            MoPub.Initialize(RemoteConfigController.Instance.AndroidMoPubFullscreenAdUnitID);
+#elif UNITY_IPHONE
+            MoPub.Initialize(RemoteConfigController.Instance.IPhoneMoPubFullscreenAdUnitID);
+#endif
+            Debug.Log("Mobile Ads initialized");
             adsInitialized = true;
-            Debug.Log("MobileAds.Initialize: " + initStatus.getAdapterStatusMap());
         });
     }
 

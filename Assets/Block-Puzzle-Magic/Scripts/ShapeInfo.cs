@@ -142,6 +142,7 @@ public class ShapeInfo : MonoBehaviour
         // since flood is activation once played, show sprite here
         StartCoroutine(GamePlay.Instance.ShowPowerupActivationSprite(powerupBlock.blockID, powerupBlock.moveID,
             powerupBlock, true));
+        powerupBlock.ActivateFloodParticles();
 
         var surroundingBlocks = GamePlay.Instance.SurroundingBlocksInRadius(powerupBlock, 2, true).ToList();
         if (surroundingBlocks.Any())
