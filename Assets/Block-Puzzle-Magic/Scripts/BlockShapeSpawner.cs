@@ -79,7 +79,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         SetBlockShapeToSix();
 //        Invoke(nameof(SetupPreviousSessionShapes), 0.2F);
-        Invoke(nameof(createShapeBlockProbabilityList), 0.5F);
+        createShapeBlockProbabilityList();
     }
 
     /// <summary>
@@ -204,6 +204,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         // so that it spawns for first game
         PowerupController.Instance.AddEquippedPowerupId(thirdHelpPowerupId);
         SetActiveShapeBlocks();
+        createShapeBlockProbabilityList();
     }
 
     public List<ShapeInfo> GetPlayableShapes()
