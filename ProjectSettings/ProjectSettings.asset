@@ -253,7 +253,7 @@ PlayerSettings:
   AndroidSplashScreenScale: 2
   androidSplashScreen: {fileID: 2800000, guid: 0a9c2bef783731e44869a1c9ced5080c, type: 3}
   AndroidKeystoreName: D:/gdrive_my/Business/SuperGeekGames/Block Magic/superblockbuster.keystore
-  AndroidKeyaliasName: 
+  AndroidKeyaliasName: upload
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
