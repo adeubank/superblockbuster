@@ -88,9 +88,9 @@ public class CustomEditorUtility : MonoBehaviour
         GamePlay.Instance.ShowBasicHelp();
     }
 
-    [MenuItem("SuperBlockBuster/Add 50 coins")]
+    [MenuItem("SuperBlockBuster/Add 500 coins")]
     private static void AddFiftyCoins()
     {
-        CurrencyManager.Instance.AddCoinBalance(50);
+        CurrencyManager.Instance.AddCoinBalance(500);
     }
 }

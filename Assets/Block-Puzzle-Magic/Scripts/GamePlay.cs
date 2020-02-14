@@ -72,6 +72,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
+    public GameObject stormParticlesPrefab;
 
 
     #region IBeginDragHandler implementation
@@ -1254,6 +1255,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             case (int) ShapeInfo.Powerups.Quake:
                 powerupBlock.ActivateQuakeParticles();
                 break;
+            case (int) ShapeInfo.Powerups.Storm:
+                ActivateStormParticles();
+                break;
         }
 
         // do not show for on-place activation powerups
@@ -1266,6 +1270,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         blockGrid.Where(b => b.moveID == powerupBlock.moveID).ToList().ForEach(b => b.RemovePowerupIcon());
 
         return true;
+    }
+
+    private void ActivateStormParticles()
+    {
+        var halfCanvasWidth = transform.parent.GetComponent<RectTransform>().sizeDelta.x / 2;
+        var gameBoardYOffset = GameBoardGenerator.Instance.BoardContent.transform.localPosition.y;
+        var left = Instantiate(stormParticlesPrefab, Vector3.zero, Quaternion.LookRotation(Vector3.left), transform);
+        var right = Instantiate(stormParticlesPrefab, Vector3.zero, Quaternion.LookRotation(Vector3.right), transform);
+        left.transform.localPosition = new Vector2(-(halfCanvasWidth + 20), gameBoardYOffset);
+        right.transform.localPosition = new Vector2(halfCanvasWidth + 20, gameBoardYOffset);
     }
 
     private IEnumerator ActivateStormPowerup()
@@ -1299,7 +1313,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         foreach (var b in row)
         {
             b.ConvertToFilledBlock(0);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSecondsRealtime(0.04f);
         }
 
         // no more storm blocks
