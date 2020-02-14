@@ -1263,6 +1263,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             case (int) ShapeInfo.Powerups.Frenzy:
                 powerupBlock.ActivateFrenzyParticles();
                 break;
+            case (int) ShapeInfo.Powerups.Lag:
+                powerupBlock.ActivateLagParticles();
+                break;
+            case (int) ShapeInfo.Powerups.Avalanche:
+                powerupBlock.ActivateAvalancheParticles();
+                break;
         }
 
         // do not show for on-place activation powerups

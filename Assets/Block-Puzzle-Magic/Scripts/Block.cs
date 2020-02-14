@@ -82,6 +82,8 @@ public class Block : MonoBehaviour, IComparable
     public GameObject quakeActivationPrefab;
     public GameObject dandelionActivationPrefab;
     public GameObject frenzyParticlesPrefab;
+    public GameObject lagParticlesPrefab;
+    public GameObject avalancheParticlesPrefab;
 
     //Row Index of block.
     public int rowID;
@@ -503,5 +505,17 @@ public class Block : MonoBehaviour, IComparable
     public void ActivateFrenzyParticles()
     {
         Instantiate(frenzyParticlesPrefab, transform);
+    }
+
+    public void ActivateLagParticles()
+    {
+        Instantiate(lagParticlesPrefab, transform);
+    }
+    
+    public void ActivateAvalancheParticles()
+    {
+        var halfCanvasHeight = transform.parent.GetComponent<RectTransform>().sizeDelta.y / 2 + 50;
+        var avalancheParticles = Instantiate(avalancheParticlesPrefab, GamePlay.Instance.transform);
+        avalancheParticles.transform.localPosition = new Vector3(0, -halfCanvasHeight, 0);
     }
 }

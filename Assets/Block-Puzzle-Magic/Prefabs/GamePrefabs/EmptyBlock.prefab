@@ -314,6 +314,10 @@ MonoBehaviour:
     type: 3}
   frenzyParticlesPrefab: {fileID: 9091975811965373990, guid: c0ce112493d402d4f8d87d446cd8ebba,
     type: 3}
+  lagParticlesPrefab: {fileID: 1551315087746476338, guid: 13c298d1cfa63b54d98ef358f272dd48,
+    type: 3}
+  avalancheParticlesPrefab: {fileID: 3462843657507012511, guid: cd30464e172f1064c9f45f5e837fa7c5,
+    type: 3}
   rowID: 0
 --- !u!61 &61475109600377552
 BoxCollider2D:
