@@ -81,6 +81,7 @@ public class Block : MonoBehaviour, IComparable
     public GameObject floodActivationPrefab;
     public GameObject quakeActivationPrefab;
     public GameObject dandelionActivationPrefab;
+    public GameObject frenzyParticlesPrefab;
 
     //Row Index of block.
     public int rowID;
@@ -498,4 +499,9 @@ public class Block : MonoBehaviour, IComparable
     }
 
     #endregion
+
+    public void ActivateFrenzyParticles()
+    {
+        Instantiate(frenzyParticlesPrefab, transform);
+    }
 }

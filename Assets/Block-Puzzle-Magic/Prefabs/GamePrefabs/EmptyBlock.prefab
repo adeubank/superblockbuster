@@ -312,6 +312,8 @@ MonoBehaviour:
     type: 3}
   dandelionActivationPrefab: {fileID: 4183501450421301676, guid: 5d8298620dc5d94458f27f4ad99e23ab,
     type: 3}
+  frenzyParticlesPrefab: {fileID: 9091975811965373990, guid: c0ce112493d402d4f8d87d446cd8ebba,
+    type: 3}
   rowID: 0
 --- !u!61 &61475109600377552
 BoxCollider2D:

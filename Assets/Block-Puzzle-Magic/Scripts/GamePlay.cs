@@ -1201,7 +1201,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (block.isDandelionPowerup)
         {
-            block.ActivateDandelionParticles();
             block.isDandelionPowerup = false;
             tweenSequence.Join(HandleDandelionPowerup(block));
         }
@@ -1252,11 +1251,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         switch (powerupActivation.PowerupID)
         {
+            case (int) ShapeInfo.Powerups.Dandelion:
+                powerupBlock.ActivateDandelionParticles();
+                break;
             case (int) ShapeInfo.Powerups.Quake:
                 powerupBlock.ActivateQuakeParticles();
                 break;
             case (int) ShapeInfo.Powerups.Storm:
                 ActivateStormParticles();
+                break;
+            case (int) ShapeInfo.Powerups.Frenzy:
+                powerupBlock.ActivateFrenzyParticles();
                 break;
         }
 
