@@ -247,9 +247,29 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             var canPlaceShapeHere = nearbyBlocks.Any(nearbyBlock =>
             {
-                // if not, see if we can play it here
+                // if not, see if we can play it directly here
                 if (CanPlaceShape(nearbyBlock.transform, currentShape)) return true;
 
+                // check playable blocks using the max row and columns to check all permutations of placing this shape
+                var maxRow = currentShape.ShapeBlocks.Max(b => b.rowID);
+                var maxColumn = currentShape.ShapeBlocks.Max(b => b.columnID);
+
+                var playableBlocks = blockGrid.FindAll(b =>
+                {
+                    return b.rowID >= nearbyBlock.rowID - maxRow && b.rowID <= nearbyBlock.rowID + maxRow &&
+                           b.columnID >= nearbyBlock.columnID - maxColumn && b.columnID <= nearbyBlock.columnID + maxColumn;
+                }).ToList();
+                
+                playableBlocks.Sort((b, oB) => Vector2.Distance(worldPosition, b.transform.position).CompareTo(Vector2.Distance(worldPosition, oB.transform.position)));
+                if (playableBlocks.Any(b => CanPlaceShape(b.transform, currentShape))) return true;
+
+                    
+                // check surrounding blocks
+                var surroundingBlocks = SurroundingBlocks(nearbyBlock).ToList();
+                surroundingBlocks.Sort((b, oB) => Vector2.Distance(worldPosition, b.transform.position).CompareTo(Vector2.Distance(worldPosition, oB.transform.position)));
+                if (surroundingBlocks.Any(b => CanPlaceShape(b.transform, currentShape))) return true;
+
+                
                 return false; // no idea where the tap is
             });
             if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
