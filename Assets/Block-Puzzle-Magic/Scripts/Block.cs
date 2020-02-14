@@ -514,8 +514,8 @@ public class Block : MonoBehaviour, IComparable
     
     public void ActivateAvalancheParticles()
     {
-        var halfCanvasHeight = transform.parent.GetComponent<RectTransform>().sizeDelta.y / 2 + 50;
+        var halfCanvasHeight = transform.parent.GetComponent<RectTransform>().sizeDelta.y;
         var avalancheParticles = Instantiate(avalancheParticlesPrefab, GamePlay.Instance.transform);
-        avalancheParticles.transform.localPosition = new Vector3(0, -halfCanvasHeight, 0);
+        avalancheParticles.transform.localPosition = new Vector3(0, halfCanvasHeight * 1.3f, 0);
     }
 }
