@@ -124,7 +124,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 6
+      scalar: 3
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -465,7 +465,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 2440
+    maxNumParticles: 4800
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -530,9 +530,9 @@ ParticleSystem:
     boxThickness: {x: 0, y: 1, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 2.5, z: 0}
+    m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 5, y: 5, z: 5}
+    m_Scale: {x: 600, y: 5, z: 5}
     placementMode: 2
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -730,7 +730,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 800
+      scalar: 1600
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -4466,7 +4466,7 @@ MonoBehaviour:
   m_ParticleSystem: {fileID: 3462843657521260287}
   m_TrailParticle: {fileID: 0}
   m_IsTrail: 0
-  m_Scale: 200
+  m_Scale: 150
   m_IgnoreParent: 0
   m_AnimatableProperties: []
 --- !u!114 &7922063961573430448
@@ -4476,12 +4476,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3462843657507012511}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9c4e89389fa607479b0744ec6611490, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectDuration: 1.5
+  effectDuration: 2
 --- !u!114 &3839998630818447088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4489,7 +4489,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3462843657507012511}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6fd2e8874f60266498a388d7229a1bac, type: 3}
   m_Name: 
