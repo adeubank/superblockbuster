@@ -14,6 +14,11 @@ public class MainScreen : MonoBehaviour
         AdController.Instance.OnAdsInitialized += InstanceOnOnAdsInitialized;
     }
 
+    public void Update()
+    {
+        OpenDeveloperMenu();
+    }
+
     private void InstanceOnOnRewardVideoLoaded(object sender, EventArgs e)
     {
         StartCoroutine(RefreshAds());
@@ -117,5 +122,32 @@ public class MainScreen : MonoBehaviour
     public void MarkFirstPlay()
     {
         PlayerPrefs.SetInt(PrefsFirstPlay, 1);
+    }
+
+    private int _developerMenuOpenKey;
+
+    private void ResetDeveloperMenuOpenKey()
+    {
+        Debug.Log("Resetting developer menu open key");
+        _developerMenuOpenKey = 0;
+    }
+
+    public void OpenDeveloperMenu()
+    {
+        if (Input.touchCount != 3) return;
+
+        _developerMenuOpenKey++;
+
+        if (_developerMenuOpenKey > 3)
+        {
+            ResetDeveloperMenuOpenKey();
+            Debug.Log("Opening developer menu");
+        }
+        else
+        {
+            Invoke(nameof(ResetDeveloperMenuOpenKey), .4f);
+        }
+
+        Debug.Log("Pointerup! _developerMenuOpenKey" + _developerMenuOpenKey);
     }
 }
