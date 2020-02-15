@@ -6,6 +6,7 @@ public class MainScreen : MonoBehaviour
 {
     private const string PrefsFirstPlay = "isFirstPlay";
     public GameObject showRewardedVideoButton;
+    public GameObject DeveloperMenuGameObject;
 
     public void Start()
     {
@@ -135,19 +136,19 @@ public class MainScreen : MonoBehaviour
     public void OpenDeveloperMenu()
     {
         if (Input.touchCount != 3) return;
+        
+        CancelInvoke(nameof(ResetDeveloperMenuOpenKey));
 
         _developerMenuOpenKey++;
 
-        if (_developerMenuOpenKey > 3)
+        if (_developerMenuOpenKey > 7)
         {
             ResetDeveloperMenuOpenKey();
-            Debug.Log("Opening developer menu");
+            DeveloperMenuGameObject.Activate();
         }
         else
         {
-            Invoke(nameof(ResetDeveloperMenuOpenKey), .4f);
+            Invoke(nameof(ResetDeveloperMenuOpenKey), .8f);
         }
-
-        Debug.Log("Pointerup! _developerMenuOpenKey" + _developerMenuOpenKey);
     }
 }

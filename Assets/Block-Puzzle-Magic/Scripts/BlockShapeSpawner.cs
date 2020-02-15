@@ -62,6 +62,10 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
             ActiveShapeBlocks = new List<ShapeBlockSpawn>(shapeBlockList.ShapeBlocks.Count + PowerupController.Instance.equippedPowerupIds.Count);
             ActiveShapeBlocks.AddRange(shapeBlockList.ShapeBlocks);
             ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));
+            if (GameController.Instance.DoublePowerupSpawn)
+            {
+                ActiveShapeBlocks.AddRange(powerupList.powerupBlockSpawns.FindAll(p => PowerupController.Instance.equippedPowerupIds.Contains(p.BlockID)));
+            }
         }
     }
 

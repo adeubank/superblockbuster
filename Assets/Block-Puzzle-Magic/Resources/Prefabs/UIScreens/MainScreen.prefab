@@ -691,6 +691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showRewardedVideoButton: {fileID: 1099192789}
+  DeveloperMenuGameObject: {fileID: 0}
 --- !u!223 &223377018275392548
 Canvas:
   m_ObjectHideFlags: 0

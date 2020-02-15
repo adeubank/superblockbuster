@@ -6,6 +6,7 @@ public class GameController : Singleton<GameController>
 {
     public static GameMode gameMode = GameMode.TIMED;
     public Canvas UICanvas;
+    public bool DoublePowerupSpawn;
 
     private void Start()
     {
