@@ -93,4 +93,37 @@ public class CustomEditorUtility : MonoBehaviour
     {
         CurrencyManager.Instance.AddCoinBalance(500);
     }
+    
+    [MenuItem("SuperBlockBuster/Set Level Score C")]
+    private static void SetLevelScoreC()
+    {
+        var gameOverScreen = StackManager.Instance.gameOverScreen;
+        gameOverScreen.Activate();
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(499999);
+    } 
+    
+    [MenuItem("SuperBlockBuster/Set Level Score B")]
+    private static void SetLevelScoreB()
+    {
+        var gameOverScreen = StackManager.Instance.gameOverScreen;
+        gameOverScreen.Activate();
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(999999);
+    }
+    
+    [MenuItem("SuperBlockBuster/Set Level Score A")]
+    private static void SetLevelScoreA()
+    {
+        var gameOverScreen = StackManager.Instance.gameOverScreen;
+        gameOverScreen.Activate();
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(1499999);
+    }
+    
+    [MenuItem("SuperBlockBuster/Set Level Score S")]
+    private static void SetLevelScoreS()
+    {
+        var gameOverScreen = StackManager.Instance.gameOverScreen;
+        gameOverScreen.Activate();
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(9999999);
+    }
+
 }

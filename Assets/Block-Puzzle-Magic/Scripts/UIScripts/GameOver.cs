@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
@@ -11,9 +13,23 @@ public class GameOver : MonoBehaviour
     [SerializeField] private Text txtCoinReward;
 
     [SerializeField] private Text txtScore;
+    [SerializeField] private Image imgGrade;
+    [SerializeField] private Text txtTitle;
 
+    [SerializeField] private GameObject gradeFxPrefab;
+    [SerializeField] private Sprite imgGradeC;
+    [SerializeField] private Sprite imgGradeB;
+    [SerializeField] private Sprite imgGradeA;
+    [SerializeField] private Sprite imgGradeS;
+    private readonly List<GameObject> _gradeFxGameObjs = new List<GameObject>();
+    
     private void OnEnable()
     {
+        if (_gradeFxGameObjs.Any())
+        {
+            _gradeFxGameObjs.ForEach(Destroy);
+            _gradeFxGameObjs.Clear();
+        }  
         btnReplay.gameObject.SetActive(GameController.GamesPlayed() > 1);
 
         AdController.Instance.ShowInterstitial();
@@ -21,8 +37,29 @@ public class GameOver : MonoBehaviour
         InputManager.Instance.EnableTouch();
     }
 
-    public void SetLevelScore(int score, int coinReward)
+    public void SetLevelScore(int score)
     {
+        SetLevelGrade(score);
+        var coinReward = 50;
+
+        if (score >= 100_000)
+            coinReward = 75;
+
+        if (score >= 200_000)
+            coinReward = 100;
+
+        if (score >= 300_000)
+            coinReward = 150;
+
+        if (score >= 500_000)
+            coinReward = 200;
+
+        if (score >= 1_000_000)
+            coinReward = 250;
+
+        if (score > 1_500_000)
+            coinReward = 500;
+
         var bestScore = PlayerPrefs.GetInt("BestScore_" + GameController.gameMode, score);
 
         if (score >= bestScore)
@@ -36,6 +73,40 @@ public class GameOver : MonoBehaviour
         txtCoinReward.text = string.Format("{0:#,#.}", coinReward.ToString("0"));
 
         CurrencyManager.Instance.AddCoinBalance(coinReward);
+    }
+
+    private void SetLevelGrade(int score)
+    {
+        var grade = imgGradeC;
+        txtTitle.text = "CASUAL";
+
+        if (score >= 500_000)
+        {
+            grade = imgGradeB;
+            txtTitle.text = "BOLD";
+        }
+
+        if (score >= 1_000_000)
+        {
+            grade = imgGradeA;
+            txtTitle.text = "AWESOME";
+        }
+
+        if (score > 1_500_000)
+        {
+            grade = imgGradeS;
+            var imgRect = grade.rect;
+            var one = Instantiate(gradeFxPrefab, imgGrade.transform);
+            var two = Instantiate(gradeFxPrefab, imgGrade.transform);
+            var three = Instantiate(gradeFxPrefab, imgGrade.transform);
+            one.transform.localPosition = new Vector3(-imgRect.width + 5, imgRect.y- 5);
+            two.transform.localPosition = new Vector3(-imgRect.width + 10, imgRect.y - 50);
+            three.transform.localPosition = new Vector3(-imgRect.width + 50, imgRect.y - 5);
+            txtTitle.text = "SUPER";
+        }
+        
+        imgGrade.sprite = grade;
+        
     }
 
     public void OnHomeButtonPressed()

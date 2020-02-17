@@ -1583,32 +1583,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         AnalyticsEvent.GameOver();
         GameController.IncrementGamesPlayed();
 
-        //region compute a variable coin reward based on the score
-        var currentScore = ScoreManager.Instance.Score;
-        var coinReward = 50;
-
-        if (currentScore >= 100_000)
-            coinReward = 75;
-
-        if (currentScore >= 200_000)
-            coinReward = 100;
-
-        if (currentScore >= 300_000)
-            coinReward = 150;
-
-        if (currentScore >= 500_000)
-            coinReward = 200;
-
-        if (currentScore >= 1_000_000)
-            coinReward = 250;
-
-        if (currentScore > 1_500_000)
-            coinReward = 500;
-        //endregion
-
         var gameOverScreen = StackManager.Instance.gameOverScreen;
         gameOverScreen.Activate();
-        gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score, coinReward);
+        gameOverScreen.GetComponent<GameOver>().SetLevelScore(ScoreManager.Instance.Score);
         GameProgressManager.Instance.ClearProgress();
         StackManager.Instance.DeactivateGamePlay();
     }
