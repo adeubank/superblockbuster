@@ -1169,11 +1169,16 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return ActivateAvalanchePowerup();
 
         // do some cleanup, since there are still bugs
-        foreach (var block in blockGrid.Where(b => b.blockID == -1 && !b.isDandelionSeed))
+        foreach (var block in blockGrid)
         {
-            block.ClearBlock(false);
-            block.RemovePowerup();
-            block.ClearDandelionSeedIcon();
+            block.blockImage.transform.localPosition = Vector3.zero;
+            if (block.blockID == -1 && !block.isDandelionSeed)
+            {
+                block.ClearBlock(false);
+                block.RemovePowerup();
+                block.ClearDandelionSeedIcon();    
+            }
+            
         }
     }
 

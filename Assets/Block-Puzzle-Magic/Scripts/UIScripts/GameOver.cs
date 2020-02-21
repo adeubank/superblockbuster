@@ -80,22 +80,21 @@ public class GameOver : MonoBehaviour
         var grade = imgGradeC;
         txtTitle.text = "CASUAL";
 
-        if (score >= 500_000)
+        if (score >= 100_000)
         {
             grade = imgGradeB;
             txtTitle.text = "BOLD";
         }
 
-        if (score >= 1_000_000)
+        if (score >= 500_000)
         {
             grade = imgGradeA;
             txtTitle.text = "AWESOME";
         }
 
-        if (score > 1_500_000)
+        if (score > 1_000_000)
         {
             grade = imgGradeS;
-            var sizeDelta = imgGrade.GetComponent<RectTransform>().sizeDelta;
             var one = Instantiate(gradeFxPrefab, imgGrade.transform);
             var two = Instantiate(gradeFxPrefab, imgGrade.transform);
             var three = Instantiate(gradeFxPrefab, imgGrade.transform);

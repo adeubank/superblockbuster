@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class MainScreen : MonoBehaviour
@@ -136,7 +137,8 @@ public class MainScreen : MonoBehaviour
     public void OpenDeveloperMenu()
     {
         if (Input.touchCount != 3) return;
-        
+        if (!Input.touches.ToList().TrueForAll(t => t.phase == TouchPhase.Ended)) return;
+
         CancelInvoke(nameof(ResetDeveloperMenuOpenKey));
 
         _developerMenuOpenKey++;
