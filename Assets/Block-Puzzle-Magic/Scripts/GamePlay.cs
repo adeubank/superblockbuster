@@ -1131,8 +1131,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         yield return allLineBreaksSequence.WaitForCompletion();
 
         // cleanup any powerups that were cleared ignoring blocks with the default move ID 0
-        blockGrid.Where(b => b.moveID > 0 && clearedMoveIds.Contains(b.moveID)).ToList()
-            .ForEach(b => { b.RemovePowerup(); });
+        blockGrid.Where(b => b.moveID > 0 && clearedMoveIds.Contains(b.moveID)).ToList().ForEach(b => { b.RemovePowerup(); });
 
         #region clearing was exploding blocks
 

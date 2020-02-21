@@ -249,7 +249,7 @@ MonoBehaviour:
   txtScore: {fileID: 114329678800830446}
   imgGrade: {fileID: 2788661551125407706}
   txtTitle: {fileID: 114885338931226156}
-  gradeFxPrefab: {fileID: 7471388482966213978, guid: ba1f0685a3492be4291faaa9d9ca5752,
+  gradeFxPrefab: {fileID: 3786479659481079985, guid: ba1f0685a3492be4291faaa9d9ca5752,
     type: 3}
   imgGradeC: {fileID: 21300000, guid: db5a8f02171606d49b614bb7947ed08b, type: 3}
   imgGradeB: {fileID: 21300000, guid: 5071a00ece974dd48af2c3d3c90dc8c4, type: 3}

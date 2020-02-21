@@ -95,13 +95,16 @@ public class GameOver : MonoBehaviour
         if (score > 1_500_000)
         {
             grade = imgGradeS;
-            var imgRect = grade.rect;
+            var sizeDelta = imgGrade.GetComponent<RectTransform>().sizeDelta;
             var one = Instantiate(gradeFxPrefab, imgGrade.transform);
             var two = Instantiate(gradeFxPrefab, imgGrade.transform);
             var three = Instantiate(gradeFxPrefab, imgGrade.transform);
-            one.transform.localPosition = new Vector3(-imgRect.width + 5, imgRect.y- 5);
-            two.transform.localPosition = new Vector3(-imgRect.width + 10, imgRect.y - 50);
-            three.transform.localPosition = new Vector3(-imgRect.width + 50, imgRect.y - 5);
+            one.transform.localPosition = new Vector3(89,95);
+            two.transform.localPosition = new Vector3(-55, 35);
+            three.transform.localPosition = new Vector3(66, -125);
+            one.name = "One-" + one.name;
+            two.name = "Two-" + two.name;
+            three.name = "Three-" + three.name;
             txtTitle.text = "SUPER";
         }
         
