@@ -1073,8 +1073,6 @@ GameObject:
   - component: {fileID: 6204131876823644360}
   - component: {fileID: 6203422703584635516}
   - component: {fileID: 6095426010072910592}
-  - component: {fileID: 6094814020304807242}
-  - component: {fileID: 6095418691205366584}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -1141,32 +1139,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: CHEATER CHEATER
---- !u!114 &6094814020304807242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6125390551706116364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dfca3248ad16294ba4a688259c2bb63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  txtTag: txt-settings
---- !u!114 &6095418691205366584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6125390551706116364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0aad3778395609448b668decbc1a580, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIColorTag: popup-title-1
 --- !u!1 &6125390551976140780
 GameObject:
   m_ObjectHideFlags: 0
