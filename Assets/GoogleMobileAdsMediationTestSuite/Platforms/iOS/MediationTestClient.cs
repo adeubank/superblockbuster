@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Runtime.InteropServices;
-using GoogleMobileAds.Api;
-using GoogleMobileAds.iOS;
-using GoogleMobileAdsMediationTestSuite.Common;
-
 #if UNITY_IOS
 
 namespace GoogleMobileAdsMediationTestSuite.iOS
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using GoogleMobileAdsMediationTestSuite.Common;
+    using GoogleMobileAds.Api;
+    using GoogleMobileAds.iOS;
+    using UnityEngine;
+
     /// <summary>
     /// iOS implementation of Mediation Test Client interface <see cref="IMediationTestClient"/>
     /// </summary>

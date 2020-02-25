@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Runtime.InteropServices;
-
 #if UNITY_IOS
 
 namespace GoogleMobileAdsMediationTestSuite.iOS
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     /// Externs used by the iOS component.
     /// </summary>

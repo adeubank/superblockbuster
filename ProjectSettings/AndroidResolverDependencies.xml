@@ -2,6 +2,7 @@
   <packages>
     <package>com.google.ads.mediation:mopub:5.10.0.0</package>
     <package>com.google.ads.mediation:unity:3.4.0.0</package>
+    <package>com.google.android.ads:mediation-test-suite:1.2.2</package>
     <package>com.google.android.gms:play-services-ads:18.3.0</package>
   </packages>
   <files />

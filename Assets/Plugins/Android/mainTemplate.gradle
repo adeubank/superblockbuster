@@ -43,6 +43,9 @@ allprojects {
             url "https://jcenter.bintray.com/" // Assets/GoogleMobileAds/Editor/MoPubMediationDependencies.xml:8, Assets/GoogleMobileAds/Editor/UnityMediationDependencies.xml:7
         }
         maven {
+            url "https://maven.google.com" // Assets/GoogleMobileAdsMediationTestSuite/Editor/GoogleMobileAdsMediationTestSuiteDependencies.xml:7
+        }
+        maven {
             url "https://s3.amazonaws.com/moat-sdk-builds" // Assets/GoogleMobileAds/Editor/MoPubMediationDependencies.xml:8
         }
         mavenLocal()
@@ -61,6 +64,7 @@ dependencies {
 // Android Resolver Dependencies Start
     implementation 'com.google.ads.mediation:mopub:5.10.0.0' // Assets/GoogleMobileAds/Editor/MoPubMediationDependencies.xml:8
     implementation 'com.google.ads.mediation:unity:3.4.0.0' // Assets/GoogleMobileAds/Editor/UnityMediationDependencies.xml:7
+    implementation 'com.google.android.ads:mediation-test-suite:1.2.2' // Assets/GoogleMobileAdsMediationTestSuite/Editor/GoogleMobileAdsMediationTestSuiteDependencies.xml:7
     implementation 'com.google.android.gms:play-services-ads:18.3.0' // Assets/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7
 // Android Resolver Dependencies End
 **DEPS**}
