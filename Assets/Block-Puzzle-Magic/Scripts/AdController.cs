@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Api.Mediation.MoPub;
+using GoogleMobileAdsMediationTestSuite.Api;
 using UnityEngine;
 
 public class AdController : Singleton<AdController>
@@ -371,4 +372,26 @@ public class AdController : Singleton<AdController>
     }
 
     #endregion
+
+    public void MediationTestSuiteShow()
+    {
+        var builder = new AdRequest.Builder();
+        builder.AddTestDevice(AdRequest.TestDeviceSimulator);
+#if UNITY_ANDROID
+            builder = RemoteConfigController.Instance.AndroidTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring android test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+#endif
+#if UNITY_IOS
+            builder = RemoteConfigController.Instance.IPhoneTestDevices.Aggregate(builder, (current, testDevice) =>
+            {
+                Debug.Log("Configuring iPhone test device " + testDevice);
+                return current.AddTestDevice(testDevice);
+            });
+#endif
+        MediationTestSuite.AdRequest = builder.Build();
+        MediationTestSuite.Show();
+    }
 }

@@ -1,5 +1,4 @@
-﻿using GoogleMobileAdsMediationTestSuite.Api;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class DeveloperMenu : MonoBehaviour
@@ -39,7 +38,7 @@ public class DeveloperMenu : MonoBehaviour
 
     public void ShowMediationTestSuite()
     {
-        MediationTestSuite.Show();
+        AdController.Instance.MediationTestSuiteShow();
     }
 
     public void ToggleAds()
