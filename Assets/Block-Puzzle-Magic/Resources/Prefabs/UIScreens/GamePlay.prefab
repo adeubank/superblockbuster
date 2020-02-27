@@ -698,7 +698,7 @@ MonoBehaviour:
   TotalFreeRescueDone: 0
   TotalRescueDone: 0
   txtCurrentRound: {fileID: 1629}
-  stormParticlesPrefab: {fileID: 2177195570770106503, guid: e17f4d3be60988348b5c60296dfe5b35,
+  stormParticlesPrefab: {fileID: 2247272511450617280, guid: 19a8a32de0d7f9a488b0415f5027e055,
     type: 3}
 --- !u!114 &1305
 MonoBehaviour:
@@ -1362,6 +1362,7 @@ MonoBehaviour:
   sticksGaloreColorId: -1
   thirdHelpPowerupId: 1001
   thirdHelpShapeId: 4
+  stormFloodBlocksToSpawn: 0
 --- !u!114 &1628
 MonoBehaviour:
   m_ObjectHideFlags: 0
