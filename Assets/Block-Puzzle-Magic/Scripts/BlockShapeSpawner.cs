@@ -46,6 +46,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     // third step in tutorial
     public int thirdHelpShapeId = 4;
+    [HideInInspector] public int stormFloodBlocksToSpawn;
 
     /// <summary>
     ///     Awake this instance.
@@ -137,7 +138,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         var shapesFilled = false;
 
-        ReorderShapes();
+        SpawnStormFloodRound();
 
         var activeShapeContainers = GetActiveShapeContainers();
         var playableShapes = GetPlayableShapes();
@@ -256,24 +257,28 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
     public GameObject NextShapeBlock(Transform shapeContainer)
     {
+        if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
+            createShapeBlockProbabilityList();
+
+        GameObject nextShapeBlock;
+        
         // only sticks on sticks galore
         if (isNextRoundSticksGaloreBlocks)
         {
             var normalBlocks = SticksGaloreBlocks().ToArray();
-            var normalBlock = normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
-            return Instantiate(normalBlock, shapeContainer, true);
+            nextShapeBlock = normalBlocks[Random.Range(0, normalBlocks.Length)].shapeBlock;
+        }
+        else
+        {
+            var randomShape = shapeBlockProbabilityPool[0];
+            shapeBlockProbabilityPool.RemoveAt(0);
+            nextShapeBlock = ActiveShapeBlocks.First(b => b.BlockID == randomShape).shapeBlock;
         }
 
-        if (shapeBlockProbabilityPool == null || shapeBlockProbabilityPool.Count <= 0)
-            createShapeBlockProbabilityList();
-
-        var randomShape = shapeBlockProbabilityPool[0];
-        shapeBlockProbabilityPool.RemoveAt(0);
-        var nextShapeBlock = ActiveShapeBlocks.First(b => b.BlockID == randomShape).shapeBlock;
         var nextShapeInfo = nextShapeBlock.GetComponent<ShapeInfo>();
 
         // return a normal shape with a powerup ID
-        if (Enum.IsDefined(typeof(ShapeInfo.Powerups), randomShape))
+        if (Enum.IsDefined(typeof(ShapeInfo.Powerups), nextShapeInfo.ShapeID))
         {
             var nextNormalShape = Instantiate(NextNormalShape(), shapeContainer, true);
             nextNormalShape.GetComponent<ShapeInfo>().ShapeID = nextShapeInfo.ShapeID;
@@ -281,7 +286,6 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         }
 
         return Instantiate(nextShapeBlock, shapeContainer, true);
-        ;
     }
 
     public Sprite NextColorSprite()
@@ -321,11 +325,8 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var spawningRectTransform = spawningShapeBlock.GetComponent<RectTransform>();
         spawningShapeBlock.transform.SetParent(shapeContainer);
         spawningShapeBlock.transform.localScale = ShapeContainerLocalScale();
-        spawningRectTransform.anchoredPosition3D = new Vector3(800F, 0, 0);
         spawningRectTransform.sizeDelta = ShapeSizeDelta();
-#if HBDOTween
-        spawningShapeBlock.transform.DOLocalMove(Vector3.zero, 0.3F);
-#endif
+        PrepShapeForPlay(spawningShapeBlock);
     }
 
     private Vector2 ShapeSizeDelta()
@@ -410,5 +411,32 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
     public PowerupBlockSpawn FindPowerupById(int id)
     {
         return powerupList.powerupBlockSpawns.FirstOrDefault(powerup => powerup.BlockID == id);
+    }
+
+    public void ActivateStormFloodRound()
+    {
+        stormFloodBlocksToSpawn += 6;
+        ReorderShapes();
+        SpawnStormFloodRound();
+    }
+
+    public void SpawnStormFloodRound()
+    {
+        if (stormFloodBlocksToSpawn <= 0) return;
+
+        var emptyContainers = GetActiveShapeContainers().Where(s => s.childCount == 0).ToList();
+
+        if (emptyContainers.Count == 0) return;
+
+        GetActiveShapeContainers().Where(s => s.childCount == 0).ToList().ForEach(s =>
+        {
+            if (stormFloodBlocksToSpawn <= 0) return;
+            var nextNormalShape = NextNormalShape();
+            var spawnedShape = Instantiate(nextNormalShape, s, true);
+            var spawnedShapeInfo = spawnedShape.GetComponent<ShapeInfo>();
+            spawnedShapeInfo.ShapeID = (int) ShapeInfo.Powerups.Flood;
+            PrepShapeForPlay(spawnedShape);
+            --stormFloodBlocksToSpawn; 
+        });
     }
 }

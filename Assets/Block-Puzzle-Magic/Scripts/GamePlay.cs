@@ -1162,8 +1162,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         yield return ActivateQuakePowerup();
 
-        yield return ActivateStormPowerup();
-
         yield return ActivateFrenzyPowerup();
 
         yield return ActivateAvalanchePowerup();
@@ -1252,7 +1250,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (block.isStormPowerup)
         {
             block.isStormPowerup = false;
-            _spawnStormBlocks += 1;
+            BlockShapeSpawner.Instance.ActivateStormFloodRound();
         }
 
         if (block.isFrenzyPowerup)
@@ -1315,44 +1313,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var right = Instantiate(stormParticlesPrefab, Vector3.zero, Quaternion.LookRotation(Vector3.right), transform);
         left.transform.localPosition = new Vector2(-(halfCanvasWidth + 20), gameBoardYOffset);
         right.transform.localPosition = new Vector2(halfCanvasWidth + 20, gameBoardYOffset);
-    }
-
-    private IEnumerator ActivateStormPowerup()
-    {
-        if (_spawnStormBlocks == 0) yield break;
-
-        var allRows = new List<List<Block>>();
-        var stormRows = new List<List<Block>>();
-
-        for (var index = 0; index < GameBoardGenerator.Instance.TotalRows; index++)
-        {
-            var row = GetEntireRowForRescue(index);
-            allRows.Add(row);
-        }
-
-        // so we always spawn at least 3
-        var stormRowCount = 2 + _spawnStormBlocks;
-
-        while (stormRowCount > 0)
-        {
-            var randomIndex = Random.Range(0, allRows.Count);
-            var stormRow = allRows[randomIndex];
-            stormRows.Add(stormRow);
-            allRows.RemoveAt(randomIndex);
-            stormRowCount--;
-        }
-
-        stormRows.SelectMany(row => row).Where(b => !b.isFilled).ToList();
-
-        foreach (var row in stormRows)
-        foreach (var b in row)
-        {
-            b.ConvertToFilledBlock(0);
-            yield return new WaitForSecondsRealtime(0.04f);
-        }
-
-        // no more storm blocks
-        _spawnStormBlocks = 0;
     }
 
     public void CheckIfOutOfMoves()
