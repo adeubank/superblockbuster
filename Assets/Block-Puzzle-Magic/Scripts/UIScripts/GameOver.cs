@@ -105,6 +105,9 @@ public class GameOver : MonoBehaviour
             two.name = "Two-" + two.name;
             three.name = "Three-" + three.name;
             txtTitle.text = "SUPER";
+            _gradeFxGameObjs.Add(one);
+            _gradeFxGameObjs.Add(two);
+            _gradeFxGameObjs.Add(three);
         }
         
         imgGrade.sprite = grade;
