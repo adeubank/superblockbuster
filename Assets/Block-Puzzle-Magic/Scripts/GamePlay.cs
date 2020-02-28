@@ -24,7 +24,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private bool _powerupActivationAlreadyRunning;
     private List<PowerupActivation> _powerupsActivated;
-    private bool _shouldActivateFrenzy;
+    private int _frenzyPowerupsActivated;
     private int _spawnAvalancheBlocks;
     private int _spawnStormBlocks;
     private int _sticksGaloreRounds;
@@ -259,17 +259,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                     return b.rowID >= nearbyBlock.rowID - maxRow && b.rowID <= nearbyBlock.rowID + maxRow &&
                            b.columnID >= nearbyBlock.columnID - maxColumn && b.columnID <= nearbyBlock.columnID + maxColumn;
                 }).ToList();
-                
+
                 playableBlocks.Sort((b, oB) => Vector2.Distance(worldPosition, b.transform.position).CompareTo(Vector2.Distance(worldPosition, oB.transform.position)));
                 if (playableBlocks.Any(b => CanPlaceShape(b.transform, currentShape))) return true;
 
-                    
+
                 // check surrounding blocks
                 var surroundingBlocks = SurroundingBlocks(nearbyBlock).ToList();
                 surroundingBlocks.Sort((b, oB) => Vector2.Distance(worldPosition, b.transform.position).CompareTo(Vector2.Distance(worldPosition, oB.transform.position)));
                 if (surroundingBlocks.Any(b => CanPlaceShape(b.transform, currentShape))) return true;
 
-                
+
                 return false; // no idea where the tap is
             });
             if (canPlaceShapeHere) return; // no need to reset, assuming shape was placed
@@ -884,21 +884,18 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator ActivateFrenzyPowerup()
     {
-        if (_shouldActivateFrenzy)
-            _shouldActivateFrenzy = false;
-        else
-            yield break;
-
-        // check lock
-        if (_isFrenzyPowerupRunning) yield break;
-
-        // lock
-        _isFrenzyPowerupRunning = true;
+        if (_frenzyPowerupsActivated <= 0) yield break;
 
         const int frenzyOffscreenOffset = 10;
         const float blockTweenDuration = 0.1f;
-        var emptyBottomBlocks = blockGrid
-            .Where(b => (!b.isFilled || b.isExploding) && b.rowID > GameBoardGenerator.Instance.TotalRows - 4).ToList();
+        var emptyBottomBlocks = blockGrid.Where(b =>
+        {
+            // do not consider filled blocks that aren't exploding
+            if (b.isFilled || !b.isExploding) return false;
+
+            // fill rows from the bottom
+            return b.rowID > GameBoardGenerator.Instance.TotalRows - (4 + _frenzyPowerupsActivated);
+        }).ToList();
         var frenzySequence = DOTween.Sequence();
         var numberOfSequences = 0;
         var pseudoBlocks = new List<List<Block>>();
@@ -941,7 +938,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
 
         // unlock
-        _isFrenzyPowerupRunning = false;
+        _frenzyPowerupsActivated = 0;
     }
 
     private void UpdateRound(int newRound)
@@ -1174,9 +1171,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             {
                 block.ClearBlock(false);
                 block.RemovePowerup();
-                block.ClearDandelionSeedIcon();    
+                block.ClearDandelionSeedIcon();
             }
-            
         }
     }
 
@@ -1256,7 +1252,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (block.isFrenzyPowerup)
         {
             block.isFrenzyPowerup = false;
-            _shouldActivateFrenzy = true;
+            _frenzyPowerupsActivated += 1;
         }
 
         if (block.isAvalanchePowerup) _spawnAvalancheBlocks += 1;
