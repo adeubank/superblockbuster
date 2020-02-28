@@ -138,6 +138,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
 
         var shapesFilled = false;
 
+        ReorderShapes();
         SpawnStormFloodRound();
 
         var activeShapeContainers = GetActiveShapeContainers();

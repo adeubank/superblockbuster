@@ -73,6 +73,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     [HideInInspector] public int TotalRescueDone;
     [HideInInspector] public Text txtCurrentRound;
     public GameObject stormParticlesPrefab;
+    [HideInInspector] public int comboMultiplier = 0;
 
 
     #region IBeginDragHandler implementation
@@ -891,10 +892,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var emptyBottomBlocks = blockGrid.Where(b =>
         {
             // do not consider filled blocks that aren't exploding
-            if (b.isFilled || !b.isExploding) return false;
+            if (b.isFilled && !b.isExploding) return false;
 
             // fill rows from the bottom
-            return b.rowID > GameBoardGenerator.Instance.TotalRows - (4 + _frenzyPowerupsActivated);
+            return b.rowID > GameBoardGenerator.Instance.TotalRows - (5 + _frenzyPowerupsActivated);
         }).ToList();
         var frenzySequence = DOTween.Sequence();
         var numberOfSequences = 0;
@@ -935,7 +936,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         });
 
         yield return frenzySequence.WaitForCompletion();
-
 
         // unlock
         _frenzyPowerupsActivated = 0;
@@ -1041,7 +1041,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             yield break;
         }
 
-        var comboMultiplier = 0;
+        comboMultiplier = 0;
 
         do
         {
@@ -1051,7 +1051,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
 
-            yield return BreakLines(placingShapeBlockCount, comboMultiplier, breakingRows, breakingColumns);
+            yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
 
             // pick up any changes from after clear powerups
             breakingRows = GetFilledRows();
@@ -1061,18 +1061,21 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
     }
 
-    private IEnumerator BreakLines(int placingShapeBlockCount, int comboMultiplier, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
+    private IEnumerator BreakLines(int placingShapeBlockCount, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
     {
         if (comboMultiplier > 0 && placingShapeBlockCount > 0) AudioManager.Instance.PlaySound(comboSound);
 
         var shouldActivatePowerups = placingShapeBlockCount > 0;
-        var totalBreakingLines = breakingRows.Count + breakingColumns.Count + comboMultiplier;
+        var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
         var totalBreakingRowBlocks =
             breakingRows.SelectMany(row => row.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
         var totalBreakingColumnBlocks =
             breakingColumns.SelectMany(col => col.Select(b => b)).Sum(b => b.isDoublePoints ? 2 : 1);
         var totalBreakingBlocks = totalBreakingRowBlocks + totalBreakingColumnBlocks;
 
+        // increase combo multiplier for every 2 lines broken
+        var multiLineBreakMultiplier = totalBreakingLines / 2;
+        
         // clearing row and column at same time multiplier
         var rowAndColumnBreakMultiplier = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
 
@@ -1091,7 +1094,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         });
 
         var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
-        var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier;
+        var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier + multiLineBreakMultiplier;
         var newScore = 100 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 100;
 
         // break the lines one at a time
@@ -1123,7 +1126,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             allLineBreaksSequence.Join(BreakThisLine(line, shouldActivatePowerups));
         }
 
-        if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * multiplier);
+        if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * (comboMultiplier + multiplier));
 
         yield return allLineBreaksSequence.WaitForCompletion();
 
@@ -1186,7 +1189,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
-        yield return BreakLines(placingShapeBlockCount, 0, breakingRows, breakingColumns);
+        yield return BreakLines(placingShapeBlockCount, breakingRows, breakingColumns);
     }
 
     /// <summary>
@@ -1264,7 +1267,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         if (_powerupsActivated.Any(p => p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
             return false;
-
+        
+        comboMultiplier += 1;
         _powerupsActivated.Add(powerupActivation);
 
         switch (powerupActivation.PowerupID)
