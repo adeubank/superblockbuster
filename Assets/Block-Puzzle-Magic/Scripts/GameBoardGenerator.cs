@@ -146,7 +146,7 @@ public class GameBoardGenerator : Singleton<GameBoardGenerator>
 
             #region set score
 
-            ScoreManager.Instance.AddScore(previousSessionData.score, false);
+            ScoreManager.Instance.AddScore(previousSessionData.score, 1, false);
 
             #endregion
 

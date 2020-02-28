@@ -68,12 +68,54 @@ public class CustomEditorUtility : MonoBehaviour
         ScoreManager.Instance.AddScore(-100);
     }
 
-    [MenuItem("SuperBlockBuster/Add Plus Score")]
-    private static void AddPlusScore()
+    [MenuItem("SuperBlockBuster/Add Base 100 Score")]
+    private static void AddBaseScore()
     {
         ScoreManager.Instance.AddScore(100);
     }
+    
+    [MenuItem("SuperBlockBuster/Add Low 1,000 Score")]
+    private static void AddLowScore()
+    {
+        ScoreManager.Instance.AddScore(1000);
+    }
 
+    [MenuItem("SuperBlockBuster/Add Medium 10,000 Score")]
+    private static void AddMediumScore()
+    {
+        ScoreManager.Instance.AddScore(10_000);
+    }
+    
+    [MenuItem("SuperBlockBuster/Add High 100,000 Score")]
+    private static void AddHighScore()
+    {
+        ScoreManager.Instance.AddScore(100_000);
+    }
+    
+    [MenuItem("SuperBlockBuster/Add Combo 3x Score")]
+    private static void AddCombo3XScore()
+    {
+        ScoreManager.Instance.AddScore(10_000, 3);
+    }
+    
+    [MenuItem("SuperBlockBuster/Add Combo 4x Score")]
+    private static void AddCombo4XScore()
+    {
+        ScoreManager.Instance.AddScore(100_000, 4);
+    }
+    
+    [MenuItem("SuperBlockBuster/Add Combo 5x Score")]
+    private static void AddCombo5XScore()
+    {
+        ScoreManager.Instance.AddScore(250_000, 5);
+    }
+    
+    [MenuItem("SuperBlockBuster/Add Combo Mega Score")]
+    private static void AddComboMegaScore()
+    {
+        ScoreManager.Instance.AddScore(500_000, 6);
+    }
+    
     [MenuItem("SuperBlockBuster/Init Powerups Menu Options")]
     private static void InitMenuOptions()
     {

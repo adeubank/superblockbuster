@@ -1032,6 +1032,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
     private IEnumerator StartScoring(int placingShapeBlockCount)
     {
+        comboMultiplier = 1;
         var breakingRows = GetFilledRows();
         var breakingColumns = GetFilledColumns();
 
@@ -1040,8 +1041,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ScoreManager.Instance.AddScore(10 * placingShapeBlockCount);
             yield break;
         }
-
-        comboMultiplier = 0;
 
         do
         {
@@ -1057,13 +1056,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             breakingRows = GetFilledRows();
             breakingColumns = GetFilledColumns();
 
-            comboMultiplier += 1;
+            IncrementComboMultiplier();
         } while (breakingRows.Count > 0 || breakingColumns.Count > 0);
     }
 
     private IEnumerator BreakLines(int placingShapeBlockCount, List<List<Block>> breakingRows, List<List<Block>> breakingColumns)
     {
-        if (comboMultiplier > 0 && placingShapeBlockCount > 0) AudioManager.Instance.PlaySound(comboSound);
+        if (comboMultiplier > 2 && placingShapeBlockCount > 0) AudioManager.Instance.PlaySound(comboSound);
 
         var shouldActivatePowerups = placingShapeBlockCount > 0;
         var totalBreakingLines = breakingRows.Count + breakingColumns.Count;
@@ -1074,10 +1073,10 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         var totalBreakingBlocks = totalBreakingRowBlocks + totalBreakingColumnBlocks;
 
         // increase combo multiplier for every 2 lines broken
-        var multiLineBreakMultiplier = totalBreakingLines / 2;
+        var multiplierMultiLineBreak = totalBreakingLines / 2;
         
         // clearing row and column at same time multiplier
-        var rowAndColumnBreakMultiplier = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
+        var multiplierRowAndColumnBreak = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
 
         // find rows/columns with same color and add to multiplier
         var rowsWithSameColor = breakingRows.Aggregate(0, (total, row) =>
@@ -1093,8 +1092,8 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             return total;
         });
 
-        var sameColorMultiplier = rowsWithSameColor + columnsWithSameColor;
-        var multiplier = 1 + sameColorMultiplier + rowAndColumnBreakMultiplier + multiLineBreakMultiplier;
+        var multiplierSameColor = rowsWithSameColor + columnsWithSameColor;
+        var multipliersTotal = multiplierSameColor + multiplierRowAndColumnBreak + multiplierMultiLineBreak;
         var newScore = 100 * totalBreakingBlocks * totalBreakingLines + placingShapeBlockCount * 100;
 
         // break the lines one at a time
@@ -1126,7 +1125,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             allLineBreaksSequence.Join(BreakThisLine(line, shouldActivatePowerups));
         }
 
-        if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore * (comboMultiplier + multiplier));
+        if (placingShapeBlockCount > 0) ScoreManager.Instance.AddScore(newScore, (comboMultiplier + multipliersTotal));
 
         yield return allLineBreaksSequence.WaitForCompletion();
 
@@ -1264,11 +1263,12 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
     {
         if (powerupActivation.PowerupID == 0 || powerupBlock.moveID < 1) return false;
+        if (!Enum.IsDefined(typeof(ShapeInfo.Powerups), powerupActivation.PowerupID)) return false;
 
         if (_powerupsActivated.Any(p => p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
             return false;
-        
-        comboMultiplier += 1;
+
+        IncrementComboMultiplier();
         _powerupsActivated.Add(powerupActivation);
 
         switch (powerupActivation.PowerupID)
@@ -1303,6 +1303,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         blockGrid.Where(b => b.moveID == powerupBlock.moveID).ToList().ForEach(b => b.RemovePowerupIcon());
 
         return true;
+    }
+
+    private void IncrementComboMultiplier()
+    {
+        comboMultiplier += 1;
     }
 
     private void ActivateStormParticles()
