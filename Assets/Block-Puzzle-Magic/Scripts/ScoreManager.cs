@@ -50,11 +50,10 @@ public class ScoreManager : Singleton<ScoreManager>
     {
         var scoreTextAlertGameObject = Instantiate(scoreTextAlertPrefab, transform, false);
         var scoreTextAlert = scoreTextAlertGameObject.GetComponent<ScoreTextAlert>();
-        var baseDelay = 0.1f;
 
         if (newScore >= 0)
         {
-            scoreTextAlert.transform.position = position;
+            scoreTextAlert.transform.position = comboMultiplier > 2 ? new Vector3(position.x - 10, position.y) : position;
             scoreTextAlert.scoreText.text = "+" + newScore;
         }
         else
@@ -80,25 +79,22 @@ public class ScoreManager : Singleton<ScoreManager>
         yield return new WaitForFixedUpdate();
 
         var scoreTextAlertSequence = DOTween.Sequence();
-        if (newScore >= 0)
-            scoreTextAlertSequence.AppendInterval(baseDelay);
-        else
-            scoreTextAlertSequence.AppendInterval(baseDelay * 8);
-        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(scoreTextAlert.transform.position.x, position.y + 3, 0), baseDelay * 8));
-        scoreTextAlertSequence.Join(scoreTextAlert.scoreText.DOFade(0, baseDelay * 8));
+        scoreTextAlertSequence.AppendInterval(0.4f);
+        if (newScore <= 0) scoreTextAlertSequence.AppendInterval(0.4f);
+        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(scoreTextAlert.transform.position.x, position.y + 3, 0), 0.8f));
         scoreTextAlertSequence.AppendCallback(() => { Destroy(scoreTextAlert.gameObject); });
 
-        StartCoroutine(SpawnComboMultiplierAlert(comboMultiplier));
+        StartCoroutine(SpawnComboMultiplierAlert(comboMultiplier, position));
     }
 
-    private IEnumerator SpawnComboMultiplierAlert(int comboMultiplier)
+    private IEnumerator SpawnComboMultiplierAlert(int comboMultiplier, Vector3 position)
     {
         var comboMultiplierPrefab = comboMultiplerPrefabFromInt(comboMultiplier);
         if (comboMultiplierPrefab == null) yield break;
-        var comboMultiplierAlert = Instantiate(comboMultiplierPrefab, transform.position + new Vector3(0, 1000, 0), Quaternion.identity, transform);
+        var comboMultiplierAlert = Instantiate(comboMultiplierPrefab, position, Quaternion.identity, transform);
         yield return new WaitForFixedUpdate(); // let unity catch up
         var outOfMovesAlertSequence = DOTween.Sequence();
-        outOfMovesAlertSequence.Join(comboMultiplierAlert.transform.DOLocalMove(new Vector3(0, 254, 0), 0.8f));
+        
         if (comboMultiplier > 5)
         {
             var backgroundImg = comboMultiplierAlert.GetComponent<Image>();
@@ -113,21 +109,14 @@ public class ScoreManager : Singleton<ScoreManager>
             outOfMovesAlertSequence.Append(backgroundImg.DOColor(lowScoreColor, 0.1f));
             outOfMovesAlertSequence.Append(backgroundImg.DOColor(mediumScoreColor, 0.1f));
             outOfMovesAlertSequence.Append(backgroundImg.DOColor(highScoreColor, 0.1f));
-            
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(lowScoreColor, 0.1f));
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(mediumScoreColor, 0.1f));
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(highScoreColor, 0.1f));
-            
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(lowScoreColor, 0.1f));
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(mediumScoreColor, 0.1f));
-            outOfMovesAlertSequence.Append(backgroundImg.DOColor(highScoreColor, 0.1f));
         }
         else
         {
-            outOfMovesAlertSequence.AppendInterval(1.5f);
+            outOfMovesAlertSequence.AppendInterval(0.9f);
         }
-        outOfMovesAlertSequence.Append(comboMultiplierAlert.transform.DOLocalMove(new Vector3(0, 1000, 0), 0.2f));
-        outOfMovesAlertSequence.AppendCallback(() => { Destroy(comboMultiplierAlert); });
+        outOfMovesAlertSequence.Append(comboMultiplierAlert.transform.DOMove(new Vector3(comboMultiplierAlert.transform.position.x, position.y + 10, 0), 0.8f));
+        outOfMovesAlertSequence.AppendCallback(() => { Destroy(comboMultiplierAlert.gameObject); });
+
         yield return outOfMovesAlertSequence.WaitForCompletion();
     }
 
