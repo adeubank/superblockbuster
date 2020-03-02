@@ -386,7 +386,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.99999, y: -1618}
+  m_AnchoredPosition: {x: 0.99999, y: -1596}
   m_SizeDelta: {x: 216, y: 73}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222000012607316016
@@ -1451,7 +1451,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 275.5, y: -699}
+  m_AnchoredPosition: {x: 275.5, y: -475}
   m_SizeDelta: {x: 346, y: 121}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222000013484482506
@@ -1616,7 +1616,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -106.5, y: -703}
+  m_AnchoredPosition: {x: -106.5, y: -475}
   m_SizeDelta: {x: 431, y: 121}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222000012826989494
@@ -1658,7 +1658,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Next turn: '
+  m_Text: 'Next FREE turn: '
 --- !u!114 &114000013177727908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2160,17 +2160,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17280642a3c064fb3bb6ad029ac7310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Circle: {fileID: 1000012399626328}
-  CurrentCoinsText: {fileID: 114000010304458570}
-  DeltaCoinsText: {fileID: 114000011365934150}
-  FreeTurnButton: {fileID: 114000013741329894}
-  IsFreeTurnEnabled: 1
-  IsPaidTurnEnabled: 0
-  NextFreeTurnTimerText: {fileID: 114000013627837570}
-  NextTurnTimerWrapper: {fileID: 1000010734468692}
   PaidTurnButton: {fileID: 114000012922991452}
+  FreeTurnButton: {fileID: 114000013741329894}
+  Circle: {fileID: 1000012399626328}
+  DeltaCoinsText: {fileID: 114000011365934150}
+  CurrentCoinsText: {fileID: 114000010304458570}
+  NextTurnTimerWrapper: {fileID: 1000010734468692}
+  NextFreeTurnTimerText: {fileID: 114000013627837570}
+  TurnCost: 300
   Sectors:
-  - Probability: 0
+  - ValueTextObject: {fileID: 1000010054979428}
+    RewardValue: 200
+    Probability: 0
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2185,9 +2186,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 200
-    ValueTextObject: {fileID: 1000010054979428}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000011369322998}
+    RewardValue: 100
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2202,9 +2203,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 100
-    ValueTextObject: {fileID: 1000011369322998}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000014092406884}
+    RewardValue: 500
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2219,9 +2220,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 500
-    ValueTextObject: {fileID: 1000014092406884}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000012668819032}
+    RewardValue: 300
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2236,9 +2237,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 300
-    ValueTextObject: {fileID: 1000012668819032}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000010919969918}
+    RewardValue: 100
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2253,9 +2254,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 100
-    ValueTextObject: {fileID: 1000010919969918}
-  - Probability: 77
+  - ValueTextObject: {fileID: 1000013426821564}
+    RewardValue: 900
+    Probability: 77
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2270,9 +2271,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 900
-    ValueTextObject: {fileID: 1000013426821564}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000011544068842}
+    RewardValue: 200
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2287,9 +2288,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 200
-    ValueTextObject: {fileID: 1000011544068842}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000011932693514}
+    RewardValue: 100
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2304,9 +2305,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 100
-    ValueTextObject: {fileID: 1000011932693514}
-  - Probability: 94
+  - ValueTextObject: {fileID: 1000011061935576}
+    RewardValue: 700
+    Probability: 94
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2321,9 +2322,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 700
-    ValueTextObject: {fileID: 1000011061935576}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000011108423922}
+    RewardValue: 300
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2338,9 +2339,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 300
-    ValueTextObject: {fileID: 1000011108423922}
-  - Probability: 100
+  - ValueTextObject: {fileID: 1000012780480614}
+    RewardValue: 100
+    Probability: 100
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2355,9 +2356,9 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 100
-    ValueTextObject: {fileID: 1000012780480614}
-  - Probability: 30
+  - ValueTextObject: {fileID: 1000012307135444}
+    RewardValue: 1000
+    Probability: 30
     RewardCallback:
       m_PersistentCalls:
         m_Calls:
@@ -2372,12 +2373,11 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-    RewardValue: 1000
-    ValueTextObject: {fileID: 1000012307135444}
-  TimerMaxHours: 6
+  TimerMaxHours: 0
   TimerMaxMinutes: 0
-  TimerMaxSeconds: 0
-  TurnCost: 300
+  TimerMaxSeconds: 10
+  IsPaidTurnEnabled: 1
+  IsFreeTurnEnabled: 1
 --- !u!223 &223000010552510494
 Canvas:
   m_ObjectHideFlags: 0
@@ -2784,7 +2784,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 1, y: -1618}
+  m_AnchoredPosition: {x: 1, y: -1596}
   m_SizeDelta: {x: 216, y: 73}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &222000011228819438
@@ -3003,7 +3003,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &224000011413849184
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3335,18 +3335,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 114000013660375346}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 114000011469501268}
-        m_MethodName: OnCloseButtonPressed
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &1000013646351262
 GameObject:
   m_ObjectHideFlags: 0
