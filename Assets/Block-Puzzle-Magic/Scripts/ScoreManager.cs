@@ -53,7 +53,7 @@ public class ScoreManager : Singleton<ScoreManager>
 
         if (newScore >= 0)
         {
-            scoreTextAlert.transform.position = comboMultiplier > 2 ? new Vector3(position.x - 10, position.y) : position;
+            scoreTextAlert.transform.position = comboMultiplier > 2 ? new Vector3(position.x - 1, position.y) : position;
             scoreTextAlert.scoreText.text = "+" + newScore;
         }
         else
@@ -81,7 +81,7 @@ public class ScoreManager : Singleton<ScoreManager>
         var scoreTextAlertSequence = DOTween.Sequence();
         scoreTextAlertSequence.AppendInterval(0.4f);
         if (newScore <= 0) scoreTextAlertSequence.AppendInterval(0.4f);
-        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(scoreTextAlert.transform.position.x, position.y + 3, 0), 0.8f));
+        scoreTextAlertSequence.Append(scoreTextAlert.transform.DOMove(new Vector3(scoreTextAlert.transform.position.x, position.y + 2, 0), 0.8f));
         scoreTextAlertSequence.AppendCallback(() => { Destroy(scoreTextAlert.gameObject); });
 
         StartCoroutine(SpawnComboMultiplierAlert(comboMultiplier, position));
