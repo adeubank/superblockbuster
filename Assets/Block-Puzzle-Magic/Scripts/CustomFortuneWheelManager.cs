@@ -203,6 +203,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 	public void ShowFortuneWheel()
 	{
 		Analytics.CustomEvent("FortuneWheelShown");
+		rootObject.SetActive(true);
 		rootObject.transform.localPosition = Vector3.zero;
 		rootObject.transform.localScale = Vector3.zero;
 		InputManager.Instance.DisableTouch();
