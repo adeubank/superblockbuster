@@ -1535,7 +1535,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     public void OnGameOver()
     {
         InputManager.Instance.DisableTouch();
-        AnalyticsEvent.GameOver();
         GameController.IncrementGamesPlayed();
 
         var gameOverScreen = StackManager.Instance.gameOverScreen;

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 public class GameOver : MonoBehaviour
@@ -73,6 +74,10 @@ public class GameOver : MonoBehaviour
         txtCoinReward.text = string.Format("{0:#,#.}", coinReward.ToString("0"));
 
         CurrencyManager.Instance.AddCoinBalance(coinReward);
+        AnalyticsEvent.GameOver("GameOver", new Dictionary<string, object>
+        {
+            { "score", ScoreManager.Instance.Score }
+        });
     }
 
     private void SetLevelGrade(int score)

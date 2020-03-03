@@ -8,12 +8,49 @@ public class MainScreen : MonoBehaviour
     private const string PrefsFirstPlay = "isFirstPlay";
     public GameObject showRewardedVideoButton;
     public GameObject DeveloperMenuGameObject;
+    public CustomFortuneWheelManager fortuneWheelManager;
+    public GameObject showFortuneWheelButton;
 
     public void Start()
     {
         AdController.Instance.OnRewardVideoLoaded += InstanceOnOnRewardVideoLoaded;
         AdController.Instance.OnRewardVideoClosed += RewardedVideoClosed;
         AdController.Instance.OnAdsInitialized += InstanceOnOnAdsInitialized;
+        CustomFortuneWheelManager.Instance.freeTurnEventHandler += FreeTurnAvailableUpdate;
+    }
+
+
+    private void FreeTurnAvailableUpdate(bool isFreeTurnAvailable)
+    {
+        UpdateFortuneWheelButton(isFreeTurnAvailable);
+    }
+
+    private void UpdateFortuneWheelButton(bool isFreeTurnAvailable)
+    {
+        if (fortuneWheelManager == null)
+        {
+            Debug.Log("Fortune wheel is not configured");
+            return;
+        }
+        
+        if (isFreeTurnAvailable)
+        {
+            EnableFortuneWheelButton();
+        }
+        else
+        {
+            DisableFortuneWheelButton();
+        }
+    }
+
+    private void EnableFortuneWheelButton()
+    {
+        showFortuneWheelButton.SetActive(true);
+    }
+    
+    private void DisableFortuneWheelButton()
+    {
+        showFortuneWheelButton.SetActive(false);
     }
 
     public void Update()
