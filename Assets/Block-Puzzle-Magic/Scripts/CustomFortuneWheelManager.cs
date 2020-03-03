@@ -1,13 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.Events;
-
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -74,6 +73,8 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
 	private void Awake ()
 	{
+		// Circle needs an offset to match background
+		_startAngle = 360 / Sectors.Length / 2;
 		_previousCoinsAmount = _currentCoinsAmount;
 		// Show our current coins amount
 		CurrentCoinsText.text = _currentCoinsAmount.ToString ();
@@ -138,7 +139,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 		int fullTurnovers = 5;
 
 		// Set up how many turnovers our wheel should make before stop
-		_finalAngle = fullTurnovers * 360 + randomFinalAngle;
+		_finalAngle = fullTurnovers * 360 + randomFinalAngle - (360 / Sectors.Length / 2);
 
 		// Stop the wheel
 		_isStarted = true;
