@@ -842,13 +842,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             yield return StartScoring(placingShapeBlockCount);
         }
-
-        #region re-enable timer
-
-        if (GameController.gameMode == GameMode.TIMED || GameController.gameMode == GameMode.CHALLENGE)
-            timeSlider.ResumeTimer();
-
-        #endregion
     }
 
 
@@ -1184,6 +1177,11 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 block.RemovePowerup();
                 block.ClearDandelionSeedIcon();
             }
+
+            if (!block.isFilled)
+            {
+                block.ClearBlock(false);
+            }
         }
     }
 
@@ -1427,12 +1425,13 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         timeSlider.PauseTimer(); // just to be sure
 
+        // let it sink in
         yield return new WaitForSeconds(0.8f);
 
+        timeSlider.PauseTimer(); // just to be extra sure
         yield return ExecuteRescue();
 
-        // let it sink in
-        timeSlider.PauseTimer(); // just to be extra sure
+        timeSlider.PauseTimer(); // just to be extra extra sure
         yield return new WaitUntil(() => DOTween.TotalPlayingTweens() == 0);
 
         // lets play
