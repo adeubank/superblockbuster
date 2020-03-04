@@ -1263,7 +1263,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
     private bool ShouldActivatePowerup(PowerupActivation powerupActivation, Block powerupBlock)
     {
         if (powerupActivation.PowerupID == 0 || powerupBlock.moveID < 1) return false;
-        if (!Enum.IsDefined(typeof(ShapeInfo.Powerups), powerupActivation.PowerupID)) return false;
+        if (!ShapeInfo.IsPowerupId(powerupActivation.PowerupID)) return false;
 
         if (_powerupsActivated.Any(p => p.MoveID == powerupActivation.MoveID && p.PowerupID == powerupActivation.PowerupID))
             return false;

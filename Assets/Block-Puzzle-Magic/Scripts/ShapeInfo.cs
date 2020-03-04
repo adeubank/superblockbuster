@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class ShapeInfo : MonoBehaviour
 {
@@ -175,6 +177,11 @@ public class ShapeInfo : MonoBehaviour
             .Where(block => block.isFilled)
             .ToList()
             .ForEach(b => b.ConvertToDoublerBlock());
+    }
+
+    public static bool IsPowerupId(int powerupId)
+    {
+        return Enum.IsDefined(typeof(Powerups), powerupId);
     }
 }
 

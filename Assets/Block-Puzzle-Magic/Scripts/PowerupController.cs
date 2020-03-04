@@ -53,6 +53,12 @@ public class PowerupController : Singleton<PowerupController>
 
     public bool AddPurchasedPowerupId(int blockId)
     {
+        if (!ShapeInfo.IsPowerupId(blockId))
+        {
+            Debug.Log("Do not know powerup id " + blockId);
+            return false;
+        }
+        
         purchasedPowerupIds.Add(blockId);
         return true;
     }

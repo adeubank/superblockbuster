@@ -279,7 +279,7 @@ public class BlockShapeSpawner : Singleton<BlockShapeSpawner>
         var nextShapeInfo = nextShapeBlock.GetComponent<ShapeInfo>();
 
         // return a normal shape with a powerup ID
-        if (Enum.IsDefined(typeof(ShapeInfo.Powerups), nextShapeInfo.ShapeID))
+        if (ShapeInfo.IsPowerupId(nextShapeInfo.ShapeID))
         {
             var nextNormalShape = Instantiate(NextNormalShape(), shapeContainer, true);
             nextNormalShape.GetComponent<ShapeInfo>().ShapeID = nextShapeInfo.ShapeID;

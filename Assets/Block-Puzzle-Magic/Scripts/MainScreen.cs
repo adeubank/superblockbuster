@@ -19,7 +19,6 @@ public class MainScreen : MonoBehaviour
         CustomFortuneWheelManager.Instance.freeTurnEventHandler += FreeTurnAvailableUpdate;
     }
 
-
     private void FreeTurnAvailableUpdate(bool isFreeTurnAvailable)
     {
         UpdateFortuneWheelButton(isFreeTurnAvailable);
@@ -30,6 +29,11 @@ public class MainScreen : MonoBehaviour
         if (fortuneWheelManager == null)
         {
             Debug.Log("Fortune wheel is not configured");
+            return;
+        }
+
+        if (IsFirstPlay())
+        {
             return;
         }
         
@@ -71,6 +75,7 @@ public class MainScreen : MonoBehaviour
     private void OnEnable()
     {
         if (AdController.Instance.adsInitialized) StartCoroutine(RefreshAds());
+        UpdateFortuneWheelButton(CustomFortuneWheelManager.Instance.isFreeTurnAvailable);
     }
 
     private void OnDisable()
