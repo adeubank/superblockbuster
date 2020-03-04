@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
@@ -748,7 +750,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
             if (colorCoderSprite == null || colorCoderId == -1)
             {
-                return null;
+                return new List<TweenerCore<Color, Color, ColorOptions>>();
             }
 
             for (var index = 1;
@@ -799,9 +801,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ).ToList();
         }).ToList();
         var colorCoderSequence = DOTween.Sequence();
-        colorCoderTweeners.Where(tweeners => tweeners != null)
-            .ToList()
-            .ForEach(t => colorCoderSequence.Join(t));
+        colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
         yield return colorCoderSequence.WaitForCompletion();
     }
 
