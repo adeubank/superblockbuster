@@ -778,7 +778,6 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     var prevColor = block.blockImage.color;
                     var prevImageSprite = block.blockImage.sprite;
-                    Debug.Log("prevColor=" + prevColor + " prevImageSprite=" + prevImageSprite + " colorCoderSprite=" + colorCoderSprite + " colorCoderId=" + colorCoderId);
                     // transition block to the next color
                     return block.blockImage.DOFade(0.1f, 0.8f)
                         .OnStart(() => block.blockImage.sprite = colorCoderSprite)
