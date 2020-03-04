@@ -743,6 +743,14 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             var tweeners = new List<Block>();
             var rowId = colorCoderBlock.rowID;
             var colId = colorCoderBlock.columnID;
+            var colorCoderSprite = colorCoderBlock.blockImage.sprite;
+            var colorCoderId = colorCoderBlock.colorId;
+
+            if (colorCoderSprite == null || colorCoderId == -1)
+            {
+                return null;
+            }
+
             for (var index = 1;
                 index < GameBoardGenerator.Instance.TotalRows ||
                 index < GameBoardGenerator.Instance.TotalColumns;
@@ -770,17 +778,17 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
                 {
                     var prevColor = block.blockImage.color;
                     var prevImageSprite = block.blockImage.sprite;
-
+                    Debug.Log("prevColor=" + prevColor + " prevImageSprite=" + prevImageSprite + " colorCoderSprite=" + colorCoderSprite + " colorCoderId=" + colorCoderId);
                     // transition block to the next color
                     return block.blockImage.DOFade(0.1f, 0.8f)
-                        .OnStart(() => block.blockImage.sprite = colorCoderBlock.blockImage.sprite)
+                        .OnStart(() => block.blockImage.sprite = colorCoderSprite)
                         .OnComplete(() =>
                         {
                             if (block.isFilled)
                             {
-                                block.colorId = colorCoderBlock.colorId;
+                                block.colorId = colorCoderId;
                                 block.blockImage.color = prevColor;
-                                block.blockImage.sprite = colorCoderBlock.blockImage.sprite;
+                                block.blockImage.sprite = colorCoderSprite;
                             }
                             else
                             {
@@ -792,7 +800,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
             ).ToList();
         }).ToList();
         var colorCoderSequence = DOTween.Sequence();
-        colorCoderTweeners.ForEach(t => colorCoderSequence.Join(t));
+        colorCoderTweeners.Where(tweeners => tweeners != null)
+            .ToList()
+            .ForEach(t => colorCoderSequence.Join(t));
         yield return colorCoderSequence.WaitForCompletion();
     }
 
@@ -1074,7 +1084,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
 
         // increase combo multiplier for every 2 lines broken
         var multiplierMultiLineBreak = totalBreakingLines / 2;
-        
+
         // clearing row and column at same time multiplier
         var multiplierRowAndColumnBreak = breakingRows.Any() && breakingColumns.Any() ? 1 : 0;
 
@@ -1415,9 +1425,9 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         outOfMovesAlertSequence.AppendInterval(1.5f);
         outOfMovesAlertSequence.Append(outOfMovesGameObject.transform.DOLocalMove(new Vector3(0, 1000, 0), 0.2f));
         outOfMovesAlertSequence.AppendCallback(() => { Destroy(outOfMovesGameObject); });
-        
+
         timeSlider.PauseTimer(); // just to be sure
-        
+
         yield return new WaitForSeconds(0.8f);
 
         yield return ExecuteRescue();
