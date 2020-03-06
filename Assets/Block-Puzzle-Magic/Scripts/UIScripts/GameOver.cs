@@ -33,9 +33,11 @@ public class GameOver : MonoBehaviour
         }  
         btnReplay.gameObject.SetActive(GameController.GamesPlayed() > 1);
 
-        AdController.Instance.ShowInterstitial();
 
-        AdController.Instance.ShowBanner();
+        if (!AdController.Instance.ShowInterstitial())
+        {
+            AdController.Instance.ShowBanner();
+        }
 
         InputManager.Instance.EnableTouch();
     }

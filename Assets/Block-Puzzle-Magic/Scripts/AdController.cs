@@ -219,30 +219,32 @@ public class AdController : Singleton<AdController>
         Debug.Log("Interstitial ad failed to load: " + e.Message);
     }
 
-    public void ShowInterstitial()
+    public bool ShowInterstitial()
     {
         if (interstitial == null)
         {
             Debug.Log("interstitial was not initialized");
-            return;
+            return false;
         }
 
-        if (!CanShowAds()) return;
+        if (!CanShowAds()) return false;
 
         if (!RemoteConfigController.Instance.InterstitialAdsEnabled)
         {
             Debug.Log("Interstitial is not enabled.");
-            return;
+            return false;
         }
 
         if (interstitial.IsLoaded())
         {
             interstitial.Show();
             _lastAdShownAt = DateTime.Now;
+            return true;
         }
         else
         {
             Debug.Log("Interstitial is not loaded.");
+            return false;
         }
     }
 
