@@ -84,7 +84,7 @@ MonoBehaviour:
     rs:
       key: InterstitialAdsEnabled
       type: bool
-      value: true
+      value: True
   - metadata:
       entityId: 13236ebf-efa0-4709-8699-a2dca0184485
     rs:
@@ -96,7 +96,7 @@ MonoBehaviour:
     rs:
       key: DebugAds
       type: bool
-      value: true
+      value: False
   - metadata:
       entityId: 136d3498-60b0-409c-b51d-4f92aa342981
     rs:
@@ -187,7 +187,7 @@ MonoBehaviour:
     rs:
       key: InterstitialAdsEnabled
       type: bool
-      value: true
+      value: True
   - metadata:
       entityId: 13236ebf-efa0-4709-8699-a2dca0184485
     rs:
@@ -199,7 +199,7 @@ MonoBehaviour:
     rs:
       key: DebugAds
       type: bool
-      value: true
+      value: False
   - metadata:
       entityId: 136d3498-60b0-409c-b51d-4f92aa342981
     rs:
