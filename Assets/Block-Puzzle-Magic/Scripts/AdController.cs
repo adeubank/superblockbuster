@@ -237,6 +237,7 @@ public class AdController : Singleton<AdController>
 
         if (interstitial.IsLoaded())
         {
+            Debug.Log("Showing interstitial");
             interstitial.Show();
             _lastAdShownAt = DateTime.Now;
             return true;
