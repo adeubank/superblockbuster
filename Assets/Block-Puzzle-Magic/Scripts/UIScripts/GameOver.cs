@@ -35,7 +35,14 @@ public class GameOver : MonoBehaviour
 
         AdController.Instance.ShowInterstitial();
 
+        AdController.Instance.ShowBanner();
+
         InputManager.Instance.EnableTouch();
+    }
+
+    private void OnDisable()
+    {
+        AdController.Instance.HideBanner();
     }
 
     public void SetLevelScore(int score)

@@ -78,10 +78,10 @@ public class MainScreen : MonoBehaviour
         UpdateFortuneWheelButton(CustomFortuneWheelManager.Instance.isFreeTurnAvailable);
     }
 
-    private void OnDisable()
-    {
-        AdController.Instance.HideBanner();
-    }
+    // private void OnDisable()
+    // {
+    //     AdController.Instance.HideBanner();
+    // }
 
     private IEnumerator RefreshAds()
     {
@@ -108,7 +108,7 @@ public class MainScreen : MonoBehaviour
             AdController.Instance.RequestRewardVideoAd();
         }
 
-        AdController.Instance.ShowBanner();
+        // AdController.Instance.ShowBanner();
     }
 
     private void CheckIfRewardedVideoIsAvailable(bool showRewardVideoButton)
