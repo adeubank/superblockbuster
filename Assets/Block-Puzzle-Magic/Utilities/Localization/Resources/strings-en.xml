@@ -81,7 +81,7 @@ Use coins to unlock more powerups!"/>
     <string name="powerup-desc-1000" text="No block bust needed. Fills 2 empty spaces around the block upon placing."/>
     <string name="powerup-desc-1009" text="Shifts all blocks downward eliminating empty spaces in between rows."/>
     <string name="powerup-desc-1002" text="Scatters random sprout blocks that will generate 2 blocks to fill empty spaces around them next turn."/>
-    <string name="powerup-desc-1008" text="Randomly fills 3 rows of blocks on the board."/>
+    <string name="powerup-desc-1008" text="Generates 6 Flood blocks for the next turn."/>
     <string name="powerup-desc-1011" text="Generates 5 random blocks to fill the bottom rows of the board."/>
     <string name="powerup-desc-1007" text="Adds 10 seconds of additional play time."/>
     <string name="powerup-desc-1010" text="Fills the outermost rows and columns with snow blocks causing a massive block bust and scoring."/>
