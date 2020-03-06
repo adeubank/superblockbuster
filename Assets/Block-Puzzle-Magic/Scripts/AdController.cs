@@ -126,7 +126,7 @@ public class AdController : Singleton<AdController>
 #endif
     }
 
-    public void ShowBanner(AdSize bannerSize = null)
+    public void ShowBanner()
     {
         if (_bannerIsVisible)
         {
@@ -154,8 +154,7 @@ public class AdController : Singleton<AdController>
 
         // Create a 320x50 banner at the bottom of the screen.
         var adUnitId = BannerAdUnitId();
-        var size = bannerSize == null ? AdSize.Banner : bannerSize;
-        _bannerView = new BannerView(adUnitId, size, AdPosition.Bottom);
+        _bannerView = new BannerView(adUnitId, AdSize.Banner, AdPosition.Bottom);
         _bannerView.OnAdFailedToLoad += BannerViewOnOnAdFailedToLoad;
 
         var adRequest = NewAdRequest();
