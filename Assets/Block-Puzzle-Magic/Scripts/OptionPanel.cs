@@ -2,7 +2,6 @@
 
 public class OptionPanel : MonoBehaviour
 {
-    public GameObject FortuneWheelPrefab;
 
     /// <summary>
     ///     Raises the settings button pressed event.
@@ -57,22 +56,5 @@ public class OptionPanel : MonoBehaviour
     {
         AudioManager.Instance.PlayButtonClickSound();
         StackManager.Instance.selectLanguageScreen.Activate();
-    }
-
-    /// <summary>
-    ///     Raises the share button pressed event.
-    /// </summary>
-    public void OnShareButtonPressed()
-    {
-        if (InputManager.Instance.canInput()) AudioManager.Instance.PlayButtonClickSound();
-    }
-
-    public void OnFortuneButtonPressed()
-    {
-        if (InputManager.Instance.canInput())
-        {
-            AudioManager.Instance.PlayButtonClickSound();
-            Instantiate(FortuneWheelPrefab);
-        }
     }
 }

@@ -24,6 +24,8 @@ public class GameOver : MonoBehaviour
     [SerializeField] private Sprite imgGradeS;
     private readonly List<GameObject> _gradeFxGameObjs = new List<GameObject>();
     
+    public GameObject fortuneWheelPrefab;
+
     private void OnEnable()
     {
         if (_gradeFxGameObjs.Any())
@@ -76,7 +78,7 @@ public class GameOver : MonoBehaviour
         if (score > 1_500_000)
             coinReward = 500;
 
-        var bestScore = PlayerPrefs.GetInt("BestScore_" + GameController.gameMode, score);
+        var bestScore = GetBestScore(score);
 
         if (score >= bestScore)
         {
@@ -93,6 +95,11 @@ public class GameOver : MonoBehaviour
         {
             { "score", ScoreManager.Instance.Score }
         });
+    }
+
+    private int GetBestScore(int defaultScore = -1)
+    {
+        return PlayerPrefs.GetInt("BestScore_" + GameController.gameMode, defaultScore);
     }
 
     private void SetLevelGrade(int score)
@@ -151,6 +158,38 @@ public class GameOver : MonoBehaviour
             AudioManager.Instance.PlayButtonClickSound();
             StackManager.Instance.ActivateGamePlay();
             gameObject.Deactivate();
+        }
+    }
+    
+    /// <summary>
+    ///     Raises the share button pressed event.
+    /// </summary>
+    public void OnShareButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            var bestScore = GetBestScore();
+            if (bestScore < 0)
+            {
+                new NativeShare().SetText("Try out this game!").Share();
+            }
+            else
+            {
+                new NativeShare().SetText($"Can you beat my high score of {bestScore.ToString("0"):#,#.}").Share();
+            }
+        }
+    }
+
+    /// <summary>
+    ///     Raises the reward button pressed event.
+    /// </summary>
+    public void OnRewardButtonPressed()
+    {
+        if (InputManager.Instance.canInput())
+        {
+            AudioManager.Instance.PlayButtonClickSound();
+            Instantiate(fortuneWheelPrefab);
         }
     }
 }
