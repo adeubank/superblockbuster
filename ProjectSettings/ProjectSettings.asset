@@ -9,7 +9,7 @@ PlayerSettings:
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
   defaultScreenOrientation: 0
-  targetDevice: 2
+  targetDevice: 0
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Super Geek Games
@@ -162,7 +162,7 @@ PlayerSettings:
     Android: com.supergeekgames.superblockbuster
     iOS: com.supergeekgames.SuperBlockBuster
   buildNumber:
-    iOS: 4
+    iOS: 5
   AndroidBundleVersionCode: 6
   AndroidMinSdkVersion: 16
   AndroidTargetSdkVersion: 28

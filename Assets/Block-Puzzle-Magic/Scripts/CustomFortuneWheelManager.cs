@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.Events;
@@ -14,20 +15,20 @@ using UnityEditor;
 
 public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 {
+    private bool _recentRewardVideoRewarded;
     public GameObject rootObject;
     public GameObject spinnerRootObject;
     public GameObject rewardRootObject;
     public Image rewardImage;
     public Text rewardText;
     private Action _rewardAction;
-    public delegate void OnFreeTurnAvailableUpdateHandler(bool freeTurnAvailable);
-
-    public event OnFreeTurnAvailableUpdateHandler freeTurnEventHandler;
 
     [Header("Game Objects for some elements")]
     public Button PaidTurnButton; // This button is showed when you can turn the wheel for coins
 
     public Button FreeTurnButton; // This button is showed when you can turn the wheel for free
+    public Button RewardedVideoButton;
+
     public GameObject Circle; // Rotatable GameObject on scene with reward objects
     public Text DeltaCoinsText; // Pop-up text with wasted or rewarded coins amount
     public Text CurrentCoinsText; // Pop-up text with wasted or rewarded coins amount
@@ -101,6 +102,14 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         }
     }
 
+    private void OnEnable()
+    {
+        AdController.Instance.OnAdsInitialized += OnAdsInitialized;
+        AdController.Instance.OnRewardVideoLoaded += OnRewardVideoLoaded;
+        AdController.Instance.OnRewardVideoClosed += OnRewardedVideoClosed;
+        AdController.Instance.OnRewardVideoRewarded += OnRewardVideoRewarded;
+    }
+    
     private void TurnWheelForFree()
     {
         TurnWheel(true);
@@ -219,15 +228,12 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
             .AddSeconds(TimerMaxSeconds);
 
         isFreeTurnAvailable = false;
-        freeTurnEventHandler?.Invoke(isFreeTurnAvailable);
     }
 
     public void ShowFortuneWheel()
     {
         Analytics.CustomEvent("FortuneWheelShown");
-        rootObject.SetActive(true);
-        rewardRootObject.SetActive(false);
-        spinnerRootObject.SetActive(true);
+        ShowSpinner();
         rootObject.transform.localPosition = Vector3.zero;
         rootObject.transform.localScale = Vector3.zero;
         InputManager.Instance.DisableTouch();
@@ -239,6 +245,14 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         fortuneWheelShowSequence.AppendCallback(() => { InputManager.Instance.EnableTouch(); });
     }
 
+    public void ShowSpinner()
+    {
+        ShowTurnButtons();
+        rootObject.SetActive(true);
+        rewardRootObject.SetActive(false);
+        spinnerRootObject.SetActive(true);
+    }
+    
     public void HideFortuneWheel()
     {
         rootObject.SetActive(false);
@@ -259,8 +273,15 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
             if (!IsPaidTurnEnabled) // If our settings allow only free turns
             {
-                ShowFreeTurnButton();
-                DisableFreeTurnButton(); // Make button inactive while spinning or timer to next free turn
+                if (AdController.Instance.RewardVideoLoaded())
+                {
+                    ShowRewardVideoButton();
+                }
+                else
+                {
+                    ShowFreeTurnButton();
+                    DisableFreeTurnButton(); // Make button inactive while spinning or timer to next free turn    
+                }
             }
             else
             {
@@ -277,9 +298,6 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
     private void Update()
     {
-        // We need to show TURN FOR FREE button or TURN FOR COINS button
-        ShowTurnButtons();
-
         // Show timer only if we enable free turns
         if (IsFreeTurnEnabled)
             UpdateFreeTurnTimer();
@@ -404,7 +422,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
             _rewardAction();
         }
         
-        HideFortuneWheel();
+        ShowSpinner();
     }
 
     // Hide coins delta text after animation
@@ -451,6 +469,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
             NextFreeTurnTimerText.text = "Ready!";
             // Now we have a free turn
             isFreeTurnAvailable = true;
+            ShowTurnButtons();
             Analytics.CustomEvent("FortuneWheelAvailable");
         }
         else
@@ -460,8 +479,6 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
             // We don't have a free turn yet
             isFreeTurnAvailable = false;
         }
-
-        freeTurnEventHandler?.Invoke(isFreeTurnAvailable);
     }
 
     private void EnableButton(Button button)
@@ -499,8 +516,10 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
     private void ShowFreeTurnButton()
     {
+        NextTurnTimerWrapper.gameObject.Activate();
         FreeTurnButton.gameObject.SetActive(true);
         PaidTurnButton.gameObject.SetActive(false);
+        RewardedVideoButton.gameObject.Deactivate();
     }
 
     private void ShowPaidTurnButton()
@@ -509,10 +528,54 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         FreeTurnButton.gameObject.SetActive(false);
     }
 
+    private void ShowRewardVideoButton()
+    {
+        NextTurnTimerWrapper.gameObject.Deactivate();
+        FreeTurnButton.gameObject.SetActive(false);
+        PaidTurnButton.gameObject.SetActive(false);
+        RewardedVideoButton.gameObject.Activate();
+        
+    }
+
     public void ResetTimer()
     {
         PlayerPrefs.DeleteKey(LAST_FREE_TURN_TIME_NAME);
     }
+
+    public void RewardedVideoButtonClicked()
+    {
+        if (AdController.Instance.RewardVideoLoaded())
+            AdController.Instance.ShowRewardedVideo();
+        else
+            RewardedVideoButton.gameObject.Deactivate();
+    }
+
+    private void OnRewardVideoLoaded(object sender, EventArgs e)
+    {
+        ShowTurnButtons();
+    }
+
+    private void OnAdsInitialized(object sender, EventArgs e)
+    {
+        ShowTurnButtons();
+    }
+    
+    private void OnRewardVideoRewarded(object sender, Reward e)
+    {
+        _recentRewardVideoRewarded = true;
+    }
+    
+    public void OnRewardedVideoClosed(object sender, EventArgs eventArgs)
+    {
+        RewardedVideoButton.gameObject.Deactivate();
+
+        if (_recentRewardVideoRewarded)
+        {
+            TurnWheelForCoins();
+            _recentRewardVideoRewarded = false;
+        }
+    }
+
 }
 
 /**

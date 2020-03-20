@@ -333,6 +333,7 @@ public class GamePlay : Singleton<GamePlay>, IPointerDownHandler, IPointerUpHand
         if (GameController.GamesPlayed() < 1) return;
 
         AdController.Instance.RequestInterstitial();
+        AdController.Instance.RequestRewardVideoAd();
     }
 
     private void OnDestroy()

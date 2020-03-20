@@ -24,7 +24,7 @@ public class GameOver : MonoBehaviour
     [SerializeField] private Sprite imgGradeS;
     private readonly List<GameObject> _gradeFxGameObjs = new List<GameObject>();
     
-    public GameObject fortuneWheelPrefab;
+    public CustomFortuneWheelManager fortuneWheelManager;
 
     private void OnEnable()
     {
@@ -189,7 +189,7 @@ public class GameOver : MonoBehaviour
         if (InputManager.Instance.canInput())
         {
             AudioManager.Instance.PlayButtonClickSound();
-            Instantiate(fortuneWheelPrefab);
+            fortuneWheelManager.ShowFortuneWheel();
         }
     }
 }

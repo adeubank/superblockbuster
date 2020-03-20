@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Api.Mediation.MoPub;
@@ -11,7 +10,7 @@ public class AdController : Singleton<AdController>
     private DateTime _lastAdShownAt = DateTime.Now.AddMinutes(-5); // so we show banner immediately
     public bool adsInitialized;
     public event EventHandler OnAdsInitialized;
-
+    
     // Start is called before the first frame update
     private void Start()
     {
@@ -253,6 +252,7 @@ public class AdController : Singleton<AdController>
 
     #region Reward Video Ad
 
+    public event EventHandler<Reward> OnRewardVideoRewarded;
     public event EventHandler OnRewardVideoClosed;
     public event EventHandler OnRewardVideoLoaded;
     private RewardBasedVideoAd _rewardBasedVideo;
@@ -335,10 +335,11 @@ public class AdController : Singleton<AdController>
 
     public void RequestRewardVideoAd()
     {
+        if (!CanShowAds()) return;
         var adUnitId = RewardVideoAdUnitId();
         var request = NewAdRequest();
         Debug.Log("Loading reward video ad: " + adUnitId);
-        _rewardBasedVideo.LoadAd(request, adUnitId);
+        _rewardBasedVideo?.LoadAd(request, adUnitId);
     }
 
     public void HandleRewardBasedVideoRewarded(object sender, Reward args)
@@ -347,12 +348,7 @@ public class AdController : Singleton<AdController>
         var amount = args.Amount;
         _recentRewardAmount = amount;
         Debug.Log("User rewarded with: " + amount + " " + type);
-    }
-
-    private IEnumerator AddCoins(int amount)
-    {
-        yield return new WaitForSecondsRealtime(0.8f);
-        CurrencyManager.Instance.AddCoinBalance(amount);
+        OnRewardVideoRewarded?.Invoke(this, args);
     }
 
     public void HandleRewardBasedVideoLoaded(object sender, EventArgs args)
@@ -364,13 +360,6 @@ public class AdController : Singleton<AdController>
     public void HandleRewardBasedVideoClosed(object sender, EventArgs args)
     {
         Debug.Log("HandleRewardBasedVideoClosed event received");
-        if (_recentRewardAmount >= double.Epsilon)
-        {
-            StartCoroutine(AddCoins((int) _recentRewardAmount));
-            _recentRewardAmount = 0;
-        }
-
-        if (CanShowAds()) RequestRewardVideoAd();
         OnRewardVideoClosed?.Invoke(sender, args);
     }
 
