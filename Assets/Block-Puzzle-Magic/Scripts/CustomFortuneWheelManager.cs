@@ -88,12 +88,14 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
         if (IsFreeTurnEnabled)
         {
-            // Start our timer to next free turn
-            SetNextFreeTime();
-
             if (!PlayerPrefs.HasKey(LAST_FREE_TURN_TIME_NAME))
             {
-                PlayerPrefs.SetString(LAST_FREE_TURN_TIME_NAME, DateTime.Now.Ticks.ToString());
+                GiveFreeTurn();
+            }
+            else
+            {
+                // Start our timer to next free turn
+                SetNextFreeTime();
             }
         }
         else
@@ -193,7 +195,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
     public void TurnWheelButtonClick()
     {
-        Analytics.CustomEvent("FortuneWheelSpin");
+        Analytics.CustomEvent("FortuneWheel:SpinFree");
 
         if (isFreeTurnAvailable)
         {
@@ -232,7 +234,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
     public void ShowFortuneWheel()
     {
-        Analytics.CustomEvent("FortuneWheelShown");
+        Analytics.CustomEvent("FortuneWheel:Shown");
         ShowSpinner();
         rootObject.transform.localPosition = Vector3.zero;
         rootObject.transform.localScale = Vector3.zero;
@@ -273,6 +275,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
             if (!IsPaidTurnEnabled) // If our settings allow only free turns
             {
+                // check if reward video was loaded at beginning of game
                 if (AdController.Instance.RewardVideoLoaded())
                 {
                     ShowRewardVideoButton();
@@ -354,7 +357,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         
         ShowRewardAcceptPowerup(delegate
         {
-            Analytics.CustomEvent("FortuneWheelAward", new Dictionary<string, object>
+            Analytics.CustomEvent("FortuneWheel:Award", new Dictionary<string, object>
             {
                 {"powerup", null},
                 {"coins", rewardValue}
@@ -382,7 +385,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         ShowRewardAcceptPowerup(delegate
         {
             
-            Analytics.CustomEvent("FortuneWheelAward", new Dictionary<string, object>
+            Analytics.CustomEvent("FortuneWheel:Award", new Dictionary<string, object>
             {
                 {"powerup", rewardValue},
                 {"coins", null}
@@ -458,6 +461,8 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         if (isFreeTurnAvailable)
             return;
 
+        NextFreeTurnTimerText.gameObject.Activate();
+
         // Update the remaining time values
         _timerRemainingHours = (int) (_nextFreeTurnTime - DateTime.Now).Hours;
         _timerRemainingMinutes = (int) (_nextFreeTurnTime - DateTime.Now).Minutes;
@@ -466,11 +471,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
         // If the timer has ended
         if (_timerRemainingHours <= 0 && _timerRemainingMinutes <= 0 && _timerRemainingSeconds <= 0)
         {
-            NextFreeTurnTimerText.text = "Ready!";
-            // Now we have a free turn
-            isFreeTurnAvailable = true;
-            ShowTurnButtons();
-            Analytics.CustomEvent("FortuneWheelAvailable");
+            GiveFreeTurn();
         }
         else
         {
@@ -479,6 +480,14 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
             // We don't have a free turn yet
             isFreeTurnAvailable = false;
         }
+    }
+
+    private void GiveFreeTurn()
+    {
+        NextFreeTurnTimerText.text = "Ready!";
+        isFreeTurnAvailable = true;
+        ShowTurnButtons();
+        Analytics.CustomEvent("FortuneWheel:AvailableFree");
     }
 
     private void EnableButton(Button button)
@@ -516,7 +525,6 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
     private void ShowFreeTurnButton()
     {
-        NextTurnTimerWrapper.gameObject.Activate();
         FreeTurnButton.gameObject.SetActive(true);
         PaidTurnButton.gameObject.SetActive(false);
         RewardedVideoButton.gameObject.Deactivate();
@@ -571,6 +579,7 @@ public class CustomFortuneWheelManager : Singleton<CustomFortuneWheelManager>
 
         if (_recentRewardVideoRewarded)
         {
+            Analytics.CustomEvent("FortuneWheel:AvailableRewarded");
             TurnWheelForCoins();
             _recentRewardVideoRewarded = false;
         }

@@ -255,7 +255,8 @@ MonoBehaviour:
   imgGradeB: {fileID: 21300000, guid: 5071a00ece974dd48af2c3d3c90dc8c4, type: 3}
   imgGradeA: {fileID: 21300000, guid: 47792234b4d5f8a4e998e7e1030b8846, type: 3}
   imgGradeS: {fileID: 21300000, guid: 14704435ba4a27f4ca3566ae839d29d5, type: 3}
-  fortuneWheelPrefab: {fileID: 0}
+  fortuneWheelPrefab: {fileID: 7239689604627076431, guid: 2989aeec96c8ec342a1a8cbc2985979a,
+    type: 3}
 --- !u!223 &223749287637630394
 Canvas:
   m_ObjectHideFlags: 0
@@ -577,7 +578,6 @@ GameObject:
   - component: {fileID: 222624498299944680}
   - component: {fileID: 114375001922618318}
   - component: {fileID: 114139440701178206}
-  - component: {fileID: 114153256637781994}
   m_Layer: 5
   m_Name: btn-share
   m_TagString: Untagged
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fded97059d09df04caa96f200bed6298, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3adb3c7a5eafbc840b879e7d70724f64, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -692,19 +692,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &114153256637781994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1286643227296562}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36f621f1fa8606e498c0d022e74f2866, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIColorTag: 
 --- !u!1 &1323149973936610
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +743,6 @@ GameObject:
   - component: {fileID: 222210517910426876}
   - component: {fileID: 114974054851156040}
   - component: {fileID: 114695399816777624}
-  - component: {fileID: 114328894343437470}
   m_Layer: 5
   m_Name: btn-home
   m_TagString: Untagged
@@ -811,7 +797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fded97059d09df04caa96f200bed6298, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3adb3c7a5eafbc840b879e7d70724f64, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -871,19 +857,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &114328894343437470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1339071924424892}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36f621f1fa8606e498c0d022e74f2866, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIColorTag: btn-home-gameover
 --- !u!1 &1473224245747512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1324,7 +1297,6 @@ GameObject:
   - component: {fileID: 222160334228386152}
   - component: {fileID: 114647549948908244}
   - component: {fileID: 114085334036197306}
-  - component: {fileID: 114003354488414834}
   m_Layer: 5
   m_Name: btn-replay
   m_TagString: Untagged
@@ -1374,12 +1346,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.7490196, b: 0.6862745, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.44313726, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fded97059d09df04caa96f200bed6298, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3adb3c7a5eafbc840b879e7d70724f64, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1439,19 +1411,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &114003354488414834
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1651390575869124}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36f621f1fa8606e498c0d022e74f2866, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UIColorTag: btn-replay-gameover
 --- !u!1 &1656742099427062
 GameObject:
   m_ObjectHideFlags: 0
@@ -2454,7 +2413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: fded97059d09df04caa96f200bed6298, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3adb3c7a5eafbc840b879e7d70724f64, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
